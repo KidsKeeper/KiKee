@@ -27,5 +27,11 @@
 
 1. Android Studio에서는 `VCS` -> `git` -> `push` 눌러서 푸쉬하기 
 
-1. 깃허브 프로젝트 레파지토리로 돌아와서 
+1. 깃허브 프로젝트 레파지토리로 돌아와서 `pull requests` -> `New pull request`클릭
+
+1. 커밋메세지에서 간략하게 썼던 설명 자세히 기술 후 우측 하단의 `create pull request`클릭
+
+1. 나중에 내가 보고 Merge 함. Merge가 완료되면 다들 터미널에서 `git pull origin master` 한번씩 해주기.
+
+1. 그전까지는 새로운 branch만들어서 작업 수행.
    
