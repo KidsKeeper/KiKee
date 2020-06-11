@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      home: MyHomePage(title: '전설입니다'),
+      home: MyHomePage(title: '전설입니다..'),
     );
   }
 }
