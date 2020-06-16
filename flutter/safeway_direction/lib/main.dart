@@ -1,10 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'package:safewaydirection/data.dart' as safeway;
+import 'package:safewaydirection/googleMap.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
+
+safeway.Route a = safeway.Route();
 
 void main() => runApp(MyApp());
 
@@ -50,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       extended = !extended;
       height *= extended? 1.9 : 0.5263;
       _counter++;
+      GoogleMapsServices.searchPlace("부산대학교");
     });
   }
 
@@ -64,9 +71,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 automaticallyImplyLeading: true,
                 flexibleSpace: Column(
                   children: <Widget>[
-                    SafeArea(
-                      child : Container(
-                        margin: EdgeInsets.all(5),
+                    SafeArea( // 첫번째
+                      child : !extended ?
+                        Container(
+                          margin: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              color: Colors.yellow[100],
+                              borderRadius : BorderRadius.all(Radius.circular(90))
+                          ),
+                          child : FlatButton(
+                              onPressed: _incrementCounter,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                      ':',
+                                      style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 30, color: Colors.orange)
+                                  ),
+                                  Text(
+                                    a.origin + ' -> ' + a.destination,
+                                    style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                      width: 40,
+                                      child : FlatButton(onPressed: _incrementCounter,
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            child : Icon(Icons.navigate_next,size : 25.0)),
+                                      )
+                                  )
+                                ],
+                              )
+                          ),
+                        )
+                        : Container(
+                        margin: EdgeInsets.all(4),
                         decoration: BoxDecoration(
                             color: Colors.yellow[100],
                             borderRadius : BorderRadius.all(Radius.circular(90))
@@ -77,11 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
-                                    ':',
-                                    style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 30, color: Colors.orange)
+                                    '출발 : ',
+                                    style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
                                 ),
                                 Text(
-                                  '금정힐스테이트  -> 부산 메가..',
+                                  a.origin,
                                   style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
                                 ),
                                 Container(
@@ -89,19 +128,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child : FlatButton(onPressed: _incrementCounter,
                                       child: Container(
                                           alignment: Alignment.center,
-                                          child : Icon(Icons.mic,size : 25.0)),
+                                          child : Icon(Icons.navigate_next,size : 25.0)),
                                     )
                                 )
                               ],
                             )
                         ),
-                      ),
+                      )
                     ),
-                    extended ? SafeArea(
-                      child : Container(
+                    SafeArea( // 두번쨰
+                      child : extended ?
+                        Container(
                         alignment: Alignment.bottomCenter,
                           child: Container(
-                            margin: EdgeInsets.all(5),
+                            margin: EdgeInsets.all(4),
                             alignment: Alignment.bottomCenter,
                             decoration: BoxDecoration(
                                 color: Colors.yellow[100],
@@ -113,11 +153,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     Text(
-                                        ':',
-                                        style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 30, color: Colors.orange)
+                                        '도착 : ',
+                                        style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
                                     ),
                                     Text(
-                                      '금정힐스테이트  -> 부산 메가..',
+                                      a.destination,
                                       style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
                                     ),
                                     Container(
@@ -125,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         child : FlatButton(onPressed: _incrementCounter,
                                           child: Container(
                                               alignment: Alignment.center,
-                                              child : Icon(Icons.mic,size : 25.0)),
+                                              child : Icon(Icons.navigate_next,size : 25.0)),
                                         )
                                     )
                                   ],
@@ -133,8 +173,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
 
-                      ),
-                    ) : Container(height: 0, width: 0,),
+                      )
+                        : Container(), //null
+                    )
                   ],
                 ),
               )
@@ -145,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Opacity(opacity: extended ? 0 : 1,
               child: GoogleMap(
-                mapType: MapType.hybrid,
+                mapType: MapType.normal,
                 initialCameraPosition: _kGooglePlex,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
@@ -154,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Center(
               child: Opacity(opacity: extended ? 1 : 0,
-                child: Text('fdf'),
+                child: WillPopScope(child: Text('dfd'), onWillPop: () { if(extended)_incrementCounter(); else SystemChannels.platform.invokeMethod('SystemNavigator.pop'); return;})
               ),
             )
           ],
