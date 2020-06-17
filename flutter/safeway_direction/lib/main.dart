@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:safewaydirection/data.dart' as safeway;
 import 'package:safewaydirection/googleMap.dart';
+import 'package:safewaydirection/tMap.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
@@ -58,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
       LatLng origin = LatLng(35.2335123, 129.0810047);
       LatLng destination = LatLng(35.2277437, 129.0951384);
-      GoogleMapsServices.getRouteCoordinates(origin, destination);
+      TmapServices.getRoute(origin, destination);
     });
   }
 
