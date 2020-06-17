@@ -27,7 +27,7 @@ class TmapServices{
   if(passList != null){
     for(LatLng iter in passList) // 경유지 정보 추가. 최대 5곳 가능
       body += (iter.longitude.toString() + ',' + iter.latitude.toString() + '_');
-    body.substring(0, body.lastIndexOf('_'));
+    body = body.substring(0, body.lastIndexOf('_'));
   }
 
   body = Uri.encodeFull(body);
