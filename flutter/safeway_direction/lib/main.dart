@@ -56,7 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
       extended = !extended;
       height *= extended? 1.9 : 0.5263;
       _counter++;
-      GoogleMapsServices.searchPlace("부산대학교");
+      LatLng origin = LatLng(35.2335123, 129.0810047);
+      LatLng destination = LatLng(35.2277437, 129.0951384);
+      GoogleMapsServices.getRouteCoordinates(origin, destination);
     });
   }
 
