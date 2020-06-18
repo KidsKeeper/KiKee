@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +11,7 @@ class TmapServices{
   
   Map<String, dynamic> requestData ={
       "appKey" : projectKey,
-      "startX" : origin.longitude,
+      "startX" : origin.longitude, // 경도
       "startY" : origin.latitude,
       "endX" : destination.longitude,
       "endY" : destination.latitude,
@@ -42,5 +43,12 @@ class TmapServices{
   Map values = jsonDecode(response.body);
 
   return values;
+  }
+
+  static Future<Map<String,dynamic>> test(LatLng position) async {
+    http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
+    Map values = jsonDecode(response.body);
+
+    return values;
   }
 }

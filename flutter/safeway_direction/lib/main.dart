@@ -42,8 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool extended = false;
   Completer<GoogleMapController> _controller = Completer();
+  Set<Marker> markerTest = Set<Marker>();
+  
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(35.2476089997793, 129.091698688253),
     zoom: 14.4746,
   );
   static final CameraPosition _kLake = CameraPosition(
@@ -54,12 +56,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      /*
       extended = !extended;
       height *= extended? 1.9 : 0.5263;
       _counter++;
-      LatLng origin = LatLng(35.2335123, 129.0810047);
-      LatLng destination = LatLng(35.2277437, 129.0951384);
-      TmapServices.getRoute(origin, destination);
+      */
+      markerTest.add(Marker(
+               markerId: MarkerId('1'),
+               position: LatLng(35.2474465734972, 129.091718486654),
+            ));
+      markerTest.add(Marker(
+               markerId: MarkerId('2'),
+               position: LatLng(35.24743597040611, 129.09151701227086)
+            ));
+      markerTest.add(Marker(
+               markerId: MarkerId('3'),
+               position: LatLng(35.24774149210607, 129.09153922415),
+            ));
+      markerTest.add(Marker(
+               markerId: MarkerId('4'),
+               position: LatLng(35.24743597040611, 129.09151701227086),
+               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+            ));
+      markerTest.add(Marker(
+               markerId: MarkerId('5'),
+               position: LatLng(35.24787758810702, 129.09154755301228)
+            ));
+      LatLng origin = LatLng(35.2278421, 129.095157);
+      LatLng destination = LatLng(35.2329183, 129.082460);
+      
+      LatLng l1 = LatLng(35.2474465734972, 129.091718486654);
+      LatLng l2 = LatLng(35.2478794789843, 129.091691326138);
+
+      LatLng tt = LatLng(35.2476089997793, 129.091698688253);
+
+      // TmapServices.test(tt);
+      // TmapServices.getRoute(l1, l2);
     });
   }
 
@@ -190,6 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Opacity(opacity: extended ? 0 : 1,
               child: GoogleMap(
                 mapType: MapType.normal,
+                markers: markerTest,
                 initialCameraPosition: _kGooglePlex,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
@@ -203,12 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         )
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: Text('To the lake!'),
-        icon: Icon(Icons.directions_boat),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
