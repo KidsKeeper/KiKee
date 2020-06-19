@@ -41,7 +41,7 @@ class Store{
     indsMclsCd = "N02";
     indsSclsCd = "N02A04";
     response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
+    result.addAll(_storeListParser(response.body));
 //  result += await compute(_storeListParser,response.body);
 
     indsLclsCd = "N";
@@ -97,12 +97,11 @@ class Store{
   }
 
   static List<Store> _storeListParser(String storeList){
+    List<Store> result = List<Store>();
     Map<String,dynamic> data = jsonDecode(storeList);
     if(data['header']['resultCode'] != '00')
-      return null;
+      return result;
 
-    List<Store> result = List<Store>();
-    
     List<dynamic> items = data['body']['items'];
     items.forEach((item){
       Store storeData = Store();

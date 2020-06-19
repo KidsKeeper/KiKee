@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:safewaydirection/api/storeInformation/store.dart';
 
 import 'package:safewaydirection/data.dart' as safeway;
 import 'package:safewaydirection/googleMap.dart';
@@ -109,9 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
       LatLng l1 = LatLng(35.2451901, 129.091451);
       LatLng l2 = LatLng(35.2487721, 129.091708);
 
-      LatLng tt = LatLng(35.2476089997793, 129.091698688253);
+      LatLng tt = LatLng(35.2474343, 129.091948);
+      List<Store> a = await Store.getStoreListInRadius(100, 129.091689, 35.2476190);
+      markerTest.add(Marker(
+               markerId: MarkerId('test'),
+               position: tt,
+               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
+            ));
 
-      //TmapServices.test(LatLng(35.2476089997793, 129.091698688253));
+      Map<String,dynamic> t1 = await TmapServices.test(tt);
+
+      for(var iter in t1['resultData']['linkPoints']){
+            markerTest.add(Marker(
+               markerId: MarkerId(iter['location']['longitude'].toString()),
+               position: LatLng(iter['location']['latitude'], iter['location']['longitude']),
+               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+            ));
+
+      }
+  
       Map<String,dynamic> t = await TmapServices.getRoute(l1, l2);
       for(Map<String,dynamic> iter in t['features']){
         if(iter['geometry']['type'] == "LineString"){
