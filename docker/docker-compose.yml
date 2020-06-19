@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+   node:
+      command: /bin/sh
+      container_name: node
+      image: node:lts-alpine3.12
+      ports:
+       - 8088:8088
+      volumes:
+       - ./node:/home/node
+      tty: true
+
+   mongo:
+      container_name: mongo
+      image: mvertes/alpine-mongo:3.10_alpha
+      ports:
+       - 27017:27017
+      volumes:
+       - ./db_data:/data/db
