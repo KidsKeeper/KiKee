@@ -44,63 +44,15 @@ class _MyHomePageState extends State<MyHomePage> {
   bool extended = false;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markerTest = Set<Marker>();
+  List<LatLng> polylineTest = [];
+  Set<Polyline> _polylinemarker = Set<Polyline>();
   
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(35.2476089997793, 129.091698688253),
     zoom: 14.4746,
   );
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
   void _incrementCounter() {
     setState(() {
-      /*
-      extended = !extended;
-      height *= extended? 1.9 : 0.5263;
-      _counter++;
-      
-      markerTest.add(Marker(
-               markerId: MarkerId('1'),
-               position: LatLng(35.2474465734972, 129.091718486654),
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('2'),
-               position: LatLng(35.24743597040611, 129.09151701227086),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('3'),
-               position: LatLng(35.24774149210607, 129.09153922415),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-            ));
-      markerTest.add(Marker(
-          markerId: MarkerId('4'),
-          position: LatLng(35.24787758810702, 129.09154755301228),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-      ));
-      markerTest.add(Marker(
-               markerId: MarkerId('5'),
-               position: LatLng(35.2478794789843, 129.091691326138),  
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('6'),
-               position: LatLng(35.2476089997793, 129.091698688253),  
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('7'),
-               position: LatLng(35.24661944444444, 129.09141666666667), 
-               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure)
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('8'),
-               position: LatLng(35.24841388888889, 129.091575),
-               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan)
-            ));
-
-      */
       test();
 
     });
@@ -113,14 +65,15 @@ class _MyHomePageState extends State<MyHomePage> {
       LatLng tt = LatLng(35.2474343, 129.091948);
       List<Store> a = await Store.getStoreListInRadius(100, LatLng(35.2476190, 129.091689));
 
+      Set<String> dangerRoute = Set<String>();
       for(Store iter in a){
         markerTest.add(Marker(
                markerId: MarkerId(iter.storeLocation.location.latitude.toString()),
                position: iter.storeLocation.location,
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
             ));
+        dangerRoute.add(iter.storeLocation.rdnm);
       }
-
 
       markerTest.add(Marker(
                markerId: MarkerId('test'),
@@ -128,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
             ));
 
+    
       Map<String,dynamic> t1 = await TmapServices.getNearRoadInformation(tt);
 
       for(var iter in t1['resultData']['linkPoints']){
@@ -137,18 +91,25 @@ class _MyHomePageState extends State<MyHomePage> {
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
             ));
       }
-  
-      Map<String,dynamic> t = await TmapServices.getRoute(l1, l2);
-      for(Map<String,dynamic> iter in t['features']){
+      Map<String,dynamic> route4 = await TmapServices.getRoute(l1, l2, 2);
+      for(Map<String,dynamic> iter in route4['features']){
         if(iter['geometry']['type'] == "LineString"){
           for(var iter2 in iter['geometry']['coordinates']){
             markerTest.add(Marker(
                markerId: MarkerId(iter2[1].toString()),
                position: LatLng(iter2[1], iter2[0])
             ));
+            polylineTest.add(LatLng(iter2[1], iter2[0]));
           }
         }
       }
+      _polylinemarker.add(
+        Polyline(
+        polylineId: PolylineId('4'),
+        color: Colors.purple,
+        points: polylineTest
+        )
+      );
 
       setState(() {
         
@@ -283,6 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: GoogleMap(
                 mapType: MapType.normal,
                 markers: markerTest,
+                polylines: _polylinemarker,
                 initialCameraPosition: _kGooglePlex,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
@@ -298,10 +260,5 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }

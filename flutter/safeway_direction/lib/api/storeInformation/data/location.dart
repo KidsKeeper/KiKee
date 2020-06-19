@@ -17,7 +17,7 @@ class Location{
   String lnoSlno = '9';              // 지번부번지 
   String lnoAdr = "대전광역시 서구 ~~"; // 지번주소
   String rdnmCd = '301704298326';    // 도로명 코드
-  String rdnm = '대전광역시 서구 ~ 둔산로51번길';  // 도로명
+  String rdnm = '둔산로51번길';  // 도로명
   String bldMnno = '66'; // 건물본번지
   String bldSlno = '1';  // 건물부번지 
   String bldMngNo = '3017011200113530000022216'; //건물관리번호

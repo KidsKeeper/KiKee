@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class TmapServices{
   static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
 
-  static Future<Map<String,dynamic>> getRoute(LatLng origin, LatLng destination, {List<LatLng> passList}) async {
+  static Future<Map<String,dynamic>> getRoute(LatLng origin, LatLng destination, [int type = 0, List<LatLng> passList]) async {
 // 파라미터 설명 :각각 출발지, 도착지, 경유지(List) 정보
   
   Map<String, dynamic> requestData ={
@@ -23,8 +23,24 @@ class TmapServices{
     String body = "";
     for(var key in requestData.keys)
         body += (key + '=' + requestData[key].toString() + '&');
+    switch (type) {
+    case 0: 
+      body += "searchOption=0&";
+      break;
+    case 1:
+      body += "searchOption=4&";
+      break;
+    case 2:
+      body += "searchOption=10&";
+      break;
+    case 3:
+      body += "searchOption=30&";
+      break;
+    default:
+      return null;
+  }
     body = body.substring(0,body.lastIndexOf('&'));
-
+  
   if(passList != null){
     for(LatLng iter in passList) // 경유지 정보 추가. 최대 5곳 가능
       body += (iter.longitude.toString() + ',' + iter.latitude.toString() + '_');
