@@ -23,7 +23,7 @@ class Store{
   String indsSclsCd = 'Q12A01'; // 업종소분류 코드
   
   Location storeLocation = Location(); // 가게 위치
-
+  static String _servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
 
   static Future<List<Store>> getStoreListInRadius(int radius, LatLng location) async {
     String indsLclsCd;
@@ -34,61 +34,59 @@ class Store{
     dom.Document document;
     List<Store> result = List<Store>();
     List<dom.Element> storeList = List<dom.Element>();
-
-    String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
     
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 //  result += await compute(_storeListParser,response.body);
 
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A05";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
     
     indsLclsCd = "N";
     indsMclsCd = "N08";
     indsSclsCd = "N08A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A06";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
  
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A10";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "D";
     indsMclsCd = "D25";
     indsSclsCd = "D25A11";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
     result += _storeListParser(response.body);
 
 
@@ -96,6 +94,73 @@ class Store{
     return result;
   }
 
+  static Future<List<Store>> getStoreListInRectangle(LatLng location1, LatLng location2) async{
+    String indsLclsCd;
+    String indsMclsCd;
+    String indsSclsCd;
+  
+    http.Response response;
+    dom.Document document;
+    List<Store> result = List<Store>();
+    List<dom.Element> storeList = List<dom.Element>();
+    
+    indsLclsCd = "N";
+    indsMclsCd = "N02";
+    indsSclsCd = "N02A04";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+    indsLclsCd = "N";
+    indsMclsCd = "N02";
+    indsSclsCd = "N02A05";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+    indsLclsCd = "N";
+    indsMclsCd = "N02";
+    indsSclsCd = "N02A02";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+    
+    indsLclsCd = "N";
+    indsMclsCd = "N08";
+    indsSclsCd = "N08A04";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+
+    indsLclsCd = "Q";
+    indsMclsCd = "Q09";
+    indsSclsCd = "Q09A06";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+
+    indsLclsCd = "Q";
+    indsMclsCd = "Q09";
+    indsSclsCd = "Q09A02";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+ 
+
+    indsLclsCd = "Q";
+    indsMclsCd = "Q09";
+    indsSclsCd = "Q09A10";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+
+    indsLclsCd = "D";
+    indsMclsCd = "D25";
+    indsSclsCd = "D25A11";
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$_servicekey');
+    result += _storeListParser(response.body);
+
+
+    print('t');
+    return result;
+  }
   static List<Store> _storeListParser(String storeList){
     List<Store> result = List<Store>();
     Map<String,dynamic> data = jsonDecode(storeList);

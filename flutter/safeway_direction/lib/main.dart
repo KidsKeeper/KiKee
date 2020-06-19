@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/api/storeInformation/store.dart';
 
 import 'package:safewaydirection/data.dart' as safeway;
-import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
@@ -63,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       LatLng l2 = LatLng(35.2487721, 129.091708);
 
       LatLng tt = LatLng(35.2474343, 129.091948);
-      List<Store> a = await Store.getStoreListInRadius(100, LatLng(35.2476190, 129.091689));
+      List<Store> a = await Store.getStoreListInRectangle(l2, LatLng(35.2463822, 129.089735));
 
       Set<String> dangerRoute = Set<String>();
       for(Store iter in a){
