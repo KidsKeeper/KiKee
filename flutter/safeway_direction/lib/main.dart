@@ -1,12 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/api/storeInformation/store.dart';
-
 import 'package:safewaydirection/data.dart' as safeway;
-import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
@@ -14,7 +10,7 @@ var width =  AppBar().preferredSize.width;
 
 safeway.Route a = safeway.Route();
 
-void main() => runApp(MyApp());
+void main() => runApp(MyApp()); //신경
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -28,7 +24,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
+} //안써도
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -37,122 +33,61 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-}
+} //괜찮.
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   bool extended = false;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markerTest = Set<Marker>();
-  
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(35.2476089997793, 129.091698688253),
-    zoom: 14.4746,
-  );
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
-  void _incrementCounter() {
-    setState(() {
-      /*
-      extended = !extended;
-      height *= extended? 1.9 : 0.5263;
-      _counter++;
-      
-      markerTest.add(Marker(
-               markerId: MarkerId('1'),
-               position: LatLng(35.2474465734972, 129.091718486654),
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('2'),
-               position: LatLng(35.24743597040611, 129.09151701227086),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('3'),
-               position: LatLng(35.24774149210607, 129.09153922415),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-            ));
-      markerTest.add(Marker(
-          markerId: MarkerId('4'),
-          position: LatLng(35.24787758810702, 129.09154755301228),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-      ));
-      markerTest.add(Marker(
-               markerId: MarkerId('5'),
-               position: LatLng(35.2478794789843, 129.091691326138),  
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('6'),
-               position: LatLng(35.2476089997793, 129.091698688253),  
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('7'),
-               position: LatLng(35.24661944444444, 129.09141666666667), 
-               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure)
-            ));
-      markerTest.add(Marker(
-               markerId: MarkerId('8'),
-               position: LatLng(35.24841388888889, 129.091575),
-               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan)
-            ));
-
-      */
-      test();
-
-    });
+  Set<Marker> markers = {};
+  LatLng source = LatLng(35.2451901, 129.091451);
+  LatLng destination = LatLng(35.2487721, 129.091708);
+  @override
+  initState(){
+    super.initState();
+    markers.add(Marker(
+        markerId: MarkerId('source'),
+        position: source,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+        onTap: ()=>print("출발지")
+    ));
+    markers.add(Marker(
+        markerId: MarkerId('destination'),
+        position: destination,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+        onTap: ()=>print("도착지")
+    ));
   }
 
-  void test() async{
-      LatLng l1 = LatLng(35.2451901, 129.091451);
-      LatLng l2 = LatLng(35.2487721, 129.091708);
-
-      LatLng tt = LatLng(35.2474343, 129.091948);
-      List<Store> a = await Store.getStoreListInRadius(100, LatLng(35.2476190, 129.091689));
-
-      for(Store iter in a){
-        markerTest.add(Marker(
-               markerId: MarkerId(iter.storeLocation.location.latitude.toString()),
-               position: iter.storeLocation.location,
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-            ));
-      }
-
-
-      markerTest.add(Marker(
-               markerId: MarkerId('test'),
-               position: tt,
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-            ));
-
-      Map<String,dynamic> t1 = await TmapServices.getNearRoadInformation(tt);
-
-      for(var iter in t1['resultData']['linkPoints']){
-            markerTest.add(Marker(
-               markerId: MarkerId(iter['location']['longitude'].toString()),
-               position: LatLng(iter['location']['latitude'], iter['location']['longitude']),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
-            ));
-      }
-  
-      Map<String,dynamic> t = await TmapServices.getRoute(l1, l2);
-      for(Map<String,dynamic> iter in t['features']){
-        if(iter['geometry']['type'] == "LineString"){
-          for(var iter2 in iter['geometry']['coordinates']){
-            markerTest.add(Marker(
-               markerId: MarkerId(iter2[1].toString()),
-               position: LatLng(iter2[1], iter2[0])
-            ));
+  void getPoints() async{
+    print("getPoint!");
+    var values = await TmapServices.getRoute(source, destination);
+    //print(markers.length);
+    for(int i=0; i<values["features"].length; i++){
+      if(values["features"][i]["type"]=="LineString"){
+        var coord = values["features"][i]["geometry"]["coordinates"];
+        for(int j=0; j<coord.length; j++){
+          String id;
+          var color;
+          if(j==0 || j==coord.length-1){
+            id ="Points";
+            color = BitmapDescriptor.hueRed;
+          }else{
+            id ="LineString";
+            color = BitmapDescriptor.hueBlue;
           }
+          markers.add(Marker(
+              markerId: MarkerId("포인트"),
+              position: LatLng(coord[j][1],coord[j][0]),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+              onTap: ()=>print("포인트")
+          ));
+          setState(() {
+
+          });
         }
       }
-
-      setState(() {
-        
-      });
+    }
   }
 
   @override
@@ -162,116 +97,16 @@ class _MyHomePageState extends State<MyHomePage> {
             preferredSize: Size.fromHeight(height),
             child : SafeArea(
               child: AppBar(
-
                 automaticallyImplyLeading: true,
-                flexibleSpace: Column(
-                  children: <Widget>[
-                    SafeArea( // 첫번째
-                      child : !extended ?
-                        Container(
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                              color: Colors.yellow[100],
-                              borderRadius : BorderRadius.all(Radius.circular(90))
-                          ),
-                          child : FlatButton(
-                              onPressed: _incrementCounter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                      ':',
-                                      style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 30, color: Colors.orange)
-                                  ),
-                                  Text(
-                                    a.origin + ' -> ' + a.destination,
-                                    style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
-                                  ),
-                                  Container(
-                                      width: 40,
-                                      child : FlatButton(onPressed: _incrementCounter,
-                                        child: Container(
-                                            alignment: Alignment.center,
-                                            child : Icon(Icons.navigate_next,size : 25.0)),
-                                      )
-                                  )
-                                ],
-                              )
-                          ),
-                        )
-                        : Container(
-                        margin: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                            color: Colors.yellow[100],
-                            borderRadius : BorderRadius.all(Radius.circular(90))
-                        ),
-                        child : FlatButton(
-                            onPressed: _incrementCounter,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    '출발 : ',
-                                    style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
-                                ),
-                                Text(
-                                  a.origin,
-                                  style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                    width: 40,
-                                    child : FlatButton(onPressed: _incrementCounter,
-                                      child: Container(
-                                          alignment: Alignment.center,
-                                          child : Icon(Icons.navigate_next,size : 25.0)),
-                                    )
-                                )
-                              ],
-                            )
-                        ),
-                      )
-                    ),
-                    SafeArea( // 두번쨰
-                      child : extended ?
-                        Container(
-                        alignment: Alignment.bottomCenter,
-                          child: Container(
-                            margin: EdgeInsets.all(4),
-                            alignment: Alignment.bottomCenter,
-                            decoration: BoxDecoration(
-                                color: Colors.yellow[100],
-                                borderRadius : BorderRadius.all(Radius.circular(90))
-                            ),
-                            child : FlatButton(
-                                onPressed: _incrementCounter,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text(
-                                        '도착 : ',
-                                        style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
-                                    ),
-                                    Text(
-                                      a.destination,
-                                      style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
-                                    ),
-                                    Container(
-                                        width: 40,
-                                        child : FlatButton(onPressed: _incrementCounter,
-                                          child: Container(
-                                              alignment: Alignment.center,
-                                              child : Icon(Icons.navigate_next,size : 25.0)),
-                                        )
-                                    )
-                                  ],
-                                )
-                            ),
-                          ),
-
-                      )
-                        : Container(), //null
-                    )
-                  ],
+                flexibleSpace: Container(
+                  margin: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                      color: Colors.yellow[100],
+                      borderRadius : BorderRadius.all(Radius.circular(90))
+                  ),
+                  child : FlatButton(
+                      onPressed: getPoints,
+                  ),
                 ),
               )
             ),
@@ -282,26 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
             Opacity(opacity: extended ? 0 : 1,
               child: GoogleMap(
                 mapType: MapType.normal,
-                markers: markerTest,
-                initialCameraPosition: _kGooglePlex,
+                markers: markers,
+                initialCameraPosition: CameraPosition(target:LatLng(35.2451901, 129.091451),zoom: 14),
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                 },
               ),
             ),
-            Center(
-              child: Opacity(opacity: extended ? 1 : 0,
-                child: WillPopScope(child: Text('dfd'), onWillPop: () { if(extended)_incrementCounter(); else SystemChannels.platform.invokeMethod('SystemNavigator.pop'); return;})
-              ),
-            )
           ],
         )
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
+  } //레이아웃 파트. 내가 건들일 게 없음.
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
 }
