@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:safewaydirection/api/storeInformation/data/location.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
@@ -25,7 +25,7 @@ class Store{
   Location storeLocation = Location(); // 가게 위치
 
 
-  static Future<List<Store>> getStoreListInRadius(int radius, double cx, double cy) async {
+  static Future<List<Store>> getStoreListInRadius(int radius, LatLng location) async {
     String indsLclsCd;
     String indsMclsCd;
     String indsSclsCd;
@@ -40,55 +40,55 @@ class Store{
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result.addAll(_storeListParser(response.body));
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    result += _storeListParser(response.body);
 //  result += await compute(_storeListParser,response.body);
 
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A05";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
     indsLclsCd = "N";
     indsMclsCd = "N02";
     indsSclsCd = "N02A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
     
     indsLclsCd = "N";
     indsMclsCd = "N08";
     indsSclsCd = "N08A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A06";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
  
 
     indsLclsCd = "Q";
     indsMclsCd = "Q09";
     indsSclsCd = "Q09A10";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
 
     indsLclsCd = "D";
     indsMclsCd = "D25";
     indsSclsCd = "D25A11";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=$cx&cy=$cy&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
     result += _storeListParser(response.body);
 
 
@@ -132,6 +132,7 @@ class Store{
       storeData.storeLocation.lnoAdr = item['lnoAdr'];
       storeData.storeLocation.rdnmCd = item['rdnmCd'];
       storeData.storeLocation.rdnm = item['rdnm'];
+      storeData.storeLocation.rdnm = storeData.storeLocation.rdnm.substring(storeData.storeLocation.rdnm.lastIndexOf(' ')+1 ,storeData.storeLocation.rdnm.length);
       storeData.storeLocation.bldMnno = item['bldMnno'].toString();
       storeData.storeLocation.bldSlno = item['bldSlno'].toString();
       storeData.storeLocation.bldMngNo = item['bldMngNo'].toString();
@@ -139,8 +140,7 @@ class Store{
       storeData.storeLocation.rdnmAdr = item['rdnmAdr'];
       storeData.storeLocation.oldZipcd = int.parse(item['oldZipcd']);
       storeData.storeLocation.newZipcd = int.parse(item['newZipcd']);
-      storeData.storeLocation.lon = item['lon']; 
-      storeData.storeLocation.lat = item['lat'];
+      storeData.storeLocation.location = LatLng(item['lat'],item['lon']); 
 
       result.add(storeData);
     });

@@ -45,7 +45,7 @@ class TmapServices{
   return values;
   }
 
-  static Future<Map<String,dynamic>> test(LatLng position) async {
+  static Future<Map<String,dynamic>> getNearRoadInformation(LatLng position) async {
     http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
     Map values = jsonDecode(response.body);
 

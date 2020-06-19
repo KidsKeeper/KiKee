@@ -1,4 +1,5 @@
 // 변수안에 있는 초기값은 예시입니다.
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Location{
   String ctprvnCd = '30';              // 시도 코드
@@ -25,8 +26,6 @@ class Location{
 
   int oldZipcd = 302830; // 구 우편번호
   int newZipcd = 16618;   // 신 우편번호
-
-  double lon = 127.380605; // 경도
-  double lat = 36.354149; // 위도
+  LatLng location = LatLng(36.354149, 127.380605);
   
 }

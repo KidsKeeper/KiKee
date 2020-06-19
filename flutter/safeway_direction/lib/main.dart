@@ -111,14 +111,24 @@ class _MyHomePageState extends State<MyHomePage> {
       LatLng l2 = LatLng(35.2487721, 129.091708);
 
       LatLng tt = LatLng(35.2474343, 129.091948);
-      List<Store> a = await Store.getStoreListInRadius(100, 129.091689, 35.2476190);
+      List<Store> a = await Store.getStoreListInRadius(100, LatLng(35.2476190, 129.091689));
+
+      for(Store iter in a){
+        markerTest.add(Marker(
+               markerId: MarkerId(iter.storeLocation.location.latitude.toString()),
+               position: iter.storeLocation.location,
+               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
+            ));
+      }
+
+
       markerTest.add(Marker(
                markerId: MarkerId('test'),
                position: tt,
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
             ));
 
-      Map<String,dynamic> t1 = await TmapServices.test(tt);
+      Map<String,dynamic> t1 = await TmapServices.getNearRoadInformation(tt);
 
       for(var iter in t1['resultData']['linkPoints']){
             markerTest.add(Marker(
@@ -126,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
                position: LatLng(iter['location']['latitude'], iter['location']['longitude']),
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
             ));
-
       }
   
       Map<String,dynamic> t = await TmapServices.getRoute(l1, l2);
