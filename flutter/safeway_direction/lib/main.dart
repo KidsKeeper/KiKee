@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markerTest = Set<Marker>();
   Set<Marker> markers = {};
-  LatLng source = LatLng(35.2451901, 129.091451);
+  LatLng source = LatLng(35.227934, 129.080416);
   LatLng destination = LatLng(35.2487721, 129.091708);
   @override
   initState(){
@@ -64,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var values = await TmapServices.getRoute(source, destination);
     //print(markers.length);
     for(int i=0; i<values["features"].length; i++){
-      if(values["features"][i]["type"]=="LineString"){
+      print(values["features"][i]["geometry"]["type"]);
+      if(values["features"][i]["geometry"]["type"]=="LineString"){
         var coord = values["features"][i]["geometry"]["coordinates"];
         for(int j=0; j<coord.length; j++){
           String id;
@@ -77,17 +78,17 @@ class _MyHomePageState extends State<MyHomePage> {
             color = BitmapDescriptor.hueBlue;
           }
           markers.add(Marker(
-              markerId: MarkerId("포인트"),
+              markerId: MarkerId(id+i.toString()),
               position: LatLng(coord[j][1],coord[j][0]),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-              onTap: ()=>print("포인트")
+              icon: BitmapDescriptor.defaultMarkerWithHue(color),
+              onTap: ()=>print(id)
           ));
-          setState(() {
-
-          });
         }
       }
     }
+    setState(() {
+
+    });
   }
 
   @override
