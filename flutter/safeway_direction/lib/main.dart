@@ -63,27 +63,36 @@ class _MyHomePageState extends State<MyHomePage> {
     print("getPoint!");
     var values = await TmapServices.getRoute(source, destination);
     //print(markers.length);
-    for(int i=0; i<values["features"].length; i++){
-      print(values["features"][i]["geometry"]["type"]);
-      if(values["features"][i]["geometry"]["type"]=="LineString"){
-        var coord = values["features"][i]["geometry"]["coordinates"];
-        for(int j=0; j<coord.length; j++){
-          String id;
-          var color;
-          if(j==0 || j==coord.length-1){
-            id ="Points";
-            color = BitmapDescriptor.hueRed;
-          }else{
-            id ="LineString";
-            color = BitmapDescriptor.hueBlue;
+    for(int i=0; i<values["features"].length; i++){ // points & linestrings
+      String type = values["features"][i]["geometry"]["type"];
+      List<dynamic> coordi = values["features"][i]["geometry"]["coordinates"];
+      //print((coordi[0]).runtimeType);
+      if(type =="LineString"){
+        for(int j=0;  j<coordi.length; j++){
+          LatLng position1 = LatLng(coordi[j][1],coordi[j][0]);
+          if(markers.isNotEmpty&&markers.last.position!=position1){
+            markers.add(Marker(
+                markerId: MarkerId("LineString"+markers.length.toString()),
+                position: position1,
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+                onTap: ()=>print("LineString")
+            ));
           }
-          markers.add(Marker(
-              markerId: MarkerId(id+i.toString()),
-              position: LatLng(coord[j][1],coord[j][0]),
-              icon: BitmapDescriptor.defaultMarkerWithHue(color),
-              onTap: ()=>print(id)
-          ));
         }
+      }else{
+        LatLng position2 = LatLng(coordi[1],coordi[0]);
+        if(markers.isNotEmpty&&markers.last.position==position2){
+          print(markers.length);
+          markers.remove(markers.last);
+          print(markers.length);
+        }
+        markers.add(Marker(
+            markerId: MarkerId("Point"+markers.length.toString()),
+            position: position2,
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            onTap: ()=>print("Point")
+        ));
+        print(markers.length);
       }
     }
     setState(() {
