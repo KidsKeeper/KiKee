@@ -68,6 +68,11 @@ class TmapServices{
   return values;
   }
 
+  static Future<Set<String>> reverseGeocoding(LatLng location) async {
+    http.Response response = await http.get("https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat=${location.latitude}&lon=${location.longitude}&addressType=A03&appKey=$projectKey");
+    Map values = jsonDecode(response.body);
+
+  }
 // 아래 코드는 아마 삭제 될 것으로 예상.
   static Future<Map<String,dynamic>> getNearRoadInformation(LatLng position) async {
     http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");

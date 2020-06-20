@@ -161,6 +161,7 @@ class Store{
     print('t');
     return result;
   }
+  
   static List<Store> _storeListParser(String storeList){
     List<Store> result = List<Store>();
     Map<String,dynamic> data = jsonDecode(storeList);

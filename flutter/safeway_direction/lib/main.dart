@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/api/storeInformation/store.dart';
 
 import 'package:safewaydirection/data.dart' as safeway;
+import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
@@ -39,31 +40,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   bool extended = false;
+  bool testBool = false;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markerTest = Set<Marker>();
   List<LatLng> polylineTest = [];
   Set<Polyline> _polylinemarker = Set<Polyline>();
   
+  
+
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(35.2476089997793, 129.091698688253),
     zoom: 14.4746,
   );
   void _incrementCounter() {
-    setState(() {
+    if(!testBool)
       test();
-
-    });
+    else
+      test2();
+    testBool = !testBool;
   }
 
   void test() async{
-      LatLng l1 = LatLng(35.2451901, 129.091451);
-      LatLng l2 = LatLng(35.2487721, 129.091708);
+      LatLng l1 = LatLng(35.222752,129.090583);
+      LatLng l2 = LatLng(35.222792,129.095795);
+      LatLng accidentArea = LatLng(35.222799633098,129.092828816098);
+      
+      await TmapServices.reverseGeocoding(accidentArea);
+      
+      markerTest.add(Marker(
+               markerId: MarkerId('1'),
+               position: LatLng(35.224241666666664, 129.0918972222222),
+               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
+            ));
 
-      LatLng tt = LatLng(35.2474343, 129.091948);
+      markerTest.add(Marker(
+               markerId: MarkerId('2'),
+               position: LatLng(35.22313611111111, 129.09151111111112),
+               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
+            ));
+      markerTest.add(Marker(
+               markerId: MarkerId('3'),
+               position: LatLng(35.223155360308034, 129.09153712282787),
+               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+            ));
+
+      /*
       List<Store> a = await Store.getStoreListInRectangle(l2, LatLng(35.2463822, 129.089735));
-
       Set<String> dangerRoute = Set<String>();
       for(Store iter in a){
         markerTest.add(Marker(
@@ -79,29 +102,66 @@ class _MyHomePageState extends State<MyHomePage> {
                position: tt,
                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
             ));
-
+      
     
-      Map<String,dynamic> t1 = await TmapServices.getNearRoadInformation(tt);
+      Map<String,dynamic> t1 = await TmapServices.getNearRoadInformation(accidentArea);
 
       for(var iter in t1['resultData']['linkPoints']){
             markerTest.add(Marker(
                markerId: MarkerId(iter['location']['longitude'].toString()),
                position: LatLng(iter['location']['latitude'], iter['location']['longitude']),
-               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
             ));
+            print('NearRoadInformation ${iter['location']['latitude']}, ${iter['location']['longitude']}');
       }
-      Map<String,dynamic> route4 = await TmapServices.getRoute(l1, l2, 2);
+      */
+      setState(() {
+        
+      });
+  }
+
+  void test2() async{
+      LatLng l1 = LatLng(35.222752,129.090583);
+      LatLng l2 = LatLng(35.222792,129.095795);
+
+      int i = 0, j =0;
+      Map<String,dynamic> route4 = await TmapServices.getRoute(l1, l2);
       for(Map<String,dynamic> iter in route4['features']){
         if(iter['geometry']['type'] == "LineString"){
+          j = 0;
           for(var iter2 in iter['geometry']['coordinates']){
-            markerTest.add(Marker(
+            if(i == 0 || j != 0){
+              /*
+              markerTest.add(Marker(
                markerId: MarkerId(iter2[1].toString()),
-               position: LatLng(iter2[1], iter2[0])
+               position: LatLng(iter2[1], iter2[0]),
+               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+              ));
+              */
+              if(i == 9 && j ==1){
+              Map<String,dynamic> iii = await TmapServices.getNearRoadInformation(LatLng(iter2[1], iter2[0]));
+              markerTest.add(Marker(
+              markerId: MarkerId(iter2[1].toString()),
+              position: LatLng(iii["resultData"]["linkPoints"][0]["location"]['latitude'], iii["resultData"]["linkPoints"][0]["location"]['longitude']),
+              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
             ));
+            markerTest.add(Marker(
+              markerId: MarkerId(iter2[1].toString()),
+              position: LatLng(iii["resultData"]["linkPoints"][1]["location"]['latitude'], iii["resultData"]["linkPoints"][1]["location"]['longitude']),
+              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+            ));
+              }
+
+            }
+
             polylineTest.add(LatLng(iter2[1], iter2[0]));
+            j++;
+            
           }
         }
+        i++;
       }
+      
       _polylinemarker.add(
         Polyline(
         polylineId: PolylineId('4'),
@@ -109,10 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
         points: polylineTest
         )
       );
-
-      setState(() {
-        
-      });
+      setState(() {     });
   }
 
   @override
