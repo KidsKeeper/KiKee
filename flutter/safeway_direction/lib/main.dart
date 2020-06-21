@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<LatLng> polylineTest = [];
   Set<Polyline> _polylinemarker = Set<Polyline>();
   
-  
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(35.2476089997793, 129.091698688253),
@@ -57,13 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-
   void test2() async{
       LatLng l1 = LatLng(35.222752,129.090583);
       LatLng l2 = LatLng(35.222792,129.095795);
-      LatLng accidentArea = LatLng(35.222799633098,129.092828816098);
-      safeway.Route result = await TmapServices.getRoute(l1,l2, 0, [LatLng(35.222517,129.090659)]);
-      //await TmapServices.getRoute(l1, l2);
+      //Set<LatLng> accidentAreas = {LatLng(35.222799633098,129.092828816098)};
+      safeway.Route result = await TmapServices.getRoute(l1, l2);
+      safeway.BadPoint accidentAreas = safeway.BadPoint();
+      accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -75,17 +74,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ));
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: accidentArea,
+              position: accidentAreas.location.first,
             ));
       int i = 1;
       for(var iter in result.locations){
         markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter.first,
+              position: iter.location,
               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
             ));
         if(i == 10){
-          List<LatLng> test1= await TmapServices.getNearRoadInformation(iter.first);
+          List<LatLng> test1= await TmapServices.getNearRoadInformation(iter.location);
           for(var iter in test1)
           markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -94,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ));
         }
         if(i == 11){
-          List<LatLng> test2= await TmapServices.getNearRoadInformation(iter.first);
+          List<LatLng> test2= await TmapServices.getNearRoadInformation(iter.location);
           for(var iter in test2)
           markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -102,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
             ));
         }
-        List<LatLng> test3= await TmapServices.getNearRoadInformation(accidentArea);
+        List<LatLng> test3= await TmapServices.getNearRoadInformation(accidentAreas.location.first);
           for(var iter in test3)
           markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
