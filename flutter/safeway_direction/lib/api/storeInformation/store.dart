@@ -100,9 +100,7 @@ class Store{
     String indsSclsCd;
   
     http.Response response;
-    dom.Document document;
     List<Store> result = List<Store>();
-    List<dom.Element> storeList = List<dom.Element>();
     
     indsLclsCd = "N";
     indsMclsCd = "N02";
