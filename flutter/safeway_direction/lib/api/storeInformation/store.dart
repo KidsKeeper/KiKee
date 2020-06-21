@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:safewaydirection/api/storeInformation/data/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as parser;
-import 'package:html/dom.dart' as dom;
 
-// 변수안에 있는 초기값은 예시입니다.
-class Store{
+
+class Stores{
   String bizesId = '10868815'; // 상가 업소 번호
   String bizesNm = '땡땡땡다방'; // 상호명
   String brchNm = '대전땡땡병원점';  // 지점명
@@ -21,138 +19,85 @@ class Store{
   String indsLclsCd = 'Q'; // 업종대분류 코드
   String indsMclsCd = 'Q12'; // 업종중분류 코드
   String indsSclsCd = 'Q12A01'; // 업종소분류 코드
-  
   Location storeLocation = Location(); // 가게 위치
 
-
-  static Future<List<Store>> getStoreListInRadius(int radius, LatLng location) async {
-    String indsLclsCd;
-    String indsMclsCd;
-    String indsSclsCd;
-  
-    http.Response response;
-    dom.Document document;
-    List<Store> result = List<Store>();
-    List<dom.Element> storeList = List<dom.Element>();
-
-    String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
-    
-    indsLclsCd = "N";
-    indsMclsCd = "N02";
-    indsSclsCd = "N02A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-//  result += await compute(_storeListParser,response.body);
-
-    indsLclsCd = "N";
-    indsMclsCd = "N02";
-    indsSclsCd = "N02A05";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-    indsLclsCd = "N";
-    indsMclsCd = "N02";
-    indsSclsCd = "N02A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-    
-    indsLclsCd = "N";
-    indsMclsCd = "N08";
-    indsSclsCd = "N08A04";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-
-    indsLclsCd = "Q";
-    indsMclsCd = "Q09";
-    indsSclsCd = "Q09A06";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-
-    indsLclsCd = "Q";
-    indsMclsCd = "Q09";
-    indsSclsCd = "Q09A02";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
- 
-
-    indsLclsCd = "Q";
-    indsMclsCd = "Q09";
-    indsSclsCd = "Q09A10";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-
-    indsLclsCd = "D";
-    indsMclsCd = "D25";
-    indsSclsCd = "D25A11";
-    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
-    result += _storeListParser(response.body);
-
-
-    print('t');
-    return result;
-  }
-
-  static List<Store> _storeListParser(String storeList){
-    List<Store> result = List<Store>();
-    Map<String,dynamic> data = jsonDecode(storeList);
-    if(data['header']['resultCode'] != '00')
-      return result;
-
-    List<dynamic> items = data['body']['items'];
-    items.forEach((item){
-      Store storeData = Store();
-      storeData.bizesId = item['bizesId'];
-      storeData.bizesNm = item['bizesNm'];
-      storeData.brchNm = item['brchNm'];
-      storeData.indsLclsCd = item['indsLclsCd'];
-      storeData.indsLclsNm = item['indsLclsNm'];
-      storeData.indsMclsCd = item['indsMclsCd'];
-      storeData.indsMclsNm = item['indsMclsNm'];
-      storeData.indsSclsCd = item['indsSclsCd'];
-      storeData.indsSclsNm = item['indsSclsNm'];
-      storeData.ksicCd = item['ksicCd'];
-      storeData.ksicNm = item['ksicNm'];
-      storeData.storeLocation.ctprvnCd = item['ctprvnCd'];
-      storeData.storeLocation.ctprvnNm = item['ctprvnNm'];
-      storeData.storeLocation.signguCd = item['signguCd'];
-      storeData.storeLocation.signguNm = item['signguNm'];
-      storeData.storeLocation.adongCd = item['adongCd'];
-      storeData.storeLocation.adongNm = item['adongNm'];
-      storeData.storeLocation.ldongCd = item['ldongCd'];
-      storeData.storeLocation.ldongNm = item['ldongNm'];
-      storeData.storeLocation.lnoCd = item['lnoCd'];
-      storeData.storeLocation.plotSctCd = item['plotSctCd'];
-      storeData.storeLocation.plotSctNm = item['plotSctNm'];
-      storeData.storeLocation.lnoMnno = item['lnoMnno'].toString();
-      storeData.storeLocation.lnoSlno = item['lnoSlno'].toString();
-      storeData.storeLocation.lnoAdr = item['lnoAdr'];
-      storeData.storeLocation.rdnmCd = item['rdnmCd'];
-      storeData.storeLocation.rdnm = item['rdnm'];
-      storeData.storeLocation.rdnm = storeData.storeLocation.rdnm.substring(storeData.storeLocation.rdnm.lastIndexOf(' ')+1 ,storeData.storeLocation.rdnm.length);
-      storeData.storeLocation.bldMnno = item['bldMnno'].toString();
-      storeData.storeLocation.bldSlno = item['bldSlno'].toString();
-      storeData.storeLocation.bldMngNo = item['bldMngNo'].toString();
-      storeData.storeLocation.bldNm = item['bldNm'];
-      storeData.storeLocation.rdnmAdr = item['rdnmAdr'];
-      storeData.storeLocation.oldZipcd = int.parse(item['oldZipcd']);
-      storeData.storeLocation.newZipcd = int.parse(item['newZipcd']);
-      storeData.storeLocation.location = LatLng(item['lat'],item['lon']); 
-
-      result.add(storeData);
-    });
-      
-
-      
-
-      return result;
-
-  }
-
 }
+
+Future<List<Stores>> findNearStores(int radius, LatLng location) async{
+
+  List<Stores> result = List<Stores>();
+  List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
+  String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
+
+  for(String code in codeList){
+    result += await getData(radius, location,code, servicekey);
+  }
+
+  return result;
+}
+
+Future<List<Stores>> getData(int radius, LatLng location,String code,String serviceKey) async{
+  http.Response response;
+  String indsLclsCd = code.substring(0,1);
+  String indsMclsCd = code.substring(0,3);
+  String indsSclsCd = code;
+  response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRadius?radius=$radius&cx=${location.longitude}&cy=${location.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$serviceKey');
+  return _storeListParser(response.body);
+}
+
+List<Stores> _storeListParser(String storeList){
+  List<Stores> result = List<Stores>();
+  Map<String,dynamic> data = jsonDecode(storeList);
+  if(data['header']['resultCode'] != '00')
+    return result;
+
+  List<dynamic> items = data['body']['items'];
+  items.forEach((item){
+    Stores storeData = Stores();
+    storeData.bizesId = item['bizesId'];
+    storeData.bizesNm = item['bizesNm'];
+    storeData.brchNm = item['brchNm'];
+    storeData.indsLclsCd = item['indsLclsCd'];
+    storeData.indsLclsNm = item['indsLclsNm'];
+    storeData.indsMclsCd = item['indsMclsCd'];
+    storeData.indsMclsNm = item['indsMclsNm'];
+    storeData.indsSclsCd = item['indsSclsCd'];
+    storeData.indsSclsNm = item['indsSclsNm'];
+    storeData.ksicCd = item['ksicCd'];
+    storeData.ksicNm = item['ksicNm'];
+    storeData.storeLocation.ctprvnCd = item['ctprvnCd'];
+    storeData.storeLocation.ctprvnNm = item['ctprvnNm'];
+    storeData.storeLocation.signguCd = item['signguCd'];
+    storeData.storeLocation.signguNm = item['signguNm'];
+    storeData.storeLocation.adongCd = item['adongCd'];
+    storeData.storeLocation.adongNm = item['adongNm'];
+    storeData.storeLocation.ldongCd = item['ldongCd'];
+    storeData.storeLocation.ldongNm = item['ldongNm'];
+    storeData.storeLocation.lnoCd = item['lnoCd'];
+    storeData.storeLocation.plotSctCd = item['plotSctCd'];
+    storeData.storeLocation.plotSctNm = item['plotSctNm'];
+    storeData.storeLocation.lnoMnno = item['lnoMnno'].toString();
+    storeData.storeLocation.lnoSlno = item['lnoSlno'].toString();
+    storeData.storeLocation.lnoAdr = item['lnoAdr'];
+    storeData.storeLocation.rdnmCd = item['rdnmCd'];
+    storeData.storeLocation.rdnm = item['rdnm'];
+    storeData.storeLocation.rdnm = storeData.storeLocation.rdnm.substring(storeData.storeLocation.rdnm.lastIndexOf(' ')+1 ,storeData.storeLocation.rdnm.length);
+    storeData.storeLocation.bldMnno = item['bldMnno'].toString();
+    storeData.storeLocation.bldSlno = item['bldSlno'].toString();
+    storeData.storeLocation.bldMngNo = item['bldMngNo'].toString();
+    storeData.storeLocation.bldNm = item['bldNm'];
+    storeData.storeLocation.rdnmAdr = item['rdnmAdr'];
+    storeData.storeLocation.oldZipcd = int.parse(item['oldZipcd']);
+    storeData.storeLocation.newZipcd = int.parse(item['newZipcd']);
+    storeData.storeLocation.location = LatLng(item['lat'],item['lon']);
+    result.add(storeData);
+  });
+  return result;
+}
+
+
+
+
 
 /*
 관광 /여가/오락 => 무도/유흥/가무 => 무도유흥주점- 종합
