@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:safewaydirection/route.dart';
+import 'package:safewaydirection/utility.dart';
 class TmapServices{
   static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
 
@@ -66,20 +67,24 @@ class TmapServices{
   
   Map<String,dynamic> values = jsonDecode(response.body);
   Route result = Route.map(values);
-
   return result;
   }
 
-  static Future<Set<String>> reverseGeocoding(LatLng location) async {
+  static Future<String> reverseGeocoding(LatLng location) async {
     http.Response response = await http.get("https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat=${location.latitude}&lon=${location.longitude}&addressType=A03&appKey=$projectKey");
     Map values = jsonDecode(response.body);
-
+    return values['addressInfo']['roadName'];
   }
-// 아래 코드는 아마 삭제 될 것으로 예상.
-  static Future<Map<String,dynamic>> getNearRoadInformation(LatLng position) async {
+
+  static Future<List<LatLng>> getNearRoadInformation(LatLng position) async {
     http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
     Map values = jsonDecode(response.body);
+    List<LatLng> result = [];
 
-    return values;
+  for(var iter in values['resultData']['linkPoints'])
+    result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
+    return result;
   }
+
+
 }
