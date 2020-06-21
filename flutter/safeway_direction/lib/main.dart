@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void test2() async{
       LatLng l1 = LatLng(35.222752,129.090583);
       LatLng l2 = LatLng(35.222792,129.095795);
-
+      LatLng accidentArea = LatLng(35.222799633098,129.092828816098);
       safeway.Route result = await TmapServices.getRoute(l1, l2);
       for(var iter in result.locations){
         markerTest.add(Marker(
