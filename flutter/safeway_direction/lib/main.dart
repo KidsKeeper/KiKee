@@ -49,10 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<LatLng>> nearPoints = [];
   LatLng source = LatLng(35.222752,129.090583);
   LatLng destination = LatLng(35.222792,129.095795);
+  int visibleColorCnt = 0;
+  int num =1;
   @override
   initState() {
     super.initState();
-
 
   }
 
@@ -73,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //
 //    });
     print("================ getNearStores() Done ==================");
-  }
+  } //상가정보. 아직 활용 안할 것.
 
   void getPoints() async{
     print("================getPoint!=================");
@@ -157,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
 
     });
-  }
+  } //출발지부터 목적지까지 기본 경로.
 
   void getAccidentData() async{
     http.Response response = await http.get("http://3.34.194.177:8088/secret/api/frequently/schoolzone/2018");
@@ -235,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
 
     });
-  }
+  } //사고지 정보 얻음.
 
   void getPossibleRoute() async{
     await getAccidentData();
@@ -253,12 +254,11 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       }
-
       polylines.add(Polyline(
         polylineId: PolylineId(polylines.length.toString()),
         points: points[i].toList(),
         color: colors[i],
-        visible: true,
+        visible: false,
       ));
     }
 
@@ -266,7 +266,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
     });
 
-  }
+  } //우회경로를 찍기위한 경유지 위치 후보들을 마커로 찍어서 보여줌.
+
+  void makePolylineVisible(){
+    int n = polylines.length;
+    int cnt = visibleColorCnt%n;
+    List<Polyline> polylineList = polylines.toList();
+    for(int i=0; i<n; i++){
+      if(i==cnt){
+        polylineList[cnt] = polylineList[cnt].copyWith(visibleParam: true);
+      }else{
+        if(polylineList[i].visible == true){
+          polylineList[i] = polylineList[i].copyWith(visibleParam: false);
+        }
+      }
+    }
+    polylines = polylineList.toSet();
+    visibleColorCnt++;
+    setState(() {
+
+    });
+  } //Button을 누를때마다 폴리라인 경로 하나씩 보여줌.
+
 
   double calculateDistance(lat1, lon1, lat2, lon2){
     var p = 0.017453292519943295;
@@ -315,6 +336,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
+            FlatButton(
+              color: Colors.yellow,
+              onPressed: makePolylineVisible,
+              child: Text(
+                "Button"
+              ),
+            )
           ],
         )
       ),// This trailing comma makes auto-formatting nicer for build methods.
