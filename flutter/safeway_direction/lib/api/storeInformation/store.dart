@@ -29,8 +29,25 @@ Future<List<Stores>> findNearStores(int radius, LatLng location) async{
   List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
   String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
 
-  for(String code in codeList){
+  for(String code in codeList)
     result += await getData(radius, location,code, servicekey);
+
+  return result;
+}
+
+Future<List<Stores>> findNearStoresInRectangle(LatLng location1, LatLng location2) async{
+
+  List<Stores> result = List<Stores>();
+  List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
+  String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
+
+  http.Response response;
+  for(String code in codeList){
+    String indsLclsCd = code.substring(0,1);
+    String indsMclsCd = code.substring(0,3);
+    String indsSclsCd = code;
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    result += _storeListParser(response.body);
   }
 
   return result;

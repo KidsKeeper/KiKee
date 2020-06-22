@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ));
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: accidentAreas.location.first,
+              position: LatLng(accidentAreas.location.first.first,accidentAreas.location.first.last)
             ));
       int i = 1;
       for(var iter in result.locations){
@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
             ));
         }
-        List<LatLng> test3= await TmapServices.getNearRoadInformation(accidentAreas.location.first);
+        List<LatLng> test3= await TmapServices.getNearRoadInformation(LatLng(accidentAreas.location.first.first,accidentAreas.location.first.last));
           for(var iter in test3)
           markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
