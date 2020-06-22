@@ -62,8 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //Set<LatLng> accidentAreas = {LatLng(35.222799633098,129.092828816098)};
       safeway.Route result = await TmapServices.getRoute(l1, l2);
       safeway.BadPoint accidentAreas = safeway.BadPoint();
-      accidentAreas.add(LatLng(35.222799633098,129.092828816098));
-
+      await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
+      await result.updateDanger(accidentAreas);
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: l1,
@@ -74,48 +74,59 @@ class _MyHomePageState extends State<MyHomePage> {
             ));
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: LatLng(accidentAreas.location.first.first,accidentAreas.location.first.last)
+              position: LatLng(accidentAreas.badLocation.first.first,accidentAreas.badLocation.first.last)
             ));
       int i = 1;
       for(var iter in result.locations){
         markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: iter.location,
-              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+              icon : iter.danger > 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
             ));
+        /*
         if(i == 10){
           List<LatLng> test1= await TmapServices.getNearRoadInformation(iter.location);
           for(var iter in test1)
-          markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter,
-              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-            ));
+            markerTest.add(Marker(
+                markerId: MarkerId('test'+markerTest.length.toString()),
+                position: iter,
+                icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
+              ));
         }
         if(i == 11){
           List<LatLng> test2= await TmapServices.getNearRoadInformation(iter.location);
           for(var iter in test2)
-          markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter,
-              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
-            ));
+            markerTest.add(Marker(
+                markerId: MarkerId('test'+markerTest.length.toString()),
+                position: iter,
+                icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+              ));
         }
-        List<LatLng> test3= await TmapServices.getNearRoadInformation(LatLng(accidentAreas.location.first.first,accidentAreas.location.first.last));
+        
+        List<LatLng> test3= await TmapServices.getNearRoadInformation(LatLng(accidentAreas.badLocation.first.first,accidentAreas.badLocation.first.last));
           for(var iter in test3)
           markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: iter,
               icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
             ));
-
+        */
             //Map<String,dynamic> iii = await TmapServices.getNearRoadInformation(LatLng(iter2[1], iter2[0]));
             //polylineTest.add(iter);
             i++;
       }
 
-      setState(() {     });
-            print('t');
+      markerTest.add(Marker(
+              markerId: MarkerId('test'+markerTest.length.toString()),
+              position: result.locations[0].location,
+              icon : result.locations[0].danger > 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+            ));
+
+      for(int i = 1; i < result.locations.length; i++){
+        if(result.locations[i-1].danger > 0 == result.locations[i].danger > 0){
+
+        }
+      }
       _polylinemarker.add(
         Polyline(
         polylineId: PolylineId('4'),
@@ -123,6 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
         points: polylineTest
         )
       );
+
+      setState(() {     });
+            print('t');
       
   }
 
