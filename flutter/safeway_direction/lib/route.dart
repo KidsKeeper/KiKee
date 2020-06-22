@@ -61,4 +61,18 @@ class BadPoint{
       }
     }
   }
+
+  Set<LatLng> toLatLngSet(){
+    Set<LatLng> result = {};
+    for(var iter in location)
+      result.add(LatLng(iter.first,iter.last));
+    return result;
+  }
+
+  List<LatLng> toLatLngList(){
+    List<LatLng> result = [];
+    for(var iter in location)
+      result.add(LatLng(iter.first,iter.last));
+    return result;
+  }
 }
