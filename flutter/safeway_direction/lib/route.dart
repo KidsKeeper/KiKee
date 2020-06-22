@@ -24,8 +24,14 @@ class Route{
             0, iter['properties']['name']));
   }
 
-  updateDanger(BadPoint dangerList){
- 
+  updateDanger(BadPoint dangerList) async{
+    for(var iter in locations)
+      if(dangerList.roadName.contains(iter.roadName)){
+        List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter.location);
+        for(var iter2 in dataList)
+          if(dangerList.badLocation.contains(utility.Pair.geometryFloor(iter2)))
+            iter.danger += 1;
+      }
   }
 
 }
@@ -38,14 +44,14 @@ class _Point{
 }
 
 class BadPoint{
-  Set<utility.Pair<double,double>> location = {};
+  Set<utility.Pair<double,double>> badLocation = {};
   Set<String> roadName = {};
 
   add(LatLng data) async{
     List<LatLng> dataList = await TmapServices.getNearRoadInformation(data);
     for(LatLng iter in dataList){
       String roadName = await TmapServices.reverseGeocoding(iter);
-      location.add(utility.geometryFloor(iter));
+      badLocation.add(utility.Pair.geometryFloor(iter));
       this.roadName.add(roadName);
     }
     
@@ -56,7 +62,7 @@ class BadPoint{
       List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter);
       for(LatLng iter2 in dataList){
         String roadName = await TmapServices.reverseGeocoding(iter2);
-        location.add(utility.geometryFloor(iter));
+        badLocation.add(utility.Pair.geometryFloor(iter));
         this.roadName.add(roadName);
       }
     }
@@ -64,14 +70,14 @@ class BadPoint{
 
   Set<LatLng> toLatLngSet(){
     Set<LatLng> result = {};
-    for(var iter in location)
+    for(var iter in badLocation)
       result.add(LatLng(iter.first,iter.last));
     return result;
   }
 
   List<LatLng> toLatLngList(){
     List<LatLng> result = [];
-    for(var iter in location)
+    for(var iter in badLocation)
       result.add(LatLng(iter.first,iter.last));
     return result;
   }
