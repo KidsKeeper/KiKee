@@ -25,7 +25,7 @@ class Route{
   }
 
   updateDanger(BadPoint dangerList){
-
+ 
   }
 
 }
