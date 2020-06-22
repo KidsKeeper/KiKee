@@ -10,7 +10,10 @@ let frequentlySchema = new Schema({
     dth_dnv_cnt: Number, // 사망자수
     se_dnv_cnt: Number, // 중상자수
     sl_dnv_cnt: Number, // 경상자수
-    geom_json: String, // 다발지역폴리곤
+    geom_json: {
+        type: Array,
+        coordinates: Array
+    }, // 다발지역폴리곤
     lo_crd: Number, // 경도
     la_crd: Number // 위도
 }, { collection: 'frequently' });
