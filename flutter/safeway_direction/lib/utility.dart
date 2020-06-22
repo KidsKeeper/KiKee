@@ -15,11 +15,12 @@ class Pair<E, F> {
     if (other is! Pair) {
       return false;
     }
-    return other.first == first && other.last == last;
+    return other.first == first || other.last == last;
   }
 
   @override
   String toString() => '($first, $last)';
+
 }
 
 
