@@ -172,88 +172,65 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
         onTap: ()=>print("사고")
     ));
-//    circles = Set.from([Circle(
-//      circleId: CircleId("circle"),
-//      center: pos,
-//      radius: 100,
-//    )]);
     List<List<double>> fourWay = [[0.001,0],[-0.001,0],[0,0.001],[0,-0.001]]; //위 아래 오른쪽 왼쪽
     for(int i=0; i<4; i++){
       LatLng fourWayPos = LatLng(acciLat+fourWay[i][0],acciLng+fourWay[i][1]);
+      markers.add(Marker(
+        markerId: MarkerId(markers.length.toString()),
+        position: fourWayPos,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      ));
       var near = await TmapServices.getNearRoadInformation(fourWayPos);
       var linkPoints = near["resultData"]["linkPoints"];
       for(int j=0; j<linkPoints.length; j++){
         var posLat = linkPoints[j]["location"]["latitude"];
         var posLng = linkPoints[j]["location"]["longitude"];
+        print(LatLng(posLat,posLng));
         markers.add(Marker(
           markerId: MarkerId(markers.length.toString()),
           position: LatLng(posLat,posLng),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
         ));
         acciPassList.add(LatLng(posLat,posLng)); //가능한 경유지 정보 저장
       }
     }
-//    var near = await TmapServices.getNearRoadInformation(pos);
-//    var linkPoints = near["resultData"]["linkPoints"];
-//    List<LatLng> acciRoad = [];
-//    for(int i=0; i<linkPoints.length; i++){
-//      var posLat = linkPoints[i]["location"]["latitude"];
-//      var posLng = linkPoints[i]["location"]["longitude"];
-//      acciRoad.add(LatLng(posLat,posLng));
-//      markers.add(Marker(
-//          markerId: MarkerId('nearPoints'+i.toString()),
-//          position: LatLng(posLat,posLng),
-//          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-//          onTap: ()=>print(posLng)
-//      ));
-//    }
-//    List<Marker> remove =[];
-//    for(Marker m in markers){
-//      if(m.position.longitude<acciRoad[0].longitude){
-//      }else{
-//        remove.add(m);
-//      }
-//    }
-//    for(Marker m in remove){
-//      markers.remove(m);
-//      polylinePoints.remove(m.position);
-//    }
-//    markers.remove(markers.last);
-//    polylinePoints.remove(markers.last.position);
-//    near = await TmapServices.getNearRoadInformation(markers.last.position);
-//    print(near["resultData"]);
-//    linkPoints = near["resultData"]["linkPoints"];
-//    for(int i=0; i<linkPoints.length; i++){
-//      var posLat = linkPoints[i]["location"]["latitude"];
-//      var posLng = linkPoints[i]["location"]["longitude"];
-//      markers.add(Marker(
-//          markerId: MarkerId('nearPoints'+i.toString()),
-//          position: LatLng(posLat,posLng),
-//          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-//          onTap: ()=>print(posLng)
-//      ));
-//    }
     setState(() {
 
     });
   } //사고지 정보 얻음.
 
-  void getPossibleRoute() async{
+  Future<void> getPossibleRoute() async{
     await getAccidentData();
     List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
     List<Set<LatLng>> points = [];
     for(int i=0; i<acciPassList.length; i++){
-      points.add(Set<LatLng>());
+      List<LatLng> tmp =[]; // before store to points list.
       var values = await TmapServices.getRoute(source, destination,[acciPassList[i]]);
+      bool isFirstLineString = true;
       for(int j=0; j<values["features"].length; j++){
-        String type = values["features"][j]["geometry"]["type"];
-        List<dynamic> coordi = values["features"][j]["geometry"]["coordinates"];
-        if(type =="LineString"){
-          for(int k=0;  k<coordi.length; k++){
-            points[i].add(LatLng(coordi[k][1],coordi[k][0]));
+        if(j%2!=0){//lineString
+          var coord = values["features"][j]["geometry"]["coordinates"];
+          int coordIndex =1;
+          if(isFirstLineString == true){
+            isFirstLineString = false;
+            coordIndex = 0;
+          }
+          for(; coordIndex<coord.length; coordIndex++){  //여기서 중복을 걸러줘야함.
+            LatLng pos = LatLng(coord[coordIndex][1],coord[coordIndex][0]);
+            if(tmp.contains(pos)==false){ //중복 없음
+              tmp.add(pos);
+            }else{ //중복 있음
+              tmp.clear();
+              break;
+            }
           }
         }
       }
+      if(tmp.length>2){ //모든 가능 경로는 포인트가 적어도 1개 이상일거 아냐.. 출발 도착 포함하니까.
+        points.add(tmp.toSet());
+      }
+    }
+    for(int i=0; i<points.length; i++){
       polylines.add(Polyline(
         polylineId: PolylineId(polylines.length.toString()),
         points: points[i].toList(),
@@ -261,7 +238,6 @@ class _MyHomePageState extends State<MyHomePage> {
         visible: false,
       ));
     }
-
     setState(() {
 
     });
@@ -269,23 +245,25 @@ class _MyHomePageState extends State<MyHomePage> {
   } //우회경로를 찍기위한 경유지 위치 후보들을 마커로 찍어서 보여줌.
 
   void makePolylineVisible(){
-    int n = polylines.length;
-    int cnt = visibleColorCnt%n;
-    List<Polyline> polylineList = polylines.toList();
-    for(int i=0; i<n; i++){
-      if(i==cnt){
-        polylineList[cnt] = polylineList[cnt].copyWith(visibleParam: true);
-      }else{
-        if(polylineList[i].visible == true){
-          polylineList[i] = polylineList[i].copyWith(visibleParam: false);
-        }
-      }
-    }
-    polylines = polylineList.toSet();
-    visibleColorCnt++;
-    setState(() {
-
-    });
+    //Error Test//
+    print(polylines);
+//    int n = polylines.length;
+//    int cnt = visibleColorCnt%n;
+//    List<Polyline> polylineList = polylines.toList();
+//    for(int i=0; i<n; i++){
+//      if(i==cnt){
+//        polylineList[cnt] = polylineList[cnt].copyWith(visibleParam: true);
+//      }else{
+//        if(polylineList[i].visible == true){
+//          polylineList[i] = polylineList[i].copyWith(visibleParam: false);
+//        }
+//      }
+//    }
+//    polylines = polylineList.toSet();
+//    visibleColorCnt++;
+//    setState(() {
+//
+//    });
   } //Button을 누를때마다 폴리라인 경로 하나씩 보여줌.
 
 
@@ -313,8 +291,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       borderRadius : BorderRadius.all(Radius.circular(90))
                   ),
                   child : FlatButton(
-                      onPressed: getPossibleRoute,
-                  ),
+                      onPressed:  () async =>  {await getPossibleRoute()},
+  ),
                 ),
               )
             ),
