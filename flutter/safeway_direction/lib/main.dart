@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/api/storeInformation/store.dart';
+import 'package:safewaydirection/api/storeInformation/store.dart' as store;
 
 import 'package:safewaydirection/route.dart' as safeway;
 import 'package:safewaydirection/googleMap.dart';
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(35.2476089997793, 129.091698688253),
+    target: LatLng(35.2469699,129.087531),
     zoom: 14.4746,
   );
   void _incrementCounter() {
@@ -58,13 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void test2() async{
-      LatLng l1 = LatLng(35.222752,129.090583);
-      LatLng l2 = LatLng(35.222792,129.095795);
-      //Set<LatLng> accidentAreas = {LatLng(35.222799633098,129.092828816098)};
+      LatLng l1 = LatLng(35.2464852,129.090551);
+      LatLng l2 = LatLng(35.2487721,129.091708);
       safeway.Route result = await TmapServices.getRoute(l1, l2);
       safeway.BadPoint accidentAreas = safeway.BadPoint();
       await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
-      
+
+      List<store.Store> dangerList = await store.findNearStoresInRectangle(l1, l2);
+      for(var iter in dangerList)
+        await accidentAreas.add(iter.storeLocation.location);
       await result.updateDanger(accidentAreas);
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -75,11 +77,11 @@ class _MyHomePageState extends State<MyHomePage> {
               position: l2,
             ));
 
-      for(LatLng iter in accidentAreas.toLatLngList())
-        markerTest.add(Marker(
-                markerId: MarkerId('test'+markerTest.length.toString()),
-                position: iter,
-              ));
+      // for(LatLng iter in accidentAreas.toLatLngList())
+      //   markerTest.add(Marker(
+      //           markerId: MarkerId('test'+markerTest.length.toString()),
+      //           position: iter,
+      //         ));
 
       List<Pair<List<LatLng>,bool>> dat = List<Pair<List<LatLng>,bool>>();
       List<LatLng> n = [];
@@ -113,11 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             );
       }
-
-
-
       setState(() {     });
-            print('t');
       
   }
 
