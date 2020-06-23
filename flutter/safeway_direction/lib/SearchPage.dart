@@ -66,9 +66,6 @@ class SearchPageState extends State<SearchPage> {
                     label: Text('도서관')),
                 FlatButton.icon(
                     onPressed: null, icon: Icon(Icons.edit), label: Text('수정'),),
-                IconButton(
-                  icon: Icon(Icons.star),
-                ),
               ],
             ),
           ),
@@ -90,7 +87,7 @@ class SearchPageState extends State<SearchPage> {
                       Container(
                         height: 50,
                         child: Center(
-                          child: Text(recent[index].description.length<40?'${recent[index].description}':'${recent[index].description.substring(0,40)}'),
+                          child: Text(recent[index].description.length<35?'${recent[index].description}':'${recent[index].description.substring(0,35)}'),
                         ),
                       )
                     ],
@@ -115,6 +112,7 @@ class SearchPageState extends State<SearchPage> {
                 db.insertRecentSearch(place.description, place.placeId,
                     geolocation.Lat(), geolocation.Lng());
                 recent = await db.GetRecentSearch();
+                this.
                 setState(() {});
               },
             ),
