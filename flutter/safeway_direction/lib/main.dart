@@ -76,44 +76,17 @@ class _MyHomePageState extends State<MyHomePage> {
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: LatLng(accidentAreas.badLocation.first.first,accidentAreas.badLocation.first.last)
             ));
-      int i = 1;
+
       for(var iter in result.locations){
         markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: iter.location,
               icon : iter.danger > 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
             ));
-        /*
-        if(i == 10){
-          List<LatLng> test1= await TmapServices.getNearRoadInformation(iter.location);
-          for(var iter in test1)
-            markerTest.add(Marker(
-                markerId: MarkerId('test'+markerTest.length.toString()),
-                position: iter,
-                icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-              ));
-        }
-        if(i == 11){
-          List<LatLng> test2= await TmapServices.getNearRoadInformation(iter.location);
-          for(var iter in test2)
-            markerTest.add(Marker(
-                markerId: MarkerId('test'+markerTest.length.toString()),
-                position: iter,
-                icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
-              ));
-        }
-        
-        List<LatLng> test3= await TmapServices.getNearRoadInformation(LatLng(accidentAreas.badLocation.first.first,accidentAreas.badLocation.first.last));
-          for(var iter in test3)
-          markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter,
-              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-            ));
-        */
+
             //Map<String,dynamic> iii = await TmapServices.getNearRoadInformation(LatLng(iter2[1], iter2[0]));
             //polylineTest.add(iter);
-            i++;
+ 
       }
 
       markerTest.add(Marker(

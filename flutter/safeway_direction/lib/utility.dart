@@ -28,16 +28,12 @@ class Pair<E, F> {
     try {
       str1 = str1.substring(0, str1.indexOf('.')+i);
     }
-    on RangeError catch(e){
-      print(e.message);
-    }
+    on RangeError {   }
 
     try {
       str2 = str2.substring(0, str2.indexOf('.')+i);
     }
-    on RangeError catch(e){
-      print(e.message);
-    }
+    on RangeError {   }
 
     return Pair<double,double>(double.parse(str1), double.parse(str2));
   }
