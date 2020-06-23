@@ -8,6 +8,7 @@ import 'package:safewaydirection/api/storeInformation/store.dart';
 import 'package:safewaydirection/route.dart' as safeway;
 import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
+import 'package:safewaydirection/utility.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
@@ -63,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       safeway.Route result = await TmapServices.getRoute(l1, l2);
       safeway.BadPoint accidentAreas = safeway.BadPoint();
       await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
+      
       await result.updateDanger(accidentAreas);
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -72,41 +74,47 @@ class _MyHomePageState extends State<MyHomePage> {
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: l2,
             ));
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: LatLng(accidentAreas.badLocation.first.first,accidentAreas.badLocation.first.last)
-            ));
 
-      for(var iter in result.locations){
+      for(LatLng iter in accidentAreas.toLatLngList())
         markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter.location,
-              icon : iter.danger > 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-            ));
+                markerId: MarkerId('test'+markerTest.length.toString()),
+                position: iter,
+              ));
 
-            //Map<String,dynamic> iii = await TmapServices.getNearRoadInformation(LatLng(iter2[1], iter2[0]));
-            //polylineTest.add(iter);
- 
-      }
-
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: result.locations[0].location,
-              icon : result.locations[0].danger > 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-            ));
-
-      for(int i = 1; i < result.locations.length; i++){
-        if(result.locations[i-1].danger > 0 == result.locations[i].danger > 0){
-
+      List<Pair<List<LatLng>,bool>> dat = List<Pair<List<LatLng>,bool>>();
+      List<LatLng> n = [];
+      n.add(result.locations[0].location);
+      for(int i = 1; i < result.locations.length - 1; i++){
+        n.add(result.locations[i].location);
+        if(result.locations[i-1].danger > 0 != result.locations[i].danger > 0){
+          dat.add(Pair(List<LatLng>.from(n),result.locations[i-1].danger > 0));
+          n.clear();
+          n.add(result.locations[i].location);
         }
       }
-      _polylinemarker.add(
-        Polyline(
-        polylineId: PolylineId('4'),
-        color: Colors.purple,
-        points: polylineTest
-        )
-      );
+      n.add(result.locations[result.locations.length - 1].location);
+      dat.add(Pair(n,result.locations[result.locations.length-2].danger > 0));
+      
+      for(Pair<List<LatLng>,bool> iter in dat){
+        if(iter.last)
+          _polylinemarker.add(
+            Polyline(
+            polylineId: PolylineId(_polylinemarker.length.toString()),
+            color: Colors.red,
+            points: iter.first
+            )
+          );
+        else
+          _polylinemarker.add(
+              Polyline(
+              polylineId: PolylineId(_polylinemarker.length.toString()),
+              color: Colors.blue,
+              points: iter.first
+              )
+            );
+      }
+
+
 
       setState(() {     });
             print('t');
