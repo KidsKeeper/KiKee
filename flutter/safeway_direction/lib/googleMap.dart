@@ -35,7 +35,21 @@ class GoogleMapsServices{
     return url;
   }
 
-  static Set<Polyline> drawPolyline(way.Route routeData){
+  static Set<Polyline> drawPolyline(way.Route routeData, Color color){
+    Set<Polyline> _polylinemarker = Set<Polyline>();
+          _polylinemarker.add(
+            Polyline(
+            polylineId: PolylineId(_polylinemarker.length.toString()),
+            color: color,
+            points: routeData.toLatLngList()
+            )
+          );
+      return _polylinemarker;
+  }
+
+  // only use for test
+  static Set<Polyline> drawPolylineforTest(way.Route routeData){
+    
       Set<Polyline> _polylinemarker = Set<Polyline>();
       List<Pair<List<LatLng>,bool>> data = List<Pair<List<LatLng>,bool>>();
       List<LatLng> n = [];
