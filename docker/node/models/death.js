@@ -10,8 +10,8 @@ let deathSchema = new Schema({
     wnd_dnv_cnt: Number, // 경상자수
     occrrnc_lc_sgg_cd: String, // 위치 시도코드
     occrrnc_lc_sido_cd: String, // 위치 시군구코드
-    lo_crd: Number, // 경도
-    la_crd: Number // 위도
+    lo_crd: String, // 경도
+    la_crd: String // 위도
 }, { collection: 'death' });
 
 module.exports = mongoose.model( 'death', deathSchema );

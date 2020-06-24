@@ -14,8 +14,8 @@ let frequentlySchema = new Schema({
         type: Array,
         coordinates: Array
     }, // 다발지역폴리곤
-    lo_crd: Number, // 경도
-    la_crd: Number // 위도
+    lo_crd: String, // 경도
+    la_crd: String // 위도
 }, { collection: 'frequently' });
 
 module.exports = mongoose.model( 'frequently', frequentlySchema );
