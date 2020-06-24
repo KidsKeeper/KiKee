@@ -83,8 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // only test
 
     _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
-      setState(() {     });
+    // _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
+    setState(() {
       
+    });
   }
 
   @override
