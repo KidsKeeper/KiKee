@@ -15,7 +15,7 @@ class _TestSearchState extends State<TestSearch> {
   FocusNode fn = new FocusNode();
   FocusNode fn2 = new FocusNode();
   Timer _throttle;
-  final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
+  final String PLACES_API_KEY;
   List<Place> _placesList;
   List<Place> _suggestedList = [
     Place(description: "부산대학교",latitude: 100.0,longitude: 20.0,placeId: 'p1'),
