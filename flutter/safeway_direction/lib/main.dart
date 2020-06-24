@@ -8,7 +8,6 @@ import 'package:safewaydirection/api/storeInformation/store.dart' as store;
 import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
-import 'package:safewaydirection/utility.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
@@ -58,15 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void test2() async{
-      LatLng l1 = LatLng(35.222752,129.090583);
-      LatLng l2 = LatLng(35.222792,129.095795);
-      way.Route result = await TmapServices.getRoute(l1, l2, [LatLng(35.222799633098,129.092828816098)]);
-      way.BadPoint accidentAreas = way.BadPoint();
-      await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
-      List<store.Store> dangerList = await store.findNearStoresInRectangle(l1, l2);
-      for(var iter in dangerList)
-        await accidentAreas.add(iter.storeLocation.location);
+      LatLng l1 = LatLng(35.2464852,129.090551);
+      LatLng l2 = LatLng(35.2487721, 129.091708);
+      way.Route result = await TmapServices.getRoute(l1, l2);
+      way.BadPoint accidentAreas = way.BadPoint();
+      // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
+
+      await accidentAreas.addstoreList(await store.findNearStoresInRectangle(l1, l2));
       await result.updateDanger(accidentAreas);
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
@@ -76,15 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
               markerId: MarkerId('test'+markerTest.length.toString()),
               position: l2,
             ));
+    // only test
+      for(LatLng iter in accidentAreas.toLatLngList())
+        markerTest.add(Marker(
+                markerId: MarkerId('test'+markerTest.length.toString()),
+                position: iter,
+              ));
+    // only test
 
-      // for(LatLng iter in accidentAreas.toLatLngList())
-      //   markerTest.add(Marker(
-      //           markerId: MarkerId('test'+markerTest.length.toString()),
-      //           position: iter,
-      //         ));
-
-
-    _polylinemarker = GoogleMapsServices.drawPolyline(result);
+    _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
       setState(() {     });
       
   }
