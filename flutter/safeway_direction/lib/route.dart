@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart' as utility;
 import 'package:safewaydirection/tMap.dart';
@@ -6,6 +7,22 @@ import 'api/storeInformation/store.dart';
 
 class Route{
   List<_Point> locations = [];
+  
+  @override
+  int get hashCode {
+    int hashCode = 0;
+    for(var iter in locations)
+      hashCode ^= iter.hashCode;
+    return hashCode;
+  }
+  
+  @override
+  bool operator ==(dynamic other){
+    if(other is !Route)
+      return false;
+    return listEquals(this.locations, other.locations);
+  }
+
   Route();
 
   Route.map(Map<String,dynamic> data){
@@ -20,12 +37,13 @@ class Route{
             _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]),
             0, iter['properties']['name']));
   }
+  
 
   List<LatLng> toLatLngList(){
     List<LatLng> result = [];
     for(_Point iter in locations)
       result.add(iter.location);
-    
+
     return result;
   }
   updateDanger(BadPoint dangerList) async{
@@ -37,10 +55,8 @@ class Route{
             iter.danger += 1;
             break;
           }
-            
       }
   }
-
 }
 class _Point{
   LatLng location;
@@ -48,6 +64,16 @@ class _Point{
   String roadName;
 
   _Point(this.location, this.danger, this.roadName);
+
+  @override
+  int get hashCode => location.hashCode ^ roadName.hashCode;
+  
+  @override
+  bool operator ==(dynamic other) {
+    if(other is !_Point)
+      return false;
+    return ((location == other.location) && (roadName == other.roadName));
+  }
 }
 
 class BadPoint{
