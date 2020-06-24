@@ -17,11 +17,9 @@ class Route{
   }
   
   @override
-  bool operator ==(dynamic other){
-    if(other is !Route)
-      return false;
-    return listEquals(this.locations, other.locations);
-  }
+  bool operator ==(dynamic other) => 
+    other is !Route ? false : listEquals(this.locations, other.locations);
+  
 
   Route();
 
@@ -69,11 +67,9 @@ class _Point{
   int get hashCode => location.hashCode ^ roadName.hashCode;
   
   @override
-  bool operator ==(dynamic other) {
-    if(other is !_Point)
-      return false;
-    return ((location == other.location) && (roadName == other.roadName));
-  }
+  bool operator ==(dynamic other) =>
+    other is !_Point ? false : (location == other.location) && (roadName == other.roadName);
+  
 }
 
 class BadPoint{
