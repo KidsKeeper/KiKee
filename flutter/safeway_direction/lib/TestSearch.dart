@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:safewaydirection/PlaceInfo.dart';
 import 'dart:async';
 
+
 class TestSearch extends StatefulWidget {
   @override
   _TestSearchState createState() => _TestSearchState();
@@ -24,14 +25,19 @@ class _TestSearchState extends State<TestSearch> {
 
   void initState() {
     super.initState();
-     _placesList = _suggestedList;
+    _placesList = _suggestedList;
     _searchController.addListener(_onSearchChanged);
+    _searchController2.addListener(_onSearchChanged);
   }
 
   _onSearchChanged() {
     if (_throttle?.isActive ?? false) _throttle.cancel();
     _throttle = Timer(const Duration(milliseconds: 500), () {
-      getLocationResults(_searchController.text);
+      if(fn.hasFocus){
+        getLocationResults(_searchController.text);
+      }
+      else getLocationResults(_searchController2.text);
+
     });
   }
 
@@ -44,6 +50,9 @@ class _TestSearchState extends State<TestSearch> {
 
   void getLocationResults(String input) async {
     if (input.isEmpty) {
+      setState(() {
+        _placesList = _suggestedList;
+      });
       return;
     }
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
