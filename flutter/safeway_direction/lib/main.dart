@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/api/storeInformation/store.dart' as store;
 
-import 'package:safewaydirection/route.dart' as safeway;
+import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
 import 'package:safewaydirection/utility.dart';
@@ -13,7 +13,7 @@ import 'package:safewaydirection/utility.dart';
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
 
-safeway.Route a = safeway.Route('origin','destination');
+way.Route resultRoute = way.Route();
 
 void main() => runApp(MyApp());
 
@@ -58,10 +58,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void test2() async{
-      LatLng l1 = LatLng(35.2464852,129.090551);
-      LatLng l2 = LatLng(35.2487721,129.091708);
-      safeway.Route result = await TmapServices.getRoute(l1, l2);
-      safeway.BadPoint accidentAreas = safeway.BadPoint();
+      LatLng l1 = LatLng(35.222752,129.090583);
+      LatLng l2 = LatLng(35.222792,129.095795);
+      way.Route result = await TmapServices.getRoute(l1, l2, [LatLng(35.222799633098,129.092828816098)]);
+      way.BadPoint accidentAreas = way.BadPoint();
       await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
       List<store.Store> dangerList = await store.findNearStoresInRectangle(l1, l2);
@@ -83,38 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //           position: iter,
       //         ));
 
-      List<Pair<List<LatLng>,bool>> dat = List<Pair<List<LatLng>,bool>>();
-      List<LatLng> n = [];
-      n.add(result.locations[0].location);
-      for(int i = 1; i < result.locations.length - 1; i++){
-        n.add(result.locations[i].location);
-        if(result.locations[i-1].danger > 0 != result.locations[i].danger > 0){
-          dat.add(Pair(List<LatLng>.from(n),result.locations[i-1].danger > 0));
-          n.clear();
-          n.add(result.locations[i].location);
-        }
-      }
-      n.add(result.locations[result.locations.length - 1].location);
-      dat.add(Pair(n,result.locations[result.locations.length-2].danger > 0));
-      
-      for(Pair<List<LatLng>,bool> iter in dat){
-        if(iter.last)
-          _polylinemarker.add(
-            Polyline(
-            polylineId: PolylineId(_polylinemarker.length.toString()),
-            color: Colors.red,
-            points: iter.first
-            )
-          );
-        else
-          _polylinemarker.add(
-              Polyline(
-              polylineId: PolylineId(_polylinemarker.length.toString()),
-              color: Colors.blue,
-              points: iter.first
-              )
-            );
-      }
+
+    _polylinemarker = GoogleMapsServices.drawPolyline(result);
       setState(() {     });
       
   }
@@ -148,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 30, color: Colors.orange)
                                   ),
                                   Text(
-                                    a.origin + ' -> ' + a.destination,
+                                    'origin' + ' -> ' + 'destination',
                                     style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
                                   ),
                                   Container(
@@ -179,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
                                 ),
                                 Text(
-                                  a.origin,
+                                  'origin',
                                   style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
                                 ),
                                 Container(
@@ -216,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         style: TextStyle(fontFamily: 'BM',fontWeight: FontWeight.bold, fontSize: 20, color: Colors.orange)
                                     ),
                                     Text(
-                                      a.destination,
+                                      'destination',
                                       style: TextStyle(fontFamily: 'BM',fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold),
                                     ),
                                     Container(
