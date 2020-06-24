@@ -3,13 +3,8 @@ import 'package:safewaydirection/utility.dart' as utility;
 import 'package:safewaydirection/tMap.dart';
 
 class Route{
-  String _origin = 'origin';
-  String _destination = 'destination';
-  String get origin => _origin;
-  String get destination => _destination;
-
   List<_Point> locations = [];
-  Route(this._origin, this._destination);
+  Route();
 
   Route.map(Map<String,dynamic> data){
     locations.add(
