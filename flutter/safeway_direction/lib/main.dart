@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
+  List<Set<LatLng>> points = [];
   Set<Circle> circles ={};
   List<LatLng> polylinePoints = [];
   List<LatLng> acciPassList = [];
@@ -202,12 +203,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> getPossibleRoute() async{
     await getAccidentData();
     List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
-    List<Set<LatLng>> points = [];
+    //List<Set<LatLng>> points = [];
     for(int i=0; i<acciPassList.length; i++){
       List<LatLng> tmp =[]; // before store to points list.
       var values = await TmapServices.getRoute(source, destination,[acciPassList[i]]);
       bool isFirstLineString = true;
-      for(int j=0; j<values["features"].length; j++){
+      bool isDuplicated = false;
+      for(int j=0; j<values["features"].length; j++){ //한가지 경로의 points, linestrings.
         if(j%2!=0){//lineString
           var coord = values["features"][j]["geometry"]["coordinates"];
           int coordIndex =1;
@@ -220,9 +222,13 @@ class _MyHomePageState extends State<MyHomePage> {
             if(tmp.contains(pos)==false){ //중복 없음
               tmp.add(pos);
             }else{ //중복 있음
+              isDuplicated = true;
               tmp.clear();
               break;
             }
+          }
+          if(isDuplicated==true){
+            break;
           }
         }
       }
@@ -233,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for(int i=0; i<points.length; i++){
       polylines.add(Polyline(
         polylineId: PolylineId(polylines.length.toString()),
-        points: points[i].toList(),
+        points: points[i].toList(),//List<LatLng>.from(points[i].toList()),
         color: colors[i],
         visible: false,
       ));
@@ -245,25 +251,24 @@ class _MyHomePageState extends State<MyHomePage> {
   } //우회경로를 찍기위한 경유지 위치 후보들을 마커로 찍어서 보여줌.
 
   void makePolylineVisible(){
-    //Error Test//
-    print(polylines);
-//    int n = polylines.length;
-//    int cnt = visibleColorCnt%n;
-//    List<Polyline> polylineList = polylines.toList();
-//    for(int i=0; i<n; i++){
-//      if(i==cnt){
-//        polylineList[cnt] = polylineList[cnt].copyWith(visibleParam: true);
-//      }else{
-//        if(polylineList[i].visible == true){
-//          polylineList[i] = polylineList[i].copyWith(visibleParam: false);
-//        }
-//      }
-//    }
-//    polylines = polylineList.toSet();
-//    visibleColorCnt++;
-//    setState(() {
-//
-//    });
+    int n = polylines.length;
+    int cnt = visibleColorCnt%n;
+    print("n: "+n.toString()+", cnt: "+cnt.toString());
+    List<Polyline> polylineList = polylines.toList();
+    for(int i=0; i<n; i++){
+      if(i==cnt){
+        polylineList[cnt] = polylineList[cnt].copyWith(visibleParam: true);
+      }else{
+        if(polylineList[i].visible == true){
+          polylineList[i] = polylineList[i].copyWith(visibleParam: false);
+        }
+      }
+    }
+    polylines = polylineList.toSet();
+    visibleColorCnt++;
+    setState(() {
+
+    });
   } //Button을 누를때마다 폴리라인 경로 하나씩 보여줌.
 
 
