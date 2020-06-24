@@ -2,6 +2,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart' as utility;
 import 'package:safewaydirection/tMap.dart';
 
+import 'api/storeInformation/store.dart';
+
 class Route{
   List<_Point> locations = [];
   Route();
@@ -19,13 +21,23 @@ class Route{
             0, iter['properties']['name']));
   }
 
+  List<LatLng> toLatLngList(){
+    List<LatLng> result = [];
+    for(_Point iter in locations)
+      result.add(iter.location);
+    
+    return result;
+  }
   updateDanger(BadPoint dangerList) async{
     for(var iter in locations)
       if(dangerList.roadName.contains(iter.roadName)){
         List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter.location);
         for(var iter2 in dataList)
-          if(dangerList.badLocation.contains(utility.Pair.geometryFloor(iter2)))
+          if(dangerList.badLocation.contains(utility.Pair.geometryFloor(iter2))){
             iter.danger += 1;
+            break;
+          }
+            
       }
   }
 
@@ -41,6 +53,13 @@ class _Point{
 class BadPoint{
   Set<utility.Pair<double,double>> badLocation = {};
   Set<String> roadName = {};
+  
+  BadPoint();
+
+  addstoreList(List<Store> data) async {
+    for(var iter in data)
+        await this.add(iter.storeLocation.location);
+  }
 
   add(LatLng data) async{
     List<LatLng> dataList = await TmapServices.getNearRoadInformation(data);
@@ -62,7 +81,7 @@ class BadPoint{
       }
     }
   }
-
+  
   Set<LatLng> toLatLngSet(){
     Set<LatLng> result = {};
     for(var iter in badLocation)

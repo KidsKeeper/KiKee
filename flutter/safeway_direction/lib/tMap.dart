@@ -1,19 +1,19 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+
 
 import 'package:safewaydirection/route.dart';
 class TmapServices{
   static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
 
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
-// 파라미터 설명 :각각 출발지, 도착지, 경로 탐색 옵션, 경유지(List) 정보
-/* int type 경로 탐색 옵션
-- 0: 추천 (기본값)
-- 1: 추천+대로우선
-- 2: 최단
-- 3: 최단거리+계단제외
-*/
+    List<LatLng> origindata = await getNearRoadInformation(origin);
+    origin =_getPointMeetLine(origindata, origin);
+    List<LatLng> destinationData = await getNearRoadInformation(destination);
+    destination = _getPointMeetLine(destinationData, destination);
+
   Map<String, dynamic> requestData ={
       "appKey" : projectKey,
       "startX" : origin.longitude, // 경도
@@ -69,5 +69,21 @@ class TmapServices{
     return result;
   }
 
+  static LatLng _getPointMeetLine(List<LatLng> lineLatLng, LatLng point){
+    LatLng l1 = lineLatLng.first;
+    LatLng l2 = lineLatLng.last;
+    
+    double a21 = l2.latitude-l1.latitude;
+    double b21 = l2.longitude-l1.longitude;
+
+    double x = a21 * point.latitude + b21 * point.longitude;
+    x += pow(b21, 2) * l1.latitude / a21;
+    x -= b21 * l1.longitude;
+    x /= a21 + pow(b21,2) / a21;
+
+    double y = b21 * (x - l1.latitude) / a21 + l1.longitude;
+
+    return LatLng(x,y);
+  }
 
 }
