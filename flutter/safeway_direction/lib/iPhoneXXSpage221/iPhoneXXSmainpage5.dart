@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../SearchPage.dart';
-import 'iPhoneXXSpage21.dart';
+import 'package:safewaydirection/TestSearch.dart';
 
 class iPhoneXXSmainpage5 extends StatelessWidget {
   iPhoneXXSmainpage5({
@@ -32,7 +31,7 @@ class iPhoneXXSmainpage5 extends StatelessWidget {
               {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
+                  MaterialPageRoute(builder: (context) => TestSearch()),
                 );
               },
               child: SvgPicture.string(

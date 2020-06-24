@@ -71,12 +71,19 @@ class SearchMapPlaceWidget extends StatefulWidget {
 
   /// Enables Dark Mode when set to `true`. Default value is `false`.
   final bool darkMode;
-
+  SearchMapPlaceWidgetState widgetContainer;
   @override
-  _SearchMapPlaceWidgetState createState() => _SearchMapPlaceWidgetState();
+  SearchMapPlaceWidgetState createState() {
+    widgetContainer = SearchMapPlaceWidgetState();
+    return widgetContainer;
+  }
+
+  test(SearchMapPlaceWidgetState test){
+    test.selectRecent("ddd");
+  }
 }
 
-class _SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerProviderStateMixin {
+class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerProviderStateMixin {
   TextEditingController _textEditingController = TextEditingController();
   AnimationController _animationController;
   // SearchContainer height.
