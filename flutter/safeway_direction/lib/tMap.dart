@@ -3,11 +3,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:safewaydirection/route.dart';
-import 'package:safewaydirection/utility.dart';
 class TmapServices{
   static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
 
-  static Future<Route> getRoute(LatLng origin, LatLng destination, [int type = 0, List<LatLng> passList]) async {
+  static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
 // 파라미터 설명 :각각 출발지, 도착지, 경로 탐색 옵션, 경유지(List) 정보
 /* int type 경로 탐색 옵션
 - 0: 추천 (기본값)
@@ -30,22 +29,6 @@ class TmapServices{
     // 경로 탐색 옵션 추가 코드
     for(var key in requestData.keys)
         body += (key + '=' + requestData[key].toString() + '&');
-    switch (type) {
-    case 0: 
-      body += "searchOption=0&";
-      break;
-    case 1:
-      body += "searchOption=4&";
-      break;
-    case 2:
-      body += "searchOption=10&";
-      break;
-    case 3:
-      body += "searchOption=30&";
-      break;
-    default:
-      return null;
-  }
     body = body.substring(0,body.lastIndexOf('&'));
   
   // 경유지 있을 경우 추가 코드
