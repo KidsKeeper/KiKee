@@ -20,19 +20,20 @@ class GoogleMapsServices{
   }
 
   // 장소 정보 받아옴.
-  static Future<String> searchPlace(String str) async {
+  static Future<LatLng> searchPlace(String str) async {
     String url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=$_apiKey&inputtype=textquery&input=$str";
     url = Uri.encodeFull(url);
     http.Response response = await http.get(url);
       Map values = jsonDecode(response.body);
-    print("====================>>>>>>>>$values");
     
     url = "https://maps.googleapis.com/maps/api/place/details/json?key=$_apiKey&place_id=${values['candidates'][0]['place_id']}&language=ko";
     url = Uri.encodeFull(url);
     response = await http.get(url);
     values = jsonDecode(response.body);
-    print("====================>>>>>>>>$values");
-    return url;
+    values = values["result"]["geometry"]["location"];
+    LatLng result = LatLng(values["lat"], values["lng"]);
+  
+    return result;
   }
 
   static Set<Polyline> drawPolyline(way.Route routeData, Color color){

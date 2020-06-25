@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Set<Polyline> _polylinemarker = Set<Polyline>();
   
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(35.2469699,129.087531),
     zoom: 14.4746,
   );
@@ -57,36 +57,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void test2() async{
+    print('start');
+    LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
+    LatLng l2 = await GoogleMapsServices.searchPlace("고광빌라");
+    _kGooglePlex = CameraPosition(
+      target: l1,
+      zoom: 14.4746,
+      );
+    // LatLng l1 = LatLng(35.2464852,129.090551);
+    // LatLng l2 = LatLng(35.2487721, 129.091708);
+    way.Route result = await TmapServices.getRoute(l1, l2);
+    way.BadPoint accidentAreas = way.BadPoint();
+    // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
-      LatLng l1 = LatLng(35.2464852,129.090551);
-      LatLng l2 = LatLng(35.2487721, 129.091708);
-      way.Route result = await TmapServices.getRoute(l1, l2);
-      way.BadPoint accidentAreas = way.BadPoint();
-      // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
-
-      await accidentAreas.addstoreList(await store.findNearStoresInRectangle(l1, l2));
-      await result.updateDanger(accidentAreas);
+    await accidentAreas.addstoreList(await store.findNearStoresInRectangle(l1, l2));
+    await result.updateDanger(accidentAreas);
+    markerTest.add(Marker(
+            markerId: MarkerId('test'+markerTest.length.toString()),
+            position: l1,
+          ));
+    markerTest.add(Marker(
+            markerId: MarkerId('test'+markerTest.length.toString()),
+            position: l2,
+          ));
+  // only test
+    for(LatLng iter in accidentAreas.toLatLngList())
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: l1,
+              position: iter,
             ));
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: l2,
-            ));
-    // only test
-      for(LatLng iter in accidentAreas.toLatLngList())
-        markerTest.add(Marker(
-                markerId: MarkerId('test'+markerTest.length.toString()),
-                position: iter,
-              ));
-    // only test
+  // only test
 
-    _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
-    // _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
-    setState(() {
-      
-    });
+  _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
+  // _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
+  setState(() {
+    
+  });
   }
 
   @override
