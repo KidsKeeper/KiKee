@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void test2() async{
     print('start');
-    LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
+    LatLng l1 = await GoogleMapsServices.searchPlace("서울대학교");
     LatLng l2 = await GoogleMapsServices.searchPlace("고광빌라");
     _kGooglePlex = CameraPosition(
       target: l1,
