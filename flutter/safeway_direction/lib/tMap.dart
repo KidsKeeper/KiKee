@@ -10,9 +10,9 @@ class TmapServices{
 
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
-    origin =_getPointMeetLine(origindata, origin);
+    origin = origindata != null ? _getPointMeetLine(origindata, origin) : origin;
     List<LatLng> destinationData = await getNearRoadInformation(destination);
-    destination = _getPointMeetLine(destinationData, destination);
+    destination = destinationData != null ? _getPointMeetLine(destinationData, destination) : destination;
 
   Map<String, dynamic> requestData ={
       "appKey" : projectKey,
@@ -48,9 +48,14 @@ class TmapServices{
     body: body
   );
   
-  Map<String,dynamic> values = jsonDecode(response.body);
-  Route result = Route.map(values);
-  return result;
+    try{
+      Map<String,dynamic> values = jsonDecode(response.body);
+      Route result = Route.map(values);
+      return result;
+    }
+    catch(e){
+      return null;
+    }
   }
 
   static Future<String> reverseGeocoding(LatLng location) async {
@@ -60,13 +65,18 @@ class TmapServices{
   }
 
   static Future<List<LatLng>> getNearRoadInformation(LatLng position) async {
-    http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
-    Map values = jsonDecode(response.body);
-    List<LatLng> result = [];
+    try{
+      http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
+      Map values = jsonDecode(response.body);
+      List<LatLng> result = [];
 
-  for(var iter in values['resultData']['linkPoints'])
-    result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
-    return result;
+      for(var iter in values['resultData']['linkPoints'])
+        result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
+        return result;
+    }
+    catch(e){
+      return null;
+    }
   }
 
   static LatLng _getPointMeetLine(List<LatLng> lineLatLng, LatLng point){
