@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:safewaydirection/PlaceInfo.dart';
 import 'dart:async';
-
+import 'LocalDB.dart';
+import 'PlaceInfo.dart';
 
 class TestSearch extends StatefulWidget {
   @override
@@ -15,17 +15,18 @@ class _TestSearchState extends State<TestSearch> {
   FocusNode fn = new FocusNode();
   FocusNode fn2 = new FocusNode();
   Timer _throttle;
+  DataBase db = new DataBase();
+  bool firstTime = true;
   final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
   List<Place> _placesList;
-  List<Place> _suggestedList = [
-    Place(description: "부산대학교",latitude: 100.0,longitude: 20.0,placeId: 'p1'),
-    Place(description: "부산대학교 제 6공학관",latitude: 100.0,longitude: 20.0,placeId: 'p2'),
-    Place(description: "부산대학교 메가박스",latitude: 100.0,longitude: 20.0,placeId: 'p3'),
-  ];
-
-  void initState() {
+  List<Place> _suggestedList = [];
+  String title1 = "최근 검색";
+  String title2 = "검색 내용";
+  String heading;
+  initState() {
     super.initState();
     _placesList = _suggestedList;
+    heading = title1;
     _searchController.addListener(_onSearchChanged);
     _searchController2.addListener(_onSearchChanged);
   }
@@ -33,12 +34,17 @@ class _TestSearchState extends State<TestSearch> {
   _onSearchChanged() {
     if (_throttle?.isActive ?? false) _throttle.cancel();
     _throttle = Timer(const Duration(milliseconds: 500), () {
-      if(fn.hasFocus){
+      if (fn.hasFocus) {
         getLocationResults(_searchController.text);
-      }
-      else getLocationResults(_searchController2.text);
-
+      } else
+        getLocationResults(_searchController2.text);
     });
+  }
+
+  Future<List<Place>> _fetchData() async {
+    db.databaseInit();
+    await Future.delayed(const Duration(seconds: 1), () {});
+    return db.GetRecentSearch();
   }
 
   @override
@@ -49,31 +55,44 @@ class _TestSearchState extends State<TestSearch> {
   }
 
   void getLocationResults(String input) async {
+    firstTime = false;
     if (input.isEmpty) {
       setState(() {
+        heading = title1;
         _placesList = _suggestedList;
       });
       return;
     }
-    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String type = '(regions)';
+    String language = 'ko';
+
     // TODO Add session token
-    String request = '$baseURL?input=$input&key=$PLACES_API_KEY&type=$type';
+    String request = '$baseURL?input=$input&key=$PLACES_API_KEY&language=$language';
     Response response = await Dio().get(request);
 
     final predictions = response.data['predictions'];
 
     List<Place> _displayResults = [];
 
-    for (var i=0; i < predictions.length; i++) {
+    for (var i = 0; i < predictions.length; i++) {
       String description = predictions[i]['description'];
-      String placeId = predictions[i]['placeId'];
+      String placeId = predictions[i]['place_id'];
+      String main_text = predictions[i]['structured_formatting']['main_text'];
+      String secondary_text = predictions[i]['structured_formatting']['secondary_text'];
       double longitude = predictions[i]['longitude'];
       double latitude = predictions[i]['latitude'];
-      _displayResults.add(Place(placeId: placeId,description: description,longitude: longitude,latitude: latitude));
+      _displayResults.add(Place(
+          placeId: placeId,
+          description: description,
+          longitude: longitude,
+          latitude: latitude));
     }
 
     setState(() {
+      heading = title2;
       _placesList = _displayResults;
     });
   }
@@ -81,10 +100,7 @@ class _TestSearchState extends State<TestSearch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Create Trip - Location'),
-      ),
-      body: Center(
+      body: SafeArea(
         child: Column(
           children: <Widget>[
             Padding(
@@ -94,7 +110,19 @@ class _TestSearchState extends State<TestSearch> {
                 autofocus: false,
                 focusNode: fn,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search),
+                    prefix: Text('내위치:'),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: new OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(50.0),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    )
                 ),
               ),
             ),
@@ -105,23 +133,59 @@ class _TestSearchState extends State<TestSearch> {
                 autofocus: false,
                 focusNode: fn2,
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
                   prefixIcon: Icon(Icons.search),
+                  prefix: Text('도착지:'),
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(50.0),
+                    ),
+                    borderSide: new BorderSide(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
+                  ),
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    String tmp = _searchController2.text;
+                    _searchController2.text = _searchController.text;
+                    _searchController.text = tmp;
+                  },
+                  icon: Icon(Icons.swap_vert),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    _searchController2.clear();
+                  },
+                  icon: Icon(Icons.close),
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: Row(
                 children: <Widget>[
                   FlatButton.icon(
-                    onPressed: (){
+                    onPressed: () {
                       setState(() {
-                        if(fn.hasFocus) _searchController.text = "집";
-                        else if(fn2.hasFocus){
+                        if (fn.hasFocus)
+                          _searchController.text = "집";
+                        else if (fn2.hasFocus) {
                           _searchController2.text = "집";
                         }
                       });
-                    }, icon: Icon(Icons.home), label: Text('집'),),
+                    },
+                    icon: Icon(Icons.home),
+                    label: Text('집'),
+                  ),
                   FlatButton.icon(
                       onPressed: null,
                       icon: Icon(Icons.school),
@@ -131,11 +195,37 @@ class _TestSearchState extends State<TestSearch> {
                       icon: Icon(Icons.book),
                       label: Text('도서관')),
                   FlatButton.icon(
-                    onPressed: null, icon: Icon(Icons.edit), label: Text('수정'),),
+                    onPressed: null,
+                    icon: Icon(Icons.edit),
+                    label: Text('수정'),
+                  ),
                 ],
               ),
             ),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+              child: new Text('$heading',textAlign: TextAlign.left,),
+            ),
+            firstTime
+                ? FutureBuilder(
+              future: _fetchData(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData == false) {
+                  return CircularProgressIndicator();
+                } else {
+                  _suggestedList = snapshot.data;
+                  _placesList = _suggestedList;
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: _placesList.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          buildPlaceCard(context, index),
+                    ),
+                  );
+                }
+              },
+            )
+                : Expanded(
               child: ListView.builder(
                 itemCount: _placesList.length,
                 itemBuilder: (BuildContext context, int index) =>
@@ -169,10 +259,12 @@ class _TestSearchState extends State<TestSearch> {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
+                              heading==title1?Icon(Icons.access_time):Icon(Icons.search),
+                              SizedBox(width: 4,),
                               Flexible(
                                 child: Text(_placesList[index].description,
                                     maxLines: 3,
-                                    style: TextStyle(fontSize: 25.0)),
+                                    style: TextStyle(fontSize: 15.0)),
                               ),
                             ],
                           ),
@@ -180,20 +272,24 @@ class _TestSearchState extends State<TestSearch> {
                       ),
                     ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Placeholder(
-                        fallbackHeight: 80,
-                        fallbackWidth: 80,
-                      ),
-                    ],
-                  )
                 ],
               ),
-              onTap: () {
-                if(fn.hasFocus) _searchController.text = _placesList[index].description;
-                else if(fn2.hasFocus){
+              onTap: () async{
+                if (fn.hasFocus) {
+                  _searchController.text = _placesList[index].description;
+                  db.insertRecentSearch(_placesList[index].description,
+                      _placesList[index].placeId,
+                      10.0, 10.0);
+                  _suggestedList = await db.GetRecentSearch();
+                  setState(() {});
+                }
+                else if (fn2.hasFocus) {
                   _searchController2.text = _placesList[index].description;
+                  db.insertRecentSearch(_placesList[index].description,
+                      _placesList[index].placeId,
+                      10.0, 10.0);
+                  _suggestedList = await db.GetRecentSearch();
+                  setState(() {});
                 }
               },
             ),

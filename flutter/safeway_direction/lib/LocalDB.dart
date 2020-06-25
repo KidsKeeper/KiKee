@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'PlaceInfo.dart';
 
 class DataBase {
   var database;
@@ -35,7 +36,7 @@ class DataBase {
     // Dog를 올바른 테이블에 추가하세요. 또한
     // `conflictAlgorithm`을 명시할 것입니다. 본 예제에서는
     // 만약 동일한 dog가 여러번 추가되면, 이전 데이터를 덮어쓸 것입니다.
-    DbPlace place = DbPlace(description: des,latitude: Lat,longitude: lon,placeId: id);
+    Place place = Place(description: des,latitude: Lat,longitude: lon,placeId: id);
     await db.insert(
       'RecentSearch',
       place.toMap(),
@@ -53,7 +54,7 @@ class DataBase {
     };
   }
 
-  Future<List<DbPlace>> GetRecentSearch() async {
+  Future<List<Place>> GetRecentSearch() async {
     // 데이터베이스 reference를 얻습니다.
     final Database db = await database;
 
@@ -62,7 +63,7 @@ class DataBase {
 
     // List<Map<String, dynamic>를 List<Dog>으로 변환합니다.
     return List.generate(maps.length, (i) {
-      return DbPlace(
+      return Place(
           placeId: maps[i]['placeId'],
           description: maps[i]['description'],
           longitude: maps[i]['longitude'],
@@ -86,18 +87,3 @@ class DataBase {
 
 }
 
-class DbPlace {
-  final String placeId;
-  final String description;
-  final double longitude;
-  final double latitude;
-  DbPlace({this.placeId, this.description, this.longitude, this.latitude});
-  Map<String, dynamic> toMap() {
-    return {
-      'placeId': placeId,
-      'description': description,
-      'longitude': longitude,
-      'latitude': latitude,
-    };
-  }
-}
