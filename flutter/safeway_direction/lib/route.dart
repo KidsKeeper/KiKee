@@ -21,7 +21,8 @@ class Route{
 
 
   List<_Point> locations = [];
-  
+  List<LatLng> crossWalks = [];
+
   @override
   int get hashCode {
     int hashCode = 0;
@@ -43,17 +44,38 @@ class Route{
     _totalHour = (time / 3600).round();
     _totalMinute = ((time % 3600) / 60).round();
 
+    String str ="";
     // 각 경로 입력
     locations.add(
       _Point(
         LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]),
-        0, ""));
-    for(var iter in data['features'])
+        0, "",""));
+    for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString')
-        for(int i = 1; i< iter['geometry']['coordinates'].length ; i++)
+        for(int i = 1; i< iter['geometry']['coordinates'].length ; i++){
           locations.add(
             _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]),
-            0, iter['properties']['name']));
+            0, iter['properties']['name'], str));
+          str ="";
+        }
+          
+      else if(iter['geometry']['type'] == 'Point'){
+        str = iter['properties']['description'];
+      }
+    }
+     
+    // 횡단보도 좌표 정리
+    for(var iter in data['features']){
+      if(iter['geometry']['type'] == 'LineString' && iter['properties']['facilityType'] == '15'){
+        int i = iter['geometry']['coordinates'].length;
+          if( i % 2 == 0)
+            crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
+                  (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));
+          else
+            crossWalks.add(LatLng(iter['geometry']['coordinates'][(i/2).round()-1][1],iter['geometry']['coordinates'][(i/2).round()-1][0]));
+      }
+    }
+    
   }
   
 
@@ -96,7 +118,7 @@ class _Point{
   String roadName;
   String description = "";
 
-  _Point(this.location, this.danger, this.roadName);
+  _Point(this.location, this.danger, this.roadName, this.description);
 
   @override
   int get hashCode => location.hashCode ^ roadName.hashCode;
@@ -106,8 +128,6 @@ class _Point{
     other is !_Point ? false : (location == other.location) && (roadName == other.roadName);
   
 }
-
-
 class BadPoint{
   Pair<double,double> badLocation;
   String roadName;
