@@ -79,6 +79,7 @@ class Route{
         for(LatLng iter2 in latlngList){
           try{
             iter.danger = dangerList.firstWhere((BadPoint iter) => iter.badLocation == Pair.geometryFloor(iter2)).danger;
+            totalDanger += iter.danger;
             break;
           }
           catch(e){}
