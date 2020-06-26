@@ -68,10 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
     LatLng l1 = LatLng(35.2464852,129.090551);
     LatLng l2 = LatLng(35.2487721, 129.091708);
     way.Route result = await TmapServices.getRoute(l1, l2);
-    way.BadPoint accidentAreas = way.BadPoint();
+
     // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
-    await accidentAreas.addstoreList(await store.findNearStoresInRectangle(l1, l2));
+    Set<way.BadPoint> accidentAreas = {};
+    await way.BadPoint.updateBadPointTest(accidentAreas, await store.findNearStoresInRectangle(l1, l2));
+
     await result.updateDanger(accidentAreas);
     markerTest.add(Marker(
             markerId: MarkerId('test'+markerTest.length.toString()),
@@ -82,14 +84,21 @@ class _MyHomePageState extends State<MyHomePage> {
             position: l2,
           ));
   // only test
-    for(LatLng iter in accidentAreas.toLatLngList())
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter,
-            ));
+    // for(LatLng iter in accidentAreas.toLatLngList())
+    //   markerTest.add(Marker(
+    //           markerId: MarkerId('test'+markerTest.length.toString()),
+    //           position: iter,
+    //         ));
   // only test
 
-  _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
+    for(way.BadPoint iter in accidentAreas){
+       markerTest.add(Marker(
+              markerId: MarkerId('test'+markerTest.length.toString()),
+              position: iter.toLatLng(),
+              icon: iter.danger >=3 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
+            ));
+    }
+  // _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
   // _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
   setState(() {
     
