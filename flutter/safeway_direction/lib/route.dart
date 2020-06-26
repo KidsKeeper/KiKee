@@ -12,9 +12,13 @@ class Route{
   int _totalHour;
   int _totalMinute;
 
+  //경로 위험도
+  int totalDanger = 0;
+
   int get distance => _distance;
   int get totalHour => _totalHour;
   int get totalMinute => _totalMinute;
+
 
   List<_Point> locations = [];
   
@@ -60,18 +64,30 @@ class Route{
 
     return result;
   }
-  updateDanger(BadPoint dangerList) async{
+  updateDanger(Set<BadPoint> dangerList) async{
+    // 위험도 0으로 초기화
+    totalDanger = 0;
     for(var iter in locations)
-      if(dangerList.roadName.contains(iter.roadName)){
-        List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter.location);
-        if(dataList != null)
-          for(var iter2 in dataList)
-            if(dangerList.badLocation.contains(Pair.geometryFloor(iter2))){
-              iter.danger += 1;
-              break;
-            }
+      iter.danger = 0;
+
+    Set<String> roadNameList = BadPoint.roadNameToSet(dangerList);
+
+    // 위험도 계산
+    for(_Point iter in locations){
+      if(roadNameList.contains(iter.roadName)){
+        List<LatLng> latlngList = await TmapServices.getNearRoadInformation(iter.location);
+        for(LatLng iter2 in latlngList){
+          try{
+            iter.danger = dangerList.firstWhere((BadPoint iter) => iter.badLocation == Pair.geometryFloor(iter2)).danger;
+            break;
+          }
+          catch(e){}
+        }
       }
+    }
+
   }
+
 }
 class _Point{
   LatLng location;
@@ -90,49 +106,55 @@ class _Point{
   
 }
 
+
 class BadPoint{
-  Set<Pair<double,double>> badLocation = {};
-  Set<String> roadName = {};
+  Pair<double,double> badLocation;
+  String roadName;
+  int danger = 0;
+
+  BadPoint(Pair<double,double> badLocation, String roadName){
+    this.badLocation = badLocation;
+    this.roadName = roadName;
+  }
+
+  @override
+  int get hashCode => badLocation.hashCode ^ roadName.hashCode;
+
+  bool operator ==(dynamic other){
+    if(other is! BadPoint)
+      return false;
+    return badLocation == other.badLocation && roadName == other.roadName;
+  }
+
+  toLatLng(){
+    return LatLng(badLocation.first, badLocation.last);
+  }
   
-  BadPoint();
-
-  addstoreList(List<Store> data) async {
-    for(var iter in data)
-        await this.add(iter.storeLocation.location);
-  }
-
-  add(LatLng data) async{
-    List<LatLng> dataList = await TmapServices.getNearRoadInformation(data);
-    for(LatLng iter in dataList){
-      String roadName = await TmapServices.reverseGeocoding(iter);
-      badLocation.add(Pair.geometryFloor(iter));
-      this.roadName.add(roadName);
-    }
-    
-  }
-
-  addAll(Iterable<LatLng> data) async{
-    for(LatLng iter in data){
-      List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter);
-      for(LatLng iter2 in dataList){
-        String roadName = await TmapServices.reverseGeocoding(iter2);
-        badLocation.add(Pair.geometryFloor(iter));
-        this.roadName.add(roadName);
+  static updateBadPointTest(Set<BadPoint> result, List<Store> dangerList) async{
+    for(Store danger in dangerList){
+      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.storeLocation.location);
+      for(LatLng iter in latlngList){
+        String roadName = await TmapServices.reverseGeocoding(iter);
+        Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
+        result.firstWhere(
+          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
       }
-    }
+    } 
   }
-  
-  Set<LatLng> toLatLngSet(){
-    Set<LatLng> result = {};
-    for(var iter in badLocation)
-      result.add(LatLng(iter.first,iter.last));
+
+  static Set roadNameToSet(Set<BadPoint> data){
+    Set<String> result= {};
+    for(BadPoint iter in data)
+      result.add(iter.roadName);
     return result;
   }
 
-  List<LatLng> toLatLngList(){
-    List<LatLng> result = [];
-    for(var iter in badLocation)
-      result.add(LatLng(iter.first,iter.last));
+  static Set badLocationToSet(Set<BadPoint> data){
+    Set<Pair<double,double>> result = {};
+    for(BadPoint iter in data)
+      result.add(iter.badLocation);
     return result;
   }
 }
+
