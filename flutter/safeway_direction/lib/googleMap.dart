@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/utility.dart';
 
-const _apiKey = "AIzaSyA6fqGeXFYOhuSBrVfvKoFNkN4fGAIwdmM";
+const _apiKey = "***********************";
 
 class GoogleMapsServices{
   // 도보 경로 탐색, 한국에서 사용 불가

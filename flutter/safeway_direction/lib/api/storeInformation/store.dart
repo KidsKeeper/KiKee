@@ -27,7 +27,7 @@ Future<List<Store>> findNearStores(int radius, LatLng location) async{
 
   List<Store> result = List<Store>();
   List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
-  String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
+  String servicekey = '************';
 
   for(String code in codeList)
     result += await _getData(radius, location,code, servicekey);
@@ -39,7 +39,7 @@ Future<List<Store>> findNearStoresInRectangle(LatLng location1, LatLng location2
 
   List<Store> result = List<Store>();
   List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
-  String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
+  String servicekey = '*************';
 
   http.Response response;
   for(String code in codeList){

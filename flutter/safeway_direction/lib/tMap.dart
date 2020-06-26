@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:safewaydirection/route.dart';
 class TmapServices{
-  static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
+  static const String projectKey = "**************";
 
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
