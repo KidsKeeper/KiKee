@@ -58,14 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void test2() async{
     print('start');
-    LatLng l1 = await GoogleMapsServices.searchPlace("서울대학교");
-    LatLng l2 = await GoogleMapsServices.searchPlace("고광빌라");
-    _kGooglePlex = CameraPosition(
-      target: l1,
-      zoom: 14.4746,
-      );
-    // LatLng l1 = LatLng(35.2464852,129.090551);
-    // LatLng l2 = LatLng(35.2487721, 129.091708);
+    // LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
+    // LatLng l2 = LatLng(35.2278421,129.095157);
+    // _kGooglePlex = CameraPosition(
+    //   target: l1,
+    //   zoom: 14.4746,
+    //   );
+    
+    LatLng l1 = LatLng(35.2464852,129.090551);
+    LatLng l2 = LatLng(35.2487721, 129.091708);
     way.Route result = await TmapServices.getRoute(l1, l2);
     way.BadPoint accidentAreas = way.BadPoint();
     // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
