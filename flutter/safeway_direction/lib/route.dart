@@ -64,7 +64,7 @@ class Route{
 
     return result;
   }
-  updateDanger(Set<BadPoint> dangerList) async{
+  Future<void> updateDanger(Set<BadPoint> dangerList) async{
     // 위험도 0으로 초기화
     totalDanger = 0;
     for(var iter in locations)
@@ -131,7 +131,7 @@ class BadPoint{
     return LatLng(badLocation.first, badLocation.last);
   }
   
-  static updateBadPointTest(Set<BadPoint> result, List<Store> dangerList) async{
+  static Future<void> updateBadPointbyStore(Set<BadPoint> result, List<Store> dangerList) async{
     for(Store danger in dangerList){
       List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.storeLocation.location);
       for(LatLng iter in latlngList){
@@ -144,14 +144,14 @@ class BadPoint{
     } 
   }
 
-  static Set roadNameToSet(Set<BadPoint> data){
+  static Set<String> roadNameToSet(Set<BadPoint> data){
     Set<String> result= {};
     for(BadPoint iter in data)
       result.add(iter.roadName);
     return result;
   }
 
-  static Set badLocationToSet(Set<BadPoint> data){
+  static Set<Pair<double,double>> badLocationToSet(Set<BadPoint> data){
     Set<Pair<double,double>> result = {};
     for(BadPoint iter in data)
       result.add(iter.badLocation);
