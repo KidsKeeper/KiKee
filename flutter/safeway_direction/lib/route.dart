@@ -1,11 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/utility.dart' as utility;
+import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
 
 import 'api/storeInformation/store.dart';
 
 class Route{
+  int _distance;  // 거리 m
+
+  // 소요 시간. 시간 분으로 나눠서 저장
+  int _totalHour;
+  int _totalMinute;
+
+  int get distance => _distance;
+  int get totalHour => _totalHour;
+  int get totalMinute => _totalMinute;
+
   List<_Point> locations = [];
   
   @override
@@ -19,11 +29,17 @@ class Route{
   @override
   bool operator ==(dynamic other) => 
     other is !Route ? false : listEquals(this.locations, other.locations);
-  
 
   Route();
 
   Route.map(Map<String,dynamic> data){
+    // 총 거리, 소요 시간 입력.
+    _distance = data['features'][0]["properties"]["totalDistance"];
+    int time = data['features'][0]["properties"]["totalTime"];
+    _totalHour = (time / 3600).round();
+    _totalMinute = ((time % 3600) / 60).round();
+
+    // 각 경로 입력
     locations.add(
       _Point(
         LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]),
@@ -48,11 +64,12 @@ class Route{
     for(var iter in locations)
       if(dangerList.roadName.contains(iter.roadName)){
         List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter.location);
-        for(var iter2 in dataList)
-          if(dangerList.badLocation.contains(utility.Pair.geometryFloor(iter2))){
-            iter.danger += 1;
-            break;
-          }
+        if(dataList != null)
+          for(var iter2 in dataList)
+            if(dangerList.badLocation.contains(Pair.geometryFloor(iter2))){
+              iter.danger += 1;
+              break;
+            }
       }
   }
 }
@@ -60,6 +77,7 @@ class _Point{
   LatLng location;
   int danger = 0;
   String roadName;
+  String description = "";
 
   _Point(this.location, this.danger, this.roadName);
 
@@ -73,7 +91,7 @@ class _Point{
 }
 
 class BadPoint{
-  Set<utility.Pair<double,double>> badLocation = {};
+  Set<Pair<double,double>> badLocation = {};
   Set<String> roadName = {};
   
   BadPoint();
@@ -87,7 +105,7 @@ class BadPoint{
     List<LatLng> dataList = await TmapServices.getNearRoadInformation(data);
     for(LatLng iter in dataList){
       String roadName = await TmapServices.reverseGeocoding(iter);
-      badLocation.add(utility.Pair.geometryFloor(iter));
+      badLocation.add(Pair.geometryFloor(iter));
       this.roadName.add(roadName);
     }
     
@@ -98,7 +116,7 @@ class BadPoint{
       List<LatLng> dataList = await TmapServices.getNearRoadInformation(iter);
       for(LatLng iter2 in dataList){
         String roadName = await TmapServices.reverseGeocoding(iter2);
-        badLocation.add(utility.Pair.geometryFloor(iter));
+        badLocation.add(Pair.geometryFloor(iter));
         this.roadName.add(roadName);
       }
     }
