@@ -58,21 +58,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void test2() async{
     print('start');
-    // LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
-    // LatLng l2 = LatLng(35.2278421,129.095157);
-    // _kGooglePlex = CameraPosition(
-    //   target: l1,
-    //   zoom: 14.4746,
-    //   );
+    LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
+    LatLng l2 = LatLng(35.2278421,129.095157);
+    _kGooglePlex = CameraPosition(
+      target: l1,
+      zoom: 14.4746,
+      );
     
-    LatLng l1 = LatLng(35.2464852,129.090551);
-    LatLng l2 = LatLng(35.2487721, 129.091708);
+    // LatLng l1 = LatLng(35.2464852,129.090551);
+    // LatLng l2 = LatLng(35.2487721, 129.091708);
     way.Route result = await TmapServices.getRoute(l1, l2);
 
     // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
     Set<way.BadPoint> accidentAreas = {};
-    await way.BadPoint.updateBadPointTest(accidentAreas, await store.findNearStoresInRectangle(l1, l2));
+    await way.BadPoint.updateBadPointbyStore(accidentAreas, await store.findNearStoresInRectangle(l1, l2));
 
     await result.updateDanger(accidentAreas);
     markerTest.add(Marker(
@@ -89,17 +89,29 @@ class _MyHomePageState extends State<MyHomePage> {
     //           markerId: MarkerId('test'+markerTest.length.toString()),
     //           position: iter,
     //         ));
+    // for(var iter in result.locations)
+    //   markerTest.add(Marker(
+    //           markerId: MarkerId('test'+markerTest.length.toString()),
+    //           position: iter.location,
+    //         ));
+    for(var iter in result.crossWalks)
+      markerTest.add(Marker(
+              markerId: MarkerId('test'+markerTest.length.toString()),
+              position: iter,
+              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
+            ));
+      
   // only test
 
-    for(way.BadPoint iter in accidentAreas){
-       markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter.toLatLng(),
-              icon: iter.danger >=3 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
-            ));
-    }
+    // for(way.BadPoint iter in accidentAreas){
+    //    markerTest.add(Marker(
+    //           markerId: MarkerId('test'+markerTest.length.toString()),
+    //           position: iter.toLatLng(),
+    //           icon: iter.danger >=2 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
+    //         ));
+    // }
   // _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
-  // _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
+  _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
   setState(() {
     
   });
