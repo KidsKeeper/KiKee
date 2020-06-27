@@ -2,16 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/api/storeInformation/store.dart';
-import 'package:safewaydirection/data.dart' as safeway;
 import 'package:safewaydirection/tMap.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math' show cos, sqrt, asin;
+import 'package:safewaydirection/route.dart' as way;
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
-
-safeway.Route a = safeway.Route();
-
 void main() => runApp(MyApp()); //신경
 
 class MyApp extends StatelessWidget {
@@ -52,30 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
   LatLng destination = LatLng(35.222792,129.095795);
   int visibleColorCnt = 0;
   int num =1;
+  way.Route route = way.Route();
+  Set<way.Route> routes ={};
   @override
   initState() {
     super.initState();
 
   }
-
-  void getNearStores(LatLng pos, String id) async{
-    print("=============== you called getNearStores() ================");
-    List<Stores> nearStores = await findNearStores(100,pos);
-    print(nearStores.length);
-    for(int i=0; i<nearStores.length; i++){
-      markers.add(Marker(
-          markerId: MarkerId("store"+id),
-          position: nearStores[i].storeLocation.location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          onTap: ()=>print("유해업소")
-      ));
-    }
-//
-//    setState(() {
-//
-//    });
-    print("================ getNearStores() Done ==================");
-  } //상가정보. 아직 활용 안할 것.
 
   void getPoints() async{
     print("================getPoint!=================");
@@ -85,61 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
         onTap: ()=>print("출발지")
     ));
-    List<LatLng> passlist = [LatLng(35.221982,129.092644)];
-    var values = await TmapServices.getRoute(source, destination,passlist);
-    for(int i=0; i<values["features"].length; i++){ // points & linestrings
-      String type = values["features"][i]["geometry"]["type"];
-      List<dynamic> coordi = values["features"][i]["geometry"]["coordinates"];
-      //print((coordi[0]).runtimeType);
-      if(type =="LineString"){
-        for(int j=0;  j<coordi.length; j++){
-          LatLng position1 = LatLng(coordi[j][1],coordi[j][0]);
-          if(markers.isNotEmpty&&markers.last.position!=position1){
-            markers.add(Marker(
-                markerId: MarkerId("LineString"+markers.length.toString()),
-                position: position1,
-                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                onTap: ()=>print(position1.longitude)
-            ));
-//            print("===================nearRoadInfoTest==================");
-//            var near = await TmapServices.getNearRoadInformation(position1);
-//            for(int k=0;k<near["resultData"]["linkPoints"].length; k++){
-//              var lat = near["resultData"]["linkPoints"][k]["location"]["latitude"];
-//              var lng = near["resultData"]["linkPoints"][k]["location"]["longitude"];
-//              markers.add(Marker(
-//                  markerId: MarkerId(markers.length.toString()),
-//                  position: LatLng(lat,lng),
-//                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-//              ));
-//            }
-//            print("===================nearRoadInfoTestDone==================");
-          }
-        }
-      }else{
-        LatLng position2 = LatLng(coordi[1],coordi[0]);
-        if(markers.isNotEmpty&&markers.last.position==position2){
-          markers.remove(markers.last);
-        }
-        markers.add(Marker(
-            markerId: MarkerId("Point"+markers.length.toString()),
-            position: position2,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-            onTap: ()=>print("Point")
-        ));
-//        print("===================nearRoadInfoTest==================");
-//        var near = await TmapServices.getNearRoadInformation(position2);
-//        for(int k=0;k<near["resultData"]["linkPoints"].length; k++){
-//          var lat = near["resultData"]["linkPoints"][k]["location"]["latitude"];
-//          var lng = near["resultData"]["linkPoints"][k]["location"]["longitude"];
-//          markers.add(Marker(
-//            markerId: MarkerId(markers.length.toString()),
-//            position: LatLng(lat,lng),
-//            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-//          ));
-//        }
-//        print("===================nearRoadInfoTestDone==================");
-        //await getNearStores(position2,markers.length.toString());
-      }
+    route = await TmapServices.getRoute(source, destination);  // get route infomation
+    for(int i=0; i<route.locations.length; i++){
+      markers.add(Marker(
+          markerId: MarkerId("LineString"+markers.length.toString()),
+          position: route.locations[i].location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      ));
     }
     markers.add(Marker(
         markerId: MarkerId('destination'),
@@ -162,11 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
   } //출발지부터 목적지까지 기본 경로.
 
   void getAccidentData() async{
-    http.Response response = await http.get("http://3.34.194.177:8088/secret/api/frequently/schoolzone/2018");
-    var values = jsonDecode(response.body);
-    var acciLat = double.parse(values[0]["la_crd"]);
-    var acciLng = double.parse(values[0]["lo_crd"]);
-    var acciPos = LatLng(acciLat,acciLng);
+//    http.Response response = await http.get("http://3.34.194.177:8088/secret/api/frequently/schoolzone/2018");
+//    var values = jsonDecode(response.body);
+//    var acciLat = values[0]["la_crd"];
+//    var acciLng = values[0]["lo_crd"];
+//    var acciPos = LatLng(acciLat,acciLng);
+    var acciLat = 35.222799633098;
+    var acciLng = 129.092828816098;
+    var acciPos = LatLng(35.222799633098,129.092828816098);
     markers.add(Marker(
         markerId: MarkerId('schoolzoneAcci'),
         position: acciPos,
@@ -182,10 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ));
       var near = await TmapServices.getNearRoadInformation(fourWayPos);
-      var linkPoints = near["resultData"]["linkPoints"];
-      for(int j=0; j<linkPoints.length; j++){
-        var posLat = linkPoints[j]["location"]["latitude"];
-        var posLng = linkPoints[j]["location"]["longitude"];
+      for(int j=0; j<near.length; j++){
+        var posLat = near[j].latitude;
+        var posLng = near[j].longitude;
         print(LatLng(posLat,posLng));
         markers.add(Marker(
           markerId: MarkerId(markers.length.toString()),
@@ -203,39 +136,27 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> getPossibleRoute() async{
     await getAccidentData();
     List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
-    //List<Set<LatLng>> points = [];
     for(int i=0; i<acciPassList.length; i++){
-      List<LatLng> tmp =[]; // before store to points list.
-      var values = await TmapServices.getRoute(source, destination,[acciPassList[i]]);
-      bool isFirstLineString = true;
-      bool isDuplicated = false;
-      for(int j=0; j<values["features"].length; j++){ //한가지 경로의 points, linestrings.
-        if(j%2!=0){//lineString
-          var coord = values["features"][j]["geometry"]["coordinates"];
-          int coordIndex =1;
-          if(isFirstLineString == true){
-            isFirstLineString = false;
-            coordIndex = 0;
-          }
-          for(; coordIndex<coord.length; coordIndex++){  //여기서 중복을 걸러줘야함.
-            LatLng pos = LatLng(coord[coordIndex][1],coord[coordIndex][0]);
-            if(tmp.contains(pos)==false){ //중복 없음
-              tmp.add(pos);
-            }else{ //중복 있음
-              isDuplicated = true;
-              tmp.clear();
-              break;
-            }
-          }
-          if(isDuplicated==true){
-            break;
-          }
+      int routesNum = routes.length;
+      List<LatLng> tmp = []; // before store to points list.
+      route = await TmapServices.getRoute(source, destination,[acciPassList[i]]);
+      for(int j=0; j<route.locations.length; j++){
+        if(tmp.contains(route.locations[j].location)){
+          route.locations.removeAt(j);
+          route.locations.removeAt(j+1);
+          tmp.removeLast();
+        }else {
+          tmp.add(route.locations[j].location);
         }
       }
-      if(tmp.length>2){ //모든 가능 경로는 포인트가 적어도 1개 이상일거 아냐.. 출발 도착 포함하니까.
+      routes.add(route);
+      //print(routesNum);
+      //print(routes.length);
+      if(routesNum < routes.length){
         points.add(tmp.toSet());
       }
     }
+
     for(int i=0; i<points.length; i++){
       polylines.add(Polyline(
         polylineId: PolylineId(polylines.length.toString()),
@@ -247,11 +168,16 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
 
     });
-
   } //우회경로를 찍기위한 경유지 위치 후보들을 마커로 찍어서 보여줌.
+
+
 
   void makePolylineVisible(){
     int n = polylines.length;
+    if(n==0){
+     print("n is 0 right now.");
+     return;
+    }
     int cnt = visibleColorCnt%n;
     print("n: "+n.toString()+", cnt: "+cnt.toString());
     List<Polyline> polylineList = polylines.toList();
@@ -272,36 +198,29 @@ class _MyHomePageState extends State<MyHomePage> {
   } //Button을 누를때마다 폴리라인 경로 하나씩 보여줌.
 
 
-  double calculateDistance(lat1, lon1, lat2, lon2){
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 - c((lat2 - lat1) * p)/2 +
-        c(lat1 * p) * c(lat2 * p) *
-            (1 - c((lon2 - lon1) * p))/2;
-    return 12742 * asin(sqrt(a));
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-            preferredSize: Size.fromHeight(height),
-            child : SafeArea(
-              child: AppBar(
-                automaticallyImplyLeading: true,
-                flexibleSpace: Container(
-                  margin: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                      color: Colors.yellow[100],
-                      borderRadius : BorderRadius.all(Radius.circular(90))
-                  ),
-                  child : FlatButton(
-                      onPressed:  () async =>  {await getPossibleRoute()},
-  ),
+        preferredSize: Size.fromHeight(height),
+        child : SafeArea(
+            child: AppBar(
+              automaticallyImplyLeading: true,
+              flexibleSpace: Container(
+                margin: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                    color: Colors.yellow[100],
+                    borderRadius : BorderRadius.all(Radius.circular(90))
                 ),
-              )
-            ),
+                child : FlatButton(
+                  onPressed:  () async =>  {await getPossibleRoute()},
+                ),
+              ),
+            )
         ),
+      ),
       body: Center(
         child: Stack(
           children: <Widget>[

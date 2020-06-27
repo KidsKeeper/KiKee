@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 
-class Stores{
+class Store{
   String bizesId = '10868815'; // 상가 업소 번호
   String bizesNm = '땡땡땡다방'; // 상호명
   String brchNm = '대전땡땡병원점';  // 지점명
@@ -23,9 +23,9 @@ class Stores{
 
 }
 
-Future<List<Stores>> findNearStores(int radius, LatLng location) async{
+Future<List<Store>> findNearStores(int radius, LatLng location) async{
 
-  List<Stores> result = List<Stores>();
+  List<Store> result = List<Store>();
   List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
   String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
 
@@ -36,7 +36,7 @@ Future<List<Stores>> findNearStores(int radius, LatLng location) async{
   return result;
 }
 
-Future<List<Stores>> getData(int radius, LatLng location,String code,String serviceKey) async{
+Future<List<Store>> getData(int radius, LatLng location,String code,String serviceKey) async{
   http.Response response;
   String indsLclsCd = code.substring(0,1);
   String indsMclsCd = code.substring(0,3);
@@ -45,15 +45,15 @@ Future<List<Stores>> getData(int radius, LatLng location,String code,String serv
   return _storeListParser(response.body);
 }
 
-List<Stores> _storeListParser(String storeList){
-  List<Stores> result = List<Stores>();
+List<Store> _storeListParser(String storeList){
+  List<Store> result = List<Store>();
   Map<String,dynamic> data = jsonDecode(storeList);
   if(data['header']['resultCode'] != '00')
     return result;
 
   List<dynamic> items = data['body']['items'];
   items.forEach((item){
-    Stores storeData = Stores();
+    Store storeData = Store();
     storeData.bizesId = item['bizesId'];
     storeData.bizesNm = item['bizesNm'];
     storeData.brchNm = item['brchNm'];
