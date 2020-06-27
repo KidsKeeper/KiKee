@@ -58,8 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void test2() async{
     print('start');
-    LatLng l1 = await GoogleMapsServices.searchPlace("부산대학교");
-    LatLng l2 = LatLng(35.2278421,129.095157);
+    LatLng l1 = LatLng(35.222752,129.090583); //await GoogleMapsServices.searchPlace("부산대학교");
+    LatLng l2 = LatLng(35.222792,129.095795); //LatLng(35.2278421,129.095157);
     _kGooglePlex = CameraPosition(
       target: l1,
       zoom: 14.4746,
@@ -67,12 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
     
     // LatLng l1 = LatLng(35.2464852,129.090551);
     // LatLng l2 = LatLng(35.2487721, 129.091708);
-    way.Route result = await TmapServices.getRoute(l1, l2);
+    way.Route result = await TmapServices.getRoute(l1, l2, [LatLng(35.22261379225877, 129.09358418173105)]);
 
     // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
 
     Set<way.BadPoint> accidentAreas = {};
-    await way.BadPoint.updateBadPointbyStore(accidentAreas, await store.findNearStoresInRectangle(l1, l2));
+    await way.BadPoint.updateBadPointbyStore(accidentAreas, await store.findNearStoresInRectangle(l1, l2,));
 
     await result.updateDanger(accidentAreas);
     markerTest.add(Marker(
@@ -89,11 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //           markerId: MarkerId('test'+markerTest.length.toString()),
     //           position: iter,
     //         ));
-    // for(var iter in result.locations)
-    //   markerTest.add(Marker(
-    //           markerId: MarkerId('test'+markerTest.length.toString()),
-    //           position: iter.location,
-    //         ));
+    for(var iter in result.locations)
+      markerTest.add(Marker(
+              markerId: MarkerId('test'+markerTest.length.toString()),
+              position: iter.location,
+            ));
     for(var iter in result.crossWalks)
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
