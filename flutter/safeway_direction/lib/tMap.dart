@@ -1,20 +1,19 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+
 import 'package:safewaydirection/route.dart';
-import 'package:safewaydirection/utility.dart';
 class TmapServices{
-  static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
+  static const String projectKey = "*******";
 
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
-// 파라미터 설명 :각각 출발지, 도착지, 경로 탐색 옵션, 경유지(List) 정보
-/* int type 경로 탐색 옵션
-- 0: 추천 (기본값)
-- 1: 추천+대로우선
-- 2: 최단
-- 3: 최단거리+계단제외
-*/
+    List<LatLng> origindata = await getNearRoadInformation(origin);
+    origin = origindata != null ? _getPointMeetLine(origindata, origin) : origin;
+    List<LatLng> destinationData = await getNearRoadInformation(destination);
+    destination = destinationData != null ? _getPointMeetLine(destinationData, destination) : destination;
+
     Map<String, dynamic> requestData ={
       "appKey" : projectKey,
       "startX" : origin.longitude, // 경도
@@ -27,9 +26,9 @@ class TmapServices{
 
 
     String body = "";
+    // 경로 탐색 옵션 추가 코드
     for(var key in requestData.keys)
       body += (key + '=' + requestData[key].toString() + '&');
-
     body = body.substring(0,body.lastIndexOf('&'));
 
     // 경유지 있을 경우 추가 코드
@@ -48,11 +47,15 @@ class TmapServices{
         },
         body: body
     );
-    var values = jsonDecode(response.body);
-   // Map<String,dynamic> values = jsonDecode(response.body);
 
-    Route result = Route.map(values);
-    return result;
+    try{
+      Map<String,dynamic> values = jsonDecode(response.body);
+      Route result = Route.map(values);
+      return result;
+    }
+    catch(e){
+      return null;
+    }
   }
 
   static Future<String> reverseGeocoding(LatLng location) async {
@@ -62,14 +65,35 @@ class TmapServices{
   }
 
   static Future<List<LatLng>> getNearRoadInformation(LatLng position) async {
-    http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
-    Map values = jsonDecode(response.body);
-    List<LatLng> result = [];
+    try{
+      http.Response response = await http.get("https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&appKey=$projectKey&lat=${position.latitude}&lon=${position.longitude}");
+      Map values = jsonDecode(response.body);
+      List<LatLng> result = [];
 
-    for(var iter in values['resultData']['linkPoints'])
-      result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
-    return result;
+      for(var iter in values['resultData']['linkPoints'])
+        result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
+      return result;
+    }
+    catch(e){
+      return null;
+    }
   }
 
+  static LatLng _getPointMeetLine(List<LatLng> lineLatLng, LatLng point){
+    LatLng l1 = lineLatLng.first;
+    LatLng l2 = lineLatLng.last;
+
+    double a21 = l2.latitude-l1.latitude;
+    double b21 = l2.longitude-l1.longitude;
+
+    double x = a21 * point.latitude + b21 * point.longitude;
+    x += pow(b21, 2) * l1.latitude / a21;
+    x -= b21 * l1.longitude;
+    x /= a21 + pow(b21,2) / a21;
+
+    double y = b21 * (x - l1.latitude) / a21 + l1.longitude;
+
+    return LatLng(x,y);
+  }
 
 }

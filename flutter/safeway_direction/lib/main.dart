@@ -1,3 +1,4 @@
+/* When you git pull this code, you should fill out keyblanks at googleMap.dart, tMap.dart, and store.dart */
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,26 +36,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool extended = false;
+  List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = {};
+  LatLng source = LatLng(35.2464852,129.090551);
+  LatLng destination = LatLng(35.2487721, 129.091708);
   Set<Polyline> polylines = {};
-  List<Set<LatLng>> points = [];
-  Set<Circle> circles ={};
-  List<LatLng> polylinePoints = [];
-  List<LatLng> acciPassList = [];
-  List<LatLng> passList = [];
-  List<List<LatLng>> nearPoints = [];
-  LatLng source = LatLng(35.222752,129.090583);
-  LatLng destination = LatLng(35.222792,129.095795);
-  int visibleColorCnt = 0;
-  int num =1;
+  List<List<LatLng>> polylinePoints = [];
   way.Route route = way.Route();
   Set<way.Route> routes ={};
-  @override
-  initState() {
-    super.initState();
-
-  }
+  List<LatLng> passPoints = [];
 
   void getPoints() async{
     print("================getPoint!=================");
@@ -64,75 +55,74 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
         onTap: ()=>print("출발지")
     ));
-    route = await TmapServices.getRoute(source, destination);  // get route infomation
-    for(int i=0; i<route.locations.length; i++){
-      markers.add(Marker(
-          markerId: MarkerId("LineString"+markers.length.toString()),
-          position: route.locations[i].location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-      ));
-    }
     markers.add(Marker(
         markerId: MarkerId('destination'),
         position: destination,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
         onTap: ()=>print("도착지")
     ));
-    for(Marker m in markers){
-      polylinePoints.add(m.position);
+
+    route = await TmapServices.getRoute(source, destination);  // get route infomation
+    Set<way.BadPoint> accidentAreas = {};
+    await way.BadPoint.updateBadPointbyStore(accidentAreas, await findNearStoresInRectangle(source, destination));
+    await route.updateDanger(accidentAreas);
+
+    List<List<double>> fourWay = [[0.001,0],[-0.001,0],[0,0.001],[0,-0.001]]; //위 아래 오른쪽 왼쪽 100m
+    LatLng dp = null;
+    for(int i=0; i<route.locations.length; i++){ //받은 값들중에 danger값이 있는지 판별.
+      if(route.locations[i].danger>0){
+        dp=route.locations[i].location;
+        break;
+      }
     }
-    polylines.add(Polyline(
-      polylineId: PolylineId('pid'),
-      points:polylinePoints,
-      color: Colors.blue,
-      visible: true,
-    ));
+    if(dp!=null){//more than 1 danger point
+      for(int direction =0; direction<4; direction++){ //위험 포인트에서 경유 후보 뽑아냄.
+        LatLng fourWayPos = LatLng(dp.latitude+fourWay[direction][0],dp.longitude+fourWay[direction][1]);
+        var near = await TmapServices.getNearRoadInformation(fourWayPos);
+        for(int passPoint =0; passPoint<near.length; passPoint++){
+          passPoints.add(LatLng(near[passPoint].latitude,near[passPoint].longitude));
+        }
+      }
+      for(int pp = 0; pp<passPoints.length; pp++){ // 뽑아낸 경유 후보들에서 새로운 경로후보들 뽑음
+        route = await TmapServices.getRoute(source, destination,[passPoints[pp]]);
+        Set<LatLng> tmp={};
+        for(int p = 0; p<route.locations.length; p++){
+           if(tmp.contains(route.locations[p].location)){
+             p++;
+           }else{
+             tmp.add(route.locations[p].location);
+           }
+        }
+        polylinePoints.add(tmp.toList());
+      }
+    }else{ //처음부터 안전경로일 경우.
+      //나중에생각하자.
+    }
     setState(() {
 
     });
   } //출발지부터 목적지까지 기본 경로.
 
-  void getAccidentData() async{
-//    http.Response response = await http.get("http://3.34.194.177:8088/secret/api/frequently/schoolzone/2018");
-//    var values = jsonDecode(response.body);
-//    var acciLat = values[0]["la_crd"];
-//    var acciLng = values[0]["lo_crd"];
-//    var acciPos = LatLng(acciLat,acciLng);
-    var acciLat = 35.222799633098;
-    var acciLng = 129.092828816098;
-    var acciPos = LatLng(35.222799633098,129.092828816098);
-    markers.add(Marker(
-        markerId: MarkerId('schoolzoneAcci'),
-        position: acciPos,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
-        onTap: ()=>print("사고")
-    ));
-    List<List<double>> fourWay = [[0.001,0],[-0.001,0],[0,0.001],[0,-0.001]]; //위 아래 오른쪽 왼쪽
-    for(int i=0; i<4; i++){
-      LatLng fourWayPos = LatLng(acciLat+fourWay[i][0],acciLng+fourWay[i][1]);
-      markers.add(Marker(
-        markerId: MarkerId(markers.length.toString()),
-        position: fourWayPos,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-      ));
-      var near = await TmapServices.getNearRoadInformation(fourWayPos);
-      for(int j=0; j<near.length; j++){
-        var posLat = near[j].latitude;
-        var posLng = near[j].longitude;
-        print(LatLng(posLat,posLng));
-        markers.add(Marker(
-          markerId: MarkerId(markers.length.toString()),
-          position: LatLng(posLat,posLng),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        ));
-        acciPassList.add(LatLng(posLat,posLng)); //가능한 경유지 정보 저장
-      }
+  void drawPolyline(int num) async{
+    await getPoints();
+    if(num>polylinePoints.length){
+      print('num is too big');
+      return ;
     }
+    polylines.clear();
+    polylines.add(Polyline(
+      polylineId: PolylineId(num.toString()),
+      points:polylinePoints[num],
+      color: colors[num],
+      visible: true,
+    ));
     setState(() {
 
     });
-  } //사고지 정보 얻음.
+  }
 
+
+/*
   Future<void> getPossibleRoute() async{
     await getAccidentData();
     List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
@@ -198,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
   } //Button을 누를때마다 폴리라인 경로 하나씩 보여줌.
 
 
-
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius : BorderRadius.all(Radius.circular(90))
                 ),
                 child : FlatButton(
-                  onPressed:  () async =>  {await getPossibleRoute()},
+                  ////////onPressed:  () async =>  {await getPossibleRoute()},
                 ),
               ),
             )
@@ -229,18 +219,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 mapType: MapType.normal,
                 markers: markers,
                 polylines: polylines,
-                circles: circles,
-                initialCameraPosition: CameraPosition(target:LatLng(35.223027,129.092952),zoom: 16),
+                initialCameraPosition: CameraPosition(target:LatLng(35.2464852,129.090551),zoom: 16),
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
-                  //getAccidentData();
                   //getPoints();
+                  drawPolyline(7);
                 },
               ),
             ),
             FlatButton(
               color: Colors.yellow,
-              onPressed: makePolylineVisible,
+              ///////////onPressed: makePolylineVisible,
               child: Text(
                 "Button"
               ),

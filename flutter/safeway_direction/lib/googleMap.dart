@@ -1,7 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-const apiKey = "AIzaSyA6fqGeXFYOhuSBrVfvKoFNkN4fGAIwdmM";
+const apiKey = "******";
 
 class GoogleMapsServices{
   // 한국에서 사용 불가

@@ -27,16 +27,33 @@ Future<List<Store>> findNearStores(int radius, LatLng location) async{
 
   List<Store> result = List<Store>();
   List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
+  String servicekey = '*******';
+
+  for(String code in codeList)
+    result += await _getData(radius, location,code, servicekey);
+
+  return result;
+}
+
+Future<List<Store>> findNearStoresInRectangle(LatLng location1, LatLng location2) async{
+
+  List<Store> result = List<Store>();
+  List<String> codeList = ["N02A04","N02A05","N08A04","Q09A06","Q09A02","Q09A10","D25A11"];
   String servicekey = 'gYgO7z7S7CpD1JuCgz2NZQHZtDXJ56myCwvvnBMdiFultNVEtYtcjNv5nbmBVgbVlqMzJjkZHpKFGXj9kZw7tQ%3D%3D';
 
+  http.Response response;
   for(String code in codeList){
-    result += await getData(radius, location,code, servicekey);
+    String indsLclsCd = code.substring(0,1);
+    String indsMclsCd = code.substring(0,3);
+    String indsSclsCd = code;
+    response = await http.get('http://apis.data.go.kr/B553077/api/open/sdsc/storeListInRectangle?numOfRows=1000&minx=${location1.longitude}&miny=${location1.latitude}&maxx=${location2.longitude}&maxy=${location2.latitude}&indsLclsCd=$indsLclsCd&indsMclsCd=$indsMclsCd&indsSclsCd=$indsSclsCd&type=json&ServiceKey=$servicekey');
+    result += _storeListParser(response.body);
   }
 
   return result;
 }
 
-Future<List<Store>> getData(int radius, LatLng location,String code,String serviceKey) async{
+Future<List<Store>> _getData(int radius, LatLng location,String code,String serviceKey) async{
   http.Response response;
   String indsLclsCd = code.substring(0,1);
   String indsMclsCd = code.substring(0,3);
@@ -102,36 +119,24 @@ List<Store> _storeListParser(String storeList){
 /*
 관광 /여가/오락 => 무도/유흥/가무 => 무도유흥주점- 종합
 N 02 A04
-
 관광 /여가/오락 => 무도/유흥/가무 => 한국식 유흥주점
 N 02 A05
-
 관광 /여가/오락 => 무도/유흥/가무 => 나이트 클럽
-
 N 02 A02
-
 관광 /여가/오락 => 경마/경륜/성인오락 => 카지노
 N 08 A04
-
 숙박 => 모텔/여관/여인숙 => 모텔/여관/여인숙
 O 02 A01 (이름으로 추가적인 데이터 검증 필요)
-
 음식 => 유흥주점 => 관광/유흥주점
 Q09A06
-
 음식 => 유흥주점 => 룸살롱/단란주점
 Q09A10
-
 음식 => 유흥주점 => 빠/카페/스탠드바
 Q09A08 ( 추가적인 데이터 검증 필요)
-
 음식 => 유흥주점 => 소주방/포장마차
 Q09A02
-
 음식 => 유흥주점 => 호프/맥주
 Q09A01( 추가적인 데이터 검증 필요)
-
-
 소매 => 기타판매업 => 성인용품판매
 D 25 A11
 */
