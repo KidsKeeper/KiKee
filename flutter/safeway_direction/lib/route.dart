@@ -121,11 +121,11 @@ class _Point{
   _Point(this.location, this.danger, this.roadName, this.description);
 
   @override
-  int get hashCode => location.hashCode ^ roadName.hashCode;
+  int get hashCode => location.hashCode; // ^ roadName.hashCode
 
   @override
   bool operator ==(dynamic other) =>
-      other is !_Point ? false : (location == other.location) && (roadName == other.roadName);
+      other is !_Point ? false : (location == other.location); //&& (roadName == other.roadName)
 
 }
 class BadPoint{
