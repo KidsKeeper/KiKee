@@ -6,36 +6,8 @@ import 'dart:convert';
 import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/utility.dart';
 
-const _apiKey = "***********************";
-
+const _apiKey = "****************";
 class GoogleMapsServices{
-  // 도보 경로 탐색, 한국에서 사용 불가
-  static Future<String> getRouteCoordinates(LatLng l1, LatLng l2)async{
-    String url = "https://maps.googleapis.com/maps/api/directions/json?origin=${l1.latitude},${l1.longitude}&destination=${l2.latitude},${l2.longitude}&key=$_apiKey";
-    http.Response response = await http.get(url);
-    Map values = jsonDecode(response.body);
-    print("====================>>>>>>>>$values");
-
-    return values["routes"][0]["overview_polyline"]["points"];
-  }
-
-  // 장소 정보 받아옴.
-  static Future<LatLng> searchPlace(String str) async {
-    String url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=$_apiKey&inputtype=textquery&input=$str";
-    url = Uri.encodeFull(url);
-    http.Response response = await http.get(url);
-      Map values = jsonDecode(response.body);
-    
-    url = "https://maps.googleapis.com/maps/api/place/details/json?key=$_apiKey&place_id=${values['candidates'][0]['place_id']}&language=ko";
-    url = Uri.encodeFull(url);
-    response = await http.get(url);
-    values = jsonDecode(response.body);
-    values = values["result"]["geometry"]["location"];
-    LatLng result = LatLng(values["lat"], values["lng"]);
-  
-    return result;
-  }
-
   static Set<Polyline> drawPolyline(way.Route routeData, Color color){
     Set<Polyline> _polylinemarker = Set<Polyline>();
           _polylinemarker.add(
