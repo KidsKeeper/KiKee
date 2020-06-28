@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:safewaydirection/route.dart';
 class TmapServices{
-  static const String projectKey = "**************";
+  static const String projectKey = "l7xx4e2c5a4554b145d28a4b11ec631adfe5";
 
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
@@ -51,6 +51,14 @@ class TmapServices{
     try{
       Map<String,dynamic> values = jsonDecode(response.body);
       Route result = Route.map(values);
+      if(passList!=null)
+        for(int points =0; points<result.locations.length; points++){
+          var lat = passList[0].latitude-result.locations[points].location.latitude;
+          var lng = passList[0].longitude-result.locations[points].location.longitude;
+          if(lat.abs()<0.00005&&lng.abs()<0.00005){
+            result.locations.removeAt(points);
+          }
+        }
       return result;
     }
     catch(e){
@@ -72,7 +80,7 @@ class TmapServices{
 
       for(var iter in values['resultData']['linkPoints'])
         result.add(LatLng(iter['location']['latitude'],iter['location']['longitude']));
-        return result;
+      return result;
     }
     catch(e){
       return null;
