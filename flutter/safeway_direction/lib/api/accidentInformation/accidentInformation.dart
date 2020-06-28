@@ -20,6 +20,7 @@ class AccidentArea{
 
   Future<List<AccidentArea>> getAccidentInformation(LatLng l1, LatLng l2) async{
     http.Response response = await http.get("http://3.34.194.177:8088/$_servicekey/api/frequently?minx=${l1.latitude}&miny=${l1.longitude}&maxx=${l2.latitude}&maxy${l2.longitude}");
+//    http.get("http://3.34.194.177:8088/secret/api/frequently");
     Map responseJson = jsonDecode(response.body);
     
     List<AccidentArea> result = [];
