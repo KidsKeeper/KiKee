@@ -14,7 +14,7 @@ exports.index = function (req, res) {
             deathModel.find({ 'acc_year': year }, (err, data) => {
                 if(err) return res.status(500).json({ error: 'db error' });
                 if( Object.keys(data).length === 0 ) return res.status(404).json({ error: 'no data'});
-                res.json(data);
+                res.json({ data });
             });
         }
 
@@ -22,14 +22,14 @@ exports.index = function (req, res) {
             frequentlyModel.find({ la_crd:{$gt: minx, $lt: maxx}, lo_crd:{$gt: miny, $lt: maxy} }, (err, data) => {
                 if(err) return res.status(500).json({ error: 'db error' });
                 if( Object.keys(data).length === 0 ) return res.status(404).json({ error: 'no data'});
-                res.json(data);
+                res.json({ data });
             });
         }
 
         else {
             deathModel.find((err, data) => {
                 if(err) return res.status(500).json({ error: 'db error' });
-                res.json(data)
+                res.json({ data })
             });
         }
     }
