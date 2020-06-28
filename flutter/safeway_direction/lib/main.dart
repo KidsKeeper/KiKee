@@ -8,6 +8,9 @@ import 'package:safewaydirection/api/storeInformation/store.dart' as store;
 import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
+import 'package:safewaydirection/api/accidentInformation/accidentInformation.dart' as accident;
+
+import 'package:safewaydirection/detour.dart';
 
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
@@ -18,6 +21,9 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  
+  
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,6 +41,8 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+  
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -43,12 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
   bool extended = false;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markerTest = Set<Marker>();
-  List<LatLng> polylineTest = [];
   Set<Polyline> _polylinemarker = Set<Polyline>();
-  
+  Detour tour;
+  BitmapDescriptor crosswalk;
 
   static CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(35.2469699,129.087531),
+    target: LatLng(35.2464852,129.090551),
     zoom: 14.4746,
   );
   void _incrementCounter() {
@@ -58,64 +66,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void test2() async{
     print('start');
-    LatLng l1 = LatLng(35.222752,129.090583); //await GoogleMapsServices.searchPlace("부산대학교");
-    LatLng l2 = LatLng(35.222792,129.095795); //LatLng(35.2278421,129.095157);
+
+    LatLng l1 = LatLng(35.2464852,129.090551);
+    LatLng l2 = LatLng(35.2487721, 129.091708);
+
+    
+    
     _kGooglePlex = CameraPosition(
       target: l1,
       zoom: 14.4746,
       );
+     tour = Detour.map(l1, l2);
+    await tour.drawAllPolyline();
+    _polylinemarker = tour.polylines;
     
-    // LatLng l1 = LatLng(35.2464852,129.090551);
-    // LatLng l2 = LatLng(35.2487721, 129.091708);
-    way.Route result = await TmapServices.getRoute(l1, l2, [LatLng(35.22261379225877, 129.09358418173105)]);
-
-    // await accidentAreas.add(LatLng(35.222799633098,129.092828816098));
-
-    Set<way.BadPoint> accidentAreas = {};
-    await way.BadPoint.updateBadPointbyStore(accidentAreas, await store.findNearStoresInRectangle(l1, l2,));
-
-    await result.updateDanger(accidentAreas);
-    markerTest.add(Marker(
-            markerId: MarkerId('test'+markerTest.length.toString()),
-            position: l1,
-          ));
-    markerTest.add(Marker(
-            markerId: MarkerId('test'+markerTest.length.toString()),
-            position: l2,
-          ));
-  // only test
-    // for(LatLng iter in accidentAreas.toLatLngList())
-    //   markerTest.add(Marker(
-    //           markerId: MarkerId('test'+markerTest.length.toString()),
-    //           position: iter,
-    //         ));
-    for(var iter in result.locations)
+    for(var iter in tour.routes){
+      for(var iter2 in iter.crossWalks)
       markerTest.add(Marker(
               markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter.location,
+              position: iter2,
+              icon : crosswalk
             ));
-    for(var iter in result.crossWalks)
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter,
-              icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-            ));
-      
-  // only test
-
-    // for(way.BadPoint iter in accidentAreas){
-    //    markerTest.add(Marker(
-    //           markerId: MarkerId('test'+markerTest.length.toString()),
-    //           position: iter.toLatLng(),
-    //           icon: iter.danger >=2 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue) : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
-    //         ));
-    // }
-  // _polylinemarker = GoogleMapsServices.drawPolylineforTest(result);
-  _polylinemarker = GoogleMapsServices.drawPolyline(result, Colors.black);
+    }
   setState(() {
     
   });
   }
+
+  @override
+  void initState() {
+    super.initState();
+      BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(0.2, 0.2)), 'lib/asset/crosswalk.png')
+          .then((onValue) {
+        crosswalk = onValue;
+      });
+ }
 
   @override
   Widget build(BuildContext context) {
