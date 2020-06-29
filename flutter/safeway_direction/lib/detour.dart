@@ -1,7 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/tMap.dart';
 import 'package:flutter/material.dart';
-import 'package:safewaydirection/api/storeInformation/store.dart';
+import 'package:safewaydirection/api/store.dart';
 import 'package:safewaydirection/route.dart' as way;
 
 class Detour{

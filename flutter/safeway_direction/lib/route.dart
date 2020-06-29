@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
 
-import 'api/storeInformation/store.dart';
+import 'api/store.dart';
 
 class Route{
   int _distance;  // 거리 m
@@ -153,7 +153,7 @@ class BadPoint{
   
   static Future<void> updateBadPointbyStore(Set<BadPoint> result, List<Store> dangerList) async{
     for(Store danger in dangerList){
-      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.storeLocation.location);
+      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in latlngList){
         String roadName = await TmapServices.reverseGeocoding(iter);
         Pair<double,double> pairLatLng = Pair.geometryFloor(iter);

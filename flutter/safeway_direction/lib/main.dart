@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/api/storeInformation/store.dart' as store;
+import 'package:safewaydirection/api/store.dart' as store;
 
 import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/googleMap.dart';
 import 'package:safewaydirection/tMap.dart';
-import 'package:safewaydirection/api/accidentInformation/accidentInformation.dart' as accident;
+import 'package:safewaydirection/api/accidentInformation.dart' as accident;
 
 import 'package:safewaydirection/detour.dart';
 
@@ -67,27 +67,28 @@ class _MyHomePageState extends State<MyHomePage> {
   void test2() async{
     print('start');
 
-    LatLng l1 = LatLng(35.2464852,129.090551);
-    LatLng l2 = LatLng(35.2487721, 129.091708);
+    LatLng l1 = LatLng(35.222752,129.090583);
+    LatLng l2 = LatLng(35.222792,129.095795);
 
+    await store.findNearStoresInRectangle(l1, l2);
     
     
-    _kGooglePlex = CameraPosition(
-      target: l1,
-      zoom: 14.4746,
-      );
-     tour = Detour.map(l1, l2);
-    await tour.drawAllPolyline();
-    _polylinemarker = tour.polylines;
+    // _kGooglePlex = CameraPosition(
+    //   target: l1,
+    //   zoom: 14.4746,
+    //   );
+    //  tour = Detour.map(l1, l2);
+    // await tour.drawAllPolyline();
+    // _polylinemarker = tour.polylines;
     
-    for(var iter in tour.routes){
-      for(var iter2 in iter.crossWalks)
-      markerTest.add(Marker(
-              markerId: MarkerId('test'+markerTest.length.toString()),
-              position: iter2,
-              icon : crosswalk
-            ));
-    }
+    // for(var iter in tour.routes){
+    //   for(var iter2 in iter.crossWalks)
+    //   markerTest.add(Marker(
+    //           markerId: MarkerId('test'+markerTest.length.toString()),
+    //           position: iter2,
+    //           icon : crosswalk
+    //         ));
+    // }
   setState(() {
     
   });
