@@ -14,6 +14,21 @@ class Store{
 
   LatLng location; // LatLng(36.354149, 127.380605);
 
+  @override
+  int get hashCode => bizesNm.hashCode ^ indsSclsNm.hashCode ^ lnoAdr.hashCode ^ rdnm.hashCode ^ rdnmAdr.hashCode ^ location.hashCode;
+
+  @override
+  bool operator ==(dynamic other){
+    if(other is! Store)
+      return false;
+
+    return (bizesNm == other.bizesNm)
+          && (indsSclsNm == other.indsSclsNm)
+          && (lnoAdr == other.lnoAdr)
+          && (rdnm == other.rdnm)
+          && (rdnmAdr == other.rdnmAdr)
+          && (location == other.location);
+  }
   Store();
   Store.fromJson(Map<String,dynamic> data){
     bizesNm = data['bizesNm'];
@@ -22,19 +37,18 @@ class Store{
     rdnm = data['rdnm'];
     rdnm = rdnm.substring(rdnm.lastIndexOf(' ')+1 ,rdnm.length);
     rdnmAdr = data['rdnmAdr'];
-    location = LatLng(double.parse(data['lat']),double.parse(data['lon']));
+    location = LatLng(data['lat'],data['lon']);
   }
 }
 
 Future<List<Store>> findNearStoresInRectangle(LatLng l1, LatLng l2) async{
   List<Store> result = List<Store>();
 
-  http.Response response = await http.get('http://3.34.194.177:8088/$_servicekey/api/store?minx=${l1.latitude}&miny=${l1.longitude}&maxx=${l2.latitude}&maxy${l2.longitude}');
+  http.Response response = await http.get('http://3.34.194.177:8088/$_servicekey/api/store?minx=${l1.latitude}&miny=${l1.longitude}&maxx=${l2.latitude}&maxy=${l2.longitude}');
   Map<String,dynamic> data = jsonDecode(response.body);
 
-  for(Map<String,String> iter in data["data"])
+  for(Map<String,dynamic> iter in data["data"])
     result.add(Store.fromJson(iter));
-    
   return result;
 }
 
