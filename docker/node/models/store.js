@@ -7,8 +7,8 @@ let storeSchema = new Schema({
     lnoAdr: String, // 지번주소
     rdnm: String, // 도로명
     rdnmAdr: String, // 도로명주소
-    lon: String, // 경도
-    lat: String // 위도
+    lon: Number, // 경도
+    lat: Number // 위도
 }, { collection: 'store' });
 
 module.exports = mongoose.model( 'store', storeSchema );

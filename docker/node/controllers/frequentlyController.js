@@ -28,7 +28,7 @@ exports.index = function (req, res) {
         }
 
         else {
-            if( req.query.minx && req.query.miny && req.query.maxx && req.query.maxy ) {
+            if( minx && miny && maxx && maxy ) {
                 frequentlyModel.find({ la_crd:{$gt: minx, $lt: maxx}, lo_crd:{$gt: miny, $lt: maxy} }, (err, data) => {
                     if(err) return res.status(500).json({ error: 'db error' });
                     if( Object.keys(data).length === 0 ) return res.status(404).json({ error: 'no data'});

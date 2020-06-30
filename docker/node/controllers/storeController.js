@@ -8,7 +8,7 @@ exports.index = function (req, res) {
         const maxx = req.query.maxx;
         const maxy = req.query.maxy;
 
-        if( req.query.minx && req.query.miny && req.query.maxx && req.query.maxy ) {
+        if( minx && miny && maxx && maxy ) {
             storeModel.find({ lat:{$gt: minx, $lt: maxx}, lon:{$gt: miny, $lt: maxy} }, (err, data) => {
                 if(err) return res.status(500).json({ error: 'db error' });
                 if( Object.keys(data).length === 0 ) return res.status(404).json({ error: 'no data'});
