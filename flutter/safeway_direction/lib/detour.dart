@@ -21,7 +21,7 @@ class Detour{
   Detour.map(this.source, this.destination);
 
 
-  void getRouteOrDetour() async{ //이 함수가 호출되면, polylinePoints 리스트의 값이 채워짐.
+  Future<void> getRouteOrDetour() async{ //이 함수가 호출되면, polylinePoints 리스트의 값이 채워짐.
     route = await TmapServices.getRoute(source, destination);  // get route infomation
 
     Set<way.BadPoint> accidentAreas = {};
@@ -82,7 +82,7 @@ class Detour{
     }
   }
 
-  void drawAllPolyline() async{
+  Future<void> drawAllPolyline() async{
     await getRouteOrDetour();
     for(int i=0; i<polylinePoints.length; i++){
       polylines.add(Polyline(
