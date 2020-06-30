@@ -4,6 +4,7 @@ import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
 
 import 'api/store.dart';
+import 'api/accidentInformation.dart';
 
 class Route{
   int _distance;  // 거리 m
@@ -156,12 +157,30 @@ class BadPoint{
       List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in latlngList){
         String roadName = await TmapServices.reverseGeocoding(iter);
+        //only test
+          if(danger.rdnm != roadName)
+            print("roadName different : " + danger.rdnm + " != " + roadName);
+        //
         Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
           (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
           orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
       }
     } 
+  }
+
+  static Future<void> updateBadPointbyAccident(Set<BadPoint> result, List<AccidentArea> dangerList) async{
+    for(AccidentArea danger in dangerList){
+      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
+      for(LatLng iter in  latlngList){
+        String roadName = await TmapServices.reverseGeocoding(iter);
+        Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
+        result.firstWhere(
+          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger += danger.occrrncCnt;
+      }
+    }
+
   }
 
   static Set<String> roadNameToSet(Set<BadPoint> data){
