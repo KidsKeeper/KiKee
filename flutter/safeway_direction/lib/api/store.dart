@@ -47,6 +47,8 @@ Future<List<Store>> findNearStoresInRectangle(LatLng l1, LatLng l2) async{
   http.Response response = await http.get('http://3.34.194.177:8088/$_servicekey/api/store?minx=${l1.latitude}&miny=${l1.longitude}&maxx=${l2.latitude}&maxy=${l2.longitude}');
   Map<String,dynamic> data = jsonDecode(response.body);
 
+  if(data["error"] == "no data")
+    return result;
   for(Map<String,dynamic> iter in data["data"])
     result.add(Store.fromJson(iter));
   return result;
