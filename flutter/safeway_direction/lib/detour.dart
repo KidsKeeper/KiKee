@@ -2,6 +2,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/tMap.dart';
 import 'package:flutter/material.dart';
 import 'package:safewaydirection/api/store.dart';
+import 'package:safewaydirection/api/accidentInformation.dart';
 import 'package:safewaydirection/route.dart' as way;
 
 class Detour{
@@ -26,6 +27,7 @@ class Detour{
 
     Set<way.BadPoint> accidentAreas = {};
     await way.BadPoint.updateBadPointbyStore(accidentAreas, await findNearStoresInRectangle(source, destination));
+    await way.BadPoint.updateBadPointbyAccident(accidentAreas, await getAccidentInformation(source, destination));
     await route.updateDanger(accidentAreas);
 
     List<List<double>> fourWay = [[0.001,0],[-0.001,0],[0,0.001],[0,-0.001]]; //위 아래 오른쪽 왼쪽 100m
