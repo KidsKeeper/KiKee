@@ -38,3 +38,5 @@ class Pair<E, F> {
     return Pair<double,double>(double.parse(str1), double.parse(str2));
   }
 }
+
+

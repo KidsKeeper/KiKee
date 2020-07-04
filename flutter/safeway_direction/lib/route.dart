@@ -3,7 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
 
-import 'api/storeInformation/store.dart';
+import 'api/store.dart';
+import 'api/accidentInformation.dart';
 
 class Route{
   int _distance;  // 거리 m
@@ -32,8 +33,8 @@ class Route{
   }
 
   @override
-  bool operator ==(dynamic other) =>
-      other is !Route ? false : listEquals(this.locations, other.locations);
+  bool operator ==(dynamic other) => 
+    other is !Route ? false : listEquals(this.locations, other.locations);
 
   Route();
 
@@ -46,16 +47,11 @@ class Route{
 
     String str ="";
     // 각 경로 입력
-    locations.add(
-        _Point(
-            LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]),
-            0, "",""));
+    locations.add(_Point(LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]), 0, "",""));
     for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString')
         for(int i = 1; i< iter['geometry']['coordinates'].length ; i++){
-          locations.add(
-              _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]),
-                  0, iter['properties']['name'], str));
+          locations.add(_Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str));
           str ="";
         }
 
@@ -68,11 +64,11 @@ class Route{
     for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString' && iter['properties']['facilityType'] == '15'){
         int i = iter['geometry']['coordinates'].length;
-        if( i % 2 == 0)
-          crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
-              (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));
-        else
-          crossWalks.add(LatLng(iter['geometry']['coordinates'][(i/2).round()-1][1],iter['geometry']['coordinates'][(i/2).round()-1][0]));
+          if( i % 2 == 0)
+            crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
+                  (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));
+          else
+            crossWalks.add(LatLng(iter['geometry']['coordinates'][(i/2).round()-1][1],iter['geometry']['coordinates'][(i/2).round()-1][0]));
       }
     }
 
@@ -121,11 +117,11 @@ class _Point{
   _Point(this.location, this.danger, this.roadName, this.description);
 
   @override
-  int get hashCode => location.hashCode; // ^ roadName.hashCode
+  int get hashCode => location.hashCode;
 
   @override
   bool operator ==(dynamic other) =>
-      other is !_Point ? false : (location == other.location); //&& (roadName == other.roadName)
+    other is !_Point ? false : (location == other.location);
 
 }
 class BadPoint{
@@ -153,15 +149,33 @@ class BadPoint{
 
   static Future<void> updateBadPointbyStore(Set<BadPoint> result, List<Store> dangerList) async{
     for(Store danger in dangerList){
-      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.storeLocation.location);
+      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in latlngList){
+        String roadName = await TmapServices.reverseGeocoding(iter);
+        //only test
+          if(danger.rdnm != roadName)
+            print("roadName different : " + danger.rdnm + " != " + roadName);
+        //
+        Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
+        result.firstWhere(
+          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
+      }
+    } 
+  }
+
+  static Future<void> updateBadPointbyAccident(Set<BadPoint> result, List<AccidentArea> dangerList) async{
+    for(AccidentArea danger in dangerList){
+      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
+      for(LatLng iter in  latlngList){
         String roadName = await TmapServices.reverseGeocoding(iter);
         Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
-                (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
-            orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
+          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger += danger.occrrncCnt;
       }
     }
+
   }
 
   static Set<String> roadNameToSet(Set<BadPoint> data){
@@ -178,3 +192,4 @@ class BadPoint{
     return result;
   }
 }
+

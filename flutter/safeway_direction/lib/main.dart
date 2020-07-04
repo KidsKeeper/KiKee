@@ -1,10 +1,7 @@
-/* When you git pull this code, you should fill out keyblanks at googleMap.dart, tMap.dart, and store.dart */
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/api/storeInformation/store.dart';
-import 'package:safewaydirection/tMap.dart';
-import 'package:safewaydirection/route.dart' as way;
 import 'package:safewaydirection/detour.dart';
 var height = AppBar().preferredSize.height * 1.1;
 var width =  AppBar().preferredSize.width;
@@ -39,18 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = {};
   LatLng source = LatLng(35.2464852,129.090551);
-  LatLng destination = LatLng(35.2487721, 129.091708);
-  Detour detour;//initialize error. only static value can be passed.
+  LatLng destination = LatLng(35.2487721, 129.091708); //사고있음
+  //LatLng destination = LatLng(35.246763,129.089130); //사고없
+  Detour detour;
   Set<Polyline> polylines = {};
-  //List<List<LatLng>> polylinePoints = [];
-  //way.Route route = way.Route();
-  //Set<way.Route> routes ={};
-  //List<LatLng> passPoints = [];
 
   @override
   Widget build(BuildContext context) {
-    detour = Detour.map(source,destination);
-    test();
 
     return Scaffold(
       appBar: PreferredSize(
@@ -65,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius : BorderRadius.all(Radius.circular(90))
                 ),
                 child : FlatButton(
-                  ////////onPressed:  () async =>  {await getPossibleRoute()},
+                 onPressed:  test,
                 ),
               ),
             )
@@ -99,11 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
   } //레이아웃 파트. 내가 건들일 게 없음.
 
   void test() async{
+    print("==========================Function TEST in MAIN.dart is CALLED!===================");
+    detour = Detour.map(source,destination);
     await detour.drawAllPolyline();
     polylines = detour.polylines;
     setState(() {
 
     });
   }
-
 }
