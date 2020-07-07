@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-
+import 'keys.dart';
 
 import 'package:safewaydirection/route.dart';
 class TmapServices{
-  static const String projectKey = "l7xxc6b616e8a450499fad098454b326bda9";
-
+  static const String projectKey = Keys.tMap;
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
     origin = origindata != null ? _getPointMeetLine(origindata, origin) : origin;

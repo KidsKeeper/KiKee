@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:safewaydirection/keys.dart';
 
-const _servicekey = "secret";
+const _servicekey = Keys.database;
 
 class Store{
   String bizesNm; //'땡땡땡다방'; // 상호명
