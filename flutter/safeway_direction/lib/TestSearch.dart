@@ -247,6 +247,7 @@ class _TestSearchState extends State<TestSearch> {
                     final location2 = response2.data["result"]["geometry"]["location"];
                     end.longitude = location2['lng'];
                     end.latitude = location2['lat'];
+                    args.clear();
                     args.add(start);
                     args.add(end);
                     Navigator.push(context,  MaterialPageRoute(builder: (context) => DirectionPage(),settings: RouteSettings(arguments: args)),);
