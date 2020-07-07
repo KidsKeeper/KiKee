@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:path/path.dart';
 import 'package:safewaydirection/PlaceInfo.dart';
 import 'dart:async';
-import 'package:safewaydirection/LocalDB.dart';
+import 'DirectionPage.dart';
+import 'LocalDB.dart';
 
 class TestSearch extends StatefulWidget {
   @override
@@ -17,7 +19,11 @@ class _TestSearchState extends State<TestSearch> {
   Timer _throttle;
   DataBase db = new DataBase();
   bool firstTime = true;
-  final String PLACES_API_KEY ="placeApiKey";
+  List<Place> args = List<Place>();
+  Place start;
+  Place end;
+
+  final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
   List<Place> _placesList;
   List<Place> _suggestedList = [];
   String title1 = "최근 검색";
@@ -80,10 +86,14 @@ class _TestSearchState extends State<TestSearch> {
     for (var i = 0; i < predictions.length; i++) {
       String description = predictions[i]['description'];
       String placeId = predictions[i]['place_id'];
-      String main_text = predictions[i]['structured_formatting']['main_text'];
-      String secondary_text = predictions[i]['structured_formatting']['secondary_text'];
-      double longitude = predictions[i]['longitude'];
-      double latitude = predictions[i]['latitude'];
+      //String main_text = predictions[i]['structured_formatting']['main_text'];
+      //String secondary_text = predictions[i]['structured_formatting']['secondary_text'];
+      String url = "https://maps.googleapis.com/maps/api/place/details/json?key=$PLACES_API_KEY&place_id=$placeId&language=ko";
+      Response response = await Dio().get(url);
+      final location = response.data["result"]["geometry"]["location"];
+      double longitude = location['lng'];
+      double latitude = location['lat'];
+
       _displayResults.add(Place(
           placeId: placeId,
           description: description,
@@ -167,6 +177,25 @@ class _TestSearchState extends State<TestSearch> {
                   },
                   icon: Icon(Icons.close),
                 ),
+                IconButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back),
+                ),
+                /*
+                IconButton(
+                  onPressed: (){
+                    Place start;
+                    Place end;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>DirectionPage(start,end)),
+                    );
+                  },
+                  icon: Icon(Icons.check_circle),
+                ),
+                 */
               ],
             ),
             Padding(
@@ -199,6 +228,23 @@ class _TestSearchState extends State<TestSearch> {
                     icon: Icon(Icons.edit),
                     label: Text('수정'),
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Row(
+                children: <Widget>[
+                  IconButton(icon: Icon(Icons.arrow_back),onPressed: ()
+                  {
+                    Navigator.pop(context);
+                  },),
+                  IconButton(icon: Icon(Icons.navigation),onPressed: ()
+                  {
+                    args.add(start);
+                    args.add(end);
+                    Navigator.push(context,  MaterialPageRoute(builder: (context) => DirectionPage(),settings: RouteSettings(arguments: args)),);
+                  },),
                 ],
               ),
             ),
@@ -280,6 +326,7 @@ class _TestSearchState extends State<TestSearch> {
                   db.insertRecentSearch(_placesList[index].description,
                       _placesList[index].placeId,
                       10.0, 10.0);
+                  start = _placesList[index];
                   _suggestedList = await db.GetRecentSearch();
                   setState(() {});
                 }
@@ -288,6 +335,7 @@ class _TestSearchState extends State<TestSearch> {
                   db.insertRecentSearch(_placesList[index].description,
                       _placesList[index].placeId,
                       10.0, 10.0);
+                  end = _placesList[index];
                   _suggestedList = await db.GetRecentSearch();
                   setState(() {});
                 }
