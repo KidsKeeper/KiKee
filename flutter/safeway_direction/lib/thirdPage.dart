@@ -10,12 +10,12 @@ BorderRadiusGeometry radius = BorderRadius.only(
   topRight: Radius.circular(24.0),
 );
 
-class DirectionPage extends StatefulWidget {
+class thirdPage extends StatefulWidget {
   @override
-  State<DirectionPage> createState() => DirectionPageState();
+  State<thirdPage> createState() => thirdPageState();
 }
 
-class DirectionPageState extends State<DirectionPage> {
+class thirdPageState extends State<thirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
 //    target: LatLng(-20.3000, -40.2990),
   List<Marker> markers = [];

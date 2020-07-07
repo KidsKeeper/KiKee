@@ -3,15 +3,15 @@ import 'package:dio/dio.dart';
 import 'package:path/path.dart';
 import 'package:safewaydirection/PlaceInfo.dart';
 import 'dart:async';
-import 'DirectionPage.dart';
+import 'thirdPage.dart';
 import 'LocalDB.dart';
 
-class TestSearch extends StatefulWidget {
+class secondPage extends StatefulWidget {
   @override
-  _TestSearchState createState() => _TestSearchState();
+  _secondPageState createState() => _secondPageState();
 }
 
-class _TestSearchState extends State<TestSearch> {
+class _secondPageState extends State<secondPage> {
   TextEditingController _searchController = new TextEditingController();
   TextEditingController _searchController2 = new TextEditingController();
   FocusNode fn = new FocusNode();
@@ -114,7 +114,7 @@ class _TestSearchState extends State<TestSearch> {
                 focusNode: fn,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.search),
-                    prefix: Text('내위치:'),
+                    prefix: Text('출발지:'),
                     filled: true,
                     fillColor: Colors.white,
                     border: new OutlineInputBorder(
@@ -248,9 +248,10 @@ class _TestSearchState extends State<TestSearch> {
                     end.longitude = location2['lng'];
                     end.latitude = location2['lat'];
 
+                    args.clear();
                     args.add(start);
                     args.add(end);
-                    Navigator.push(context,  MaterialPageRoute(builder: (context) => DirectionPage(),settings: RouteSettings(arguments: args)),);
+                    Navigator.push(context,  MaterialPageRoute(builder: (context) => thirdPage(),settings: RouteSettings(arguments: args)),);
                   },),
                 ],
               ),
