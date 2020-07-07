@@ -16,7 +16,7 @@ class DataBase {
       // 데이터베이스가 처음 생성될 때, dog를 저장하기 위한 테이블을 생성합니다.
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE RecentSearch(placeId TEXT PRIMARY KEY, description TEXT, longitude DOUBLE,latitude DOUBLE)",
+          "CREATE TABLE RecentSearch(placeId TEXT PRIMARY KEY, description TEXT, longitude DOUBLE,latitude DOUBLE,mainText TEXT)",
         );
       },
       // 버전을 설정하세요. onCreate 함수에서 수행되며 데이터베이스 업그레이드와 다운그레이드를
@@ -25,7 +25,7 @@ class DataBase {
     );
   }
 
-  Future<void> insertRecentSearch(String des,String id,double Lat,double lon) async {
+  Future<void> insertRecentSearch(String des,String id,double Lat,double lon,String mainText) async {
     // 데이터베이스 reference를 얻습니다.
     final Database db = await database;
     //String Description = place.description;
@@ -36,7 +36,7 @@ class DataBase {
     // Dog를 올바른 테이블에 추가하세요. 또한
     // `conflictAlgorithm`을 명시할 것입니다. 본 예제에서는
     // 만약 동일한 dog가 여러번 추가되면, 이전 데이터를 덮어쓸 것입니다.
-    Place place = Place(description: des,latitude: Lat,longitude: lon,placeId: id);
+    Place place = Place(description: des,latitude: Lat,longitude: lon,placeId: id,mainText: mainText);
     await db.insert(
       'RecentSearch',
       place.toMap(),
@@ -45,12 +45,13 @@ class DataBase {
   }
 
   Map<String, dynamic> toMap(
-      String Description, String placeId, double lat, double lon) {
+      String Description, String placeId, double lat, double lon,String mainText) {
     return {
       'placeId': placeId,
       'description': Description,
       'longitude': lon,
       'latitude': lat,
+      'mainText' : mainText,
     };
   }
 
@@ -67,7 +68,9 @@ class DataBase {
           placeId: maps[i]['placeId'],
           description: maps[i]['description'],
           longitude: maps[i]['longitude'],
-          latitude: maps[i]['latitude']);
+          latitude: maps[i]['latitude'],
+          mainText: maps[i]['mainText']
+      );
     });
   }
 

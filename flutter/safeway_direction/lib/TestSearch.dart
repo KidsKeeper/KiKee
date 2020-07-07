@@ -247,7 +247,6 @@ class _TestSearchState extends State<TestSearch> {
                     final location2 = response2.data["result"]["geometry"]["location"];
                     end.longitude = location2['lng'];
                     end.latitude = location2['lat'];
-
                     args.add(start);
                     args.add(end);
                     Navigator.push(context,  MaterialPageRoute(builder: (context) => DirectionPage(),settings: RouteSettings(arguments: args)),);
@@ -332,7 +331,7 @@ class _TestSearchState extends State<TestSearch> {
                   _searchController.text = _placesList[index].description;
                   db.insertRecentSearch(_placesList[index].description,
                       _placesList[index].placeId,
-                      10.0, 10.0);
+                      10.0, 10.0,_placesList[index].mainText);
                   start = _placesList[index];
                   _suggestedList = await db.GetRecentSearch();
                   setState(() {});
@@ -341,7 +340,7 @@ class _TestSearchState extends State<TestSearch> {
                   _searchController2.text = _placesList[index].description;
                   db.insertRecentSearch(_placesList[index].description,
                       _placesList[index].placeId,
-                      10.0, 10.0);
+                      10.0, 10.0,_placesList[index].mainText);
                   end = _placesList[index];
                   _suggestedList = await db.GetRecentSearch();
                   setState(() {});

@@ -11,6 +11,7 @@ class Place {
       'description': description,
       'longitude': longitude,
       'latitude': latitude,
+      'mainText' : mainText,
     };
   }
 }
