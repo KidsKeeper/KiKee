@@ -19,7 +19,7 @@ class DirectionPageState extends State<DirectionPage> {
   Completer<GoogleMapController> _mapController = Completer();
 //    target: LatLng(-20.3000, -40.2990),
   List<Marker> markers = [];
-  List<DirectionClass> directionList = [DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')]; // list for direction Card
+  List<DirectionClass> directionList = [DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
   Set<Polyline> polylines;
   final CameraPosition _initialCamera = CameraPosition(
     target: LatLng(37.569758,126.977022),
@@ -34,7 +34,7 @@ class DirectionPageState extends State<DirectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Place> Route = ModalRoute.of(context).settings.arguments; //저번 페이지에서 받아온 인자 리스트
+    List<Place> Route = ModalRoute.of(context).settings.arguments;
     Place start = Route[0];
     Place end = Route[1];
 
@@ -52,20 +52,21 @@ class DirectionPageState extends State<DirectionPage> {
           Container(
             color: Color(0xFFFFE600),
             width: MediaQuery.of(context).size.width,
-            height: 80.0,
+            height: 90.0,
           ),
           Positioned(
-            child: SafeArea(
-              minimum: EdgeInsets.all(20),
+            top:10.0,
+            child: Padding(
+              padding: EdgeInsets.all(20),
               child: Row(
                 children: <Widget>[
                   Container(
                     width: MediaQuery.of(context).size.width - 40,
                     child: InkWell(
                       child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text('${start.description.length>7?start.description.substring(0,7)+'..':start.description} => ${end.description.length>7?end.description.substring(0,7)+'..':end.description}',
-                          style: TextStyle(fontSize: 25,fontFamily: 'BMJUA',color: Colors.orange),),
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(' ${start.mainText} -> ${end.mainText}',
+                          style: TextStyle(fontSize: 20,fontFamily: 'BMJUA',color: Colors.orange),),
                       ),
                       onTap: ()
                       {
@@ -73,7 +74,7 @@ class DirectionPageState extends State<DirectionPage> {
                       },
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18.0),
+                      borderRadius: BorderRadius.circular(50.0),
                       color: Color(0xfffef8be),
                     ),
                   ),
@@ -103,7 +104,6 @@ class DirectionPageState extends State<DirectionPage> {
   }
 }
 
-//Card Widget for Direction
 Widget directionCard(DirectionClass dir)
 {
   return Card(
@@ -131,7 +131,6 @@ Widget directionCard(DirectionClass dir)
   );
 }
 
-//Temporary Direction
 class DirectionClass
 {
   String distance;

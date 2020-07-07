@@ -1,9 +1,10 @@
 class Place {
   final String placeId;
   final String description;
-  final double longitude;
-  final double latitude;
-  Place({this.placeId, this.description, this.longitude, this.latitude});
+  final String mainText;
+  double longitude;
+  double latitude;
+  Place({this.placeId, this.description, this.longitude, this.latitude,this.mainText});
   Map<String, dynamic> toMap() {
     return {
       'placeId': placeId,

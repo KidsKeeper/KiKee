@@ -86,19 +86,12 @@ class _TestSearchState extends State<TestSearch> {
     for (var i = 0; i < predictions.length; i++) {
       String description = predictions[i]['description'];
       String placeId = predictions[i]['place_id'];
-      //String main_text = predictions[i]['structured_formatting']['main_text'];
-      //String secondary_text = predictions[i]['structured_formatting']['secondary_text'];
-      String url = "https://maps.googleapis.com/maps/api/place/details/json?key=$PLACES_API_KEY&place_id=$placeId&language=ko";
-      Response response = await Dio().get(url);
-      final location = response.data["result"]["geometry"]["location"];
-      double longitude = location['lng'];
-      double latitude = location['lat'];
-
+      String main_text = predictions[i]['structured_formatting']['main_text'];
+      print(main_text);
       _displayResults.add(Place(
           placeId: placeId,
           description: description,
-          longitude: longitude,
-          latitude: latitude));
+          mainText: main_text));
     }
 
     setState(() {
@@ -239,8 +232,22 @@ class _TestSearchState extends State<TestSearch> {
                   {
                     Navigator.pop(context);
                   },),
-                  IconButton(icon: Icon(Icons.navigation),onPressed: ()
+                  IconButton(icon: Icon(Icons.navigation),onPressed: () async
                   {
+                    String url = "https://maps.googleapis.com/maps/api/place/details/json?key=$PLACES_API_KEY&place_id=${start.placeId}&language=ko";
+                    Response response = await Dio().get(url);
+
+                    final location = response.data["result"]["geometry"]["location"];
+                    start.longitude = location['lng'];
+                    start.latitude = location['lat'];
+
+                    String url2 = "https://maps.googleapis.com/maps/api/place/details/json?key=$PLACES_API_KEY&place_id=${end.placeId}&language=ko";
+                    Response response2 = await Dio().get(url2);
+
+                    final location2 = response2.data["result"]["geometry"]["location"];
+                    end.longitude = location2['lng'];
+                    end.latitude = location2['lat'];
+
                     args.add(start);
                     args.add(end);
                     Navigator.push(context,  MaterialPageRoute(builder: (context) => DirectionPage(),settings: RouteSettings(arguments: args)),);
