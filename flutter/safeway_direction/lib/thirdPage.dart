@@ -2,9 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'PlaceInfo.dart';
-
-final String apiKEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
-
+import 'detour.dart';
+import 'route.dart' as way;
 BorderRadiusGeometry radius = BorderRadius.only(
   topLeft: Radius.circular(24.0),
   topRight: Radius.circular(24.0),
@@ -17,26 +16,27 @@ class thirdPage extends StatefulWidget {
 
 class thirdPageState extends State<thirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
-//    target: LatLng(-20.3000, -40.2990),
-  List<Marker> markers = [];
-  List<DirectionClass> directionList = [DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
-  Set<Polyline> polylines;
-  final CameraPosition _initialCamera = CameraPosition(
-    target: LatLng(37.569758,126.977022),
-    zoom: 14.0000,
-  );
-  //TmapServices tmapServices = new TmapServices();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
+  Set<Marker> markers = {};
+  Set<Polyline> polylines ={};
+  List<DirectionClass> directionList = [];
+  //[DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
+  Detour detour;
+  Place start,end;
   @override
   Widget build(BuildContext context) {
     List<Place> Route = ModalRoute.of(context).settings.arguments;
-    Place start = Route[0];
-    Place end = Route[1];
+    List<way.Route> routes = [];
+    start = Route[0];
+    end = Route[1];
+    for(int i=0; i<2; i++){
+      markers.add(
+        Marker(
+          markerId:MarkerId(markers.length.toString()),
+          position:LatLng(Route[i].latitude,Route[i].longitude),
+          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        )
+      );
+    }
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -44,9 +44,15 @@ class thirdPageState extends State<thirdPage> {
         children: <Widget>[
           GoogleMap(
             mapType: MapType.normal,
-            initialCameraPosition: _initialCamera,
+            initialCameraPosition: CameraPosition(
+              target: LatLng((Route[0].latitude+Route[1].latitude)/2,(Route[0].longitude+Route[1].longitude)/2),
+              zoom: 15.0,
+            ),
+            markers: markers,
+            polylines: polylines,
             onMapCreated: (GoogleMapController controller) {
               _mapController.complete(controller);
+              setPolylines();
             },
           ),
           Container(
@@ -93,7 +99,7 @@ class thirdPageState extends State<thirdPage> {
               width: MediaQuery.of(context).size.width,
               height: 100,
               child: ListView.builder(
-                itemCount: directionList.length,
+                itemCount: directionList.length, //directionList는 경로 후보
                 itemBuilder: (BuildContext context, int index) =>
                     directionCard(directionList[index]), scrollDirection: Axis.horizontal,
               )
@@ -102,7 +108,25 @@ class thirdPageState extends State<thirdPage> {
       ),
     );
   }
+
+  void setPolylines() async{
+    print("==================Function setPolylines in thirdPage.dart is CALLED!==================");
+    detour = Detour.map(LatLng(start.latitude,start.longitude),LatLng(end.latitude,end.longitude));
+    await detour.drawAllPolyline();
+    polylines = detour.polylines;
+    for(int i=0; i<detour.sortRoute.length&&i<4; i++){
+      directionList.add(
+          DirectionClass(distance: detour.sortRoute[i].distance.toString(),time:detour.sortRoute[i].totalMinute.toString())
+      );
+    }
+    setState(() {
+
+    });
+  }
 }
+
+
+
 
 Widget directionCard(DirectionClass dir)
 {
@@ -119,7 +143,7 @@ Widget directionCard(DirectionClass dir)
             backgroundColor: Colors.lightBlue,
           ),
         ),
-        Text('${dir.distance}km',style: TextStyle(color: Colors.lightBlue,fontSize: 20,fontFamily: 'BMJUA',textBaseline: TextBaseline.alphabetic ),),
+        Text('${dir.distance}m',style: TextStyle(color: Colors.lightBlue,fontSize: 20,fontFamily: 'BMJUA',textBaseline: TextBaseline.alphabetic ),),
         SizedBox(width: 10,),
         Padding(
           padding: const EdgeInsets.all(8.0),

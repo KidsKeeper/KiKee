@@ -5,6 +5,7 @@ import 'package:safewaydirection/PlaceInfo.dart';
 import 'dart:async';
 import 'thirdPage.dart';
 import 'LocalDB.dart';
+import 'keys.dart';
 
 class secondPage extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class _secondPageState extends State<secondPage> {
   Place start;
   Place end;
 
-  final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
+  final String PLACES_API_KEY = Keys.place;
   List<Place> _placesList;
   List<Place> _suggestedList = [];
   String title1 = "최근 검색";
@@ -176,19 +177,6 @@ class _secondPageState extends State<secondPage> {
                   },
                   icon: Icon(Icons.arrow_back),
                 ),
-                /*
-                IconButton(
-                  onPressed: (){
-                    Place start;
-                    Place end;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>DirectionPage(start,end)),
-                    );
-                  },
-                  icon: Icon(Icons.check_circle),
-                ),
-                 */
               ],
             ),
             Padding(
@@ -240,6 +228,7 @@ class _secondPageState extends State<secondPage> {
                     final location = response.data["result"]["geometry"]["location"];
                     start.longitude = location['lng'];
                     start.latitude = location['lat'];
+                    start.mainText = response.data["result"]["name"];
 
                     String url2 = "https://maps.googleapis.com/maps/api/place/details/json?key=$PLACES_API_KEY&place_id=${end.placeId}&language=ko";
                     Response response2 = await Dio().get(url2);
@@ -247,6 +236,7 @@ class _secondPageState extends State<secondPage> {
                     final location2 = response2.data["result"]["geometry"]["location"];
                     end.longitude = location2['lng'];
                     end.latitude = location2['lat'];
+                    end.mainText = response2.data["result"]["name"];
 
                     args.clear();
                     args.add(start);

@@ -1,7 +1,8 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 class Place {
   final String placeId;
   final String description;
-  final String mainText;
+  String mainText;
   double longitude;
   double latitude;
   Place({this.placeId, this.description, this.longitude, this.latitude,this.mainText});
