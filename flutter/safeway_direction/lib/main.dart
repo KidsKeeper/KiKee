@@ -35,8 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
   //List<Color> colors = [Colors.red,Colors.orange,Colors.yellow,Colors.green,Colors.blue,Colors.indigo,Colors.purple, Colors.pink,Colors.amber,Colors.black,Colors.white,Colors.brown];
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = {};
-  LatLng source = LatLng(35.2464852,129.090551);
-  LatLng destination = LatLng(35.2487721, 129.091708); //사고있음
+  LatLng source = LatLng(35.2227719,129.0906112);
+  LatLng destination = LatLng(35.2235147,129.0940481);
   //LatLng destination = LatLng(35.246763,129.089130); //사고없
   Detour detour;
   Set<Polyline> polylines = {};
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mapType: MapType.normal,
                 markers: markers,
                 polylines: polylines,
-                initialCameraPosition: CameraPosition(target:LatLng(35.2464852,129.090551),zoom: 16),
+                initialCameraPosition: CameraPosition(target:LatLng(35.2227719,129.0906112),zoom: 16),
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                 },
@@ -95,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     detour = Detour.map(source,destination);
     await detour.drawAllPolyline();
     polylines = detour.polylines;
+    markers = detour.markers;
     setState(() {
 
     });

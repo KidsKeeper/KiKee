@@ -13,6 +13,7 @@ class Detour{
   way.Route route = way.Route();
   Set<way.Route> routes ={};
   List<LatLng> passPoints = [];
+  Set<Marker> markers = {};
   List<way.Route> sortRoute =[];
   LatLng source;
   LatLng destination;
@@ -52,6 +53,15 @@ class Detour{
       }
       for(int pp = 0; pp<passPoints.length; pp++){ // 뽑아낸 경유 후보들에서 새로운 경로후보들 뽑음
         route = await TmapServices.getRoute(source, destination,[passPoints[pp]]);
+        String position = passPoints[pp].toString();
+        markers.add(
+          Marker(
+            markerId: MarkerId(markers.length.toString()),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            position: passPoints[pp],
+            onTap: ()=> print(position),
+          )
+        );
         print("==========================The Second API getRoute in detour.dart is REQUESTED!===================");
         List<LatLng> checkDuplication=[];
         int start=-1;

@@ -117,11 +117,11 @@ class _Point{
   _Point(this.location, this.danger, this.roadName, this.description);
 
   @override
-  int get hashCode => location.hashCode;
+  int get hashCode => Pair.geometryFloor(location, 4).hashCode;
 
   @override
   bool operator ==(dynamic other) =>
-    other is !_Point ? false : (location == other.location);
+      other is !_Point ? false : (location.latitude - other.location.latitude).abs()<0.001&&(location.longitude - other.location.longitude).abs()<0.001;
 
 }
 class BadPoint{
