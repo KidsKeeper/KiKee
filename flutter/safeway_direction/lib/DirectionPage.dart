@@ -2,8 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'PlaceInfo.dart';
+import 'package:location/location.dart';
 
 final String apiKEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
+
+// the user's initial location and current location
+// as it moves
+LocationData currentLocation;// a reference to the destination location
+LocationData destinationLocation;// wrapper around the location API
+Location location;
+
 
 BorderRadiusGeometry radius = BorderRadius.only(
   topLeft: Radius.circular(24.0),

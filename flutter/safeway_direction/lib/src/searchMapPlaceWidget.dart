@@ -1,6 +1,8 @@
 part of custom_search_map_place;
 
 class SearchMapPlaceWidget extends StatefulWidget {
+  final String lableText;
+
   SearchMapPlaceWidget({
     @required this.apiKey,
     this.placeholder = 'Search',
@@ -17,6 +19,7 @@ class SearchMapPlaceWidget extends StatefulWidget {
     this.placeType,
     this.darkMode = false,
     this.key,
+    this.lableText
   })  : assert((location == null && radius == null) || (location != null && radius != null)),
         super(key: key);
 
@@ -192,7 +195,8 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
               focusNode: _fn,
               style: TextStyle(
                 fontSize: MediaQuery.of(context).size.width * 0.04,
-                color: widget.darkMode ? Colors.grey[100] : Colors.grey[850],
+                  fontFamily: 'BMJUA',
+                color: Color(0xFFF0AD74),
               ),
             ),
           ),
@@ -227,7 +231,8 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
           place.length < 45 ? "$place" : "${place.replaceRange(45, place.length, "")} ...",
           style: TextStyle(
             fontSize: MediaQuery.of(context).size.width * 0.04,
-            color: widget.darkMode ? Colors.grey[100] : Colors.grey[850],
+              fontFamily: 'BMJUA',
+            color: Color(0xFFF0AD74),
           ),
           maxLines: 1,
         ),
@@ -244,19 +249,30 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
   */
   InputDecoration _inputStyle() {
     return InputDecoration(
+      prefixText: this.widget.lableText,
+      prefixStyle: TextStyle(color: Color(0xfff7d5af),fontFamily: 'BMJUA',),
       hintText: this.widget.placeholder,
       border: InputBorder.none,
       contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       hintStyle: TextStyle(
-        color: widget.darkMode ? Colors.grey[100] : Colors.grey[850],
+        color:  Color(0xfff7d5af),
+        fontFamily: 'BMJUA',
       ),
     );
   }
 
   BoxDecoration _containerDecoration() {
     return BoxDecoration(
-      color: widget.darkMode ? Colors.grey[800] : Colors.white,
-      borderRadius: BorderRadius.all(Radius.circular(6.0)),
+      color: Colors.white,
+      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+      boxShadow: [
+        BoxShadow(
+          color: Color(0xffe5d877),
+          spreadRadius: 1,
+          blurRadius: 7,
+          offset: Offset(0, 3), // changes position of shadow
+        ),
+      ],
     );
   }
 
