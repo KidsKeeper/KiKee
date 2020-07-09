@@ -6,7 +6,7 @@ import 'package:safewaydirection/api/accidentInformation.dart';
 import 'package:safewaydirection/route.dart' as way;
 
 class Detour{
-  List<Color> colors = [Colors.blue,Colors.yellow,Colors.orange,Colors.red];
+  List<Color> colors = [];
 //  LatLng source = LatLng(35.2464852,129.090551),LatLng destination = LatLng(35.2487721, 129.091708);
   Set<Polyline> polylines = {};
   List<List<LatLng>> polylinePoints = [];
@@ -95,6 +95,14 @@ class Detour{
     int cnt =0;
     for(way.Route iter in sortRoute) {
       cnt ++;
+      if(iter.totalDanger == 0)
+        colors.add(Colors.blue);
+      else if(iter.totalDanger <= 5)
+        colors.add(Colors.yellow);
+      else if(iter.totalDanger <= 10)
+        colors.add(Colors.orange);
+      else
+        colors.add(Colors.red);
       polylinePoints.add(iter.toLatLngList());
       if(cnt ==4)
         break;
