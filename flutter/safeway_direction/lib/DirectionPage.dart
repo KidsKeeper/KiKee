@@ -42,9 +42,9 @@ class DirectionPageState extends State<DirectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<DbPlace> Route = ModalRoute.of(context).settings.arguments;
-    DbPlace start = Route[0];
-    DbPlace end = Route[1];
+    List<PlaceInfo> Route = ModalRoute.of(context).settings.arguments;
+    PlaceInfo start = Route[0];
+    PlaceInfo end = Route[1];
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,

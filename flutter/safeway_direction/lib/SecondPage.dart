@@ -3,6 +3,9 @@ import 'DirectionPage.dart';
 import 'search_map_place.dart';
 import 'package:bubble/bubble.dart';
 import 'PlaceInfo.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'LocalDB.dart';
+
 
 class NewSearchPage extends StatefulWidget {
   @override
@@ -11,17 +14,19 @@ class NewSearchPage extends StatefulWidget {
 
 class _NewSearchPageState extends State<NewSearchPage> {
   bool first = true;
-  DbPlace start; //시작위치
-  DbPlace end; //도착위치
-  TextEditingController controller = new TextEditingController(); //SearchBox controller
+  PlaceInfo start; //시작위치
+  PlaceInfo end; //도착위치
+  TextEditingController controller =
+      new TextEditingController(); //SearchBox controller
   TextEditingController controller2 = new TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
-    if(first)
-      {
-        start = ModalRoute.of(context).settings.arguments;
-        controller.text = start.description;
-      }
+    if (first) {
+      start = ModalRoute.of(context).settings.arguments;
+      controller.text = start.description;
+    }
     return Scaffold(
         backgroundColor: Color(0xfffcefa3),
         body: SafeArea(
@@ -33,7 +38,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 child: InkWell(
                   child: Image.asset('image/_304.png'),
                   onTap: () {
-                    List<DbPlace> args = [start,end];
+                    List<PlaceInfo> args = [start, end];
                     print(start.mainText);
                     print(end.mainText);
                     Navigator.push(
@@ -116,10 +121,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.orange,
                             ),
-                            onTap: ()
-                            {
-
-                            },
+                            onTap: () {},
                           ),
                           InkWell(
                             child: CircleAvatar(
@@ -131,8 +133,20 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.greenAccent,
                             ),
-                            onTap: (){
-
+                            onTap: () {
+                              KikeeDB.instance.getFavorite('1').then((data) {
+                                try { controller2.text = data[0]['mainText']; }
+                                catch(error) { print(error); }
+                              });
+                            },
+                            onLongPress: ()
+                            {
+//                              _viewFavorite( context, 1, 'test');
+                              print('1');
+                              KikeeDB.instance.getFavorite('1').then((data) {
+                                try { _viewFavorite( context, '1', data[0]['mainText']); }
+                                catch(error) { _viewFavorite( context, '1', ''); }
+                              });
                             },
                           ),
                           InkWell(
@@ -145,9 +159,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.blueAccent,
                             ),
-                            onTap: (){
-
-                            },
+                            onTap: () {},
                           ),
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -164,9 +176,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.purple,
                             ),
-                            onTap: (){
-
-                            },
+                            onTap: () {},
                           ),
                           InkWell(
                             child: CircleAvatar(
@@ -178,9 +188,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Color(0xFFF0AD74),
                             ),
-                            onTap: (){
-
-                            },
+                            onTap: () {},
                           ),
                           InkWell(
                             child: CircleAvatar(
@@ -192,7 +200,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Color(0xFFF0AD74),
                             ),
-                            onTap: (){},
+                            onTap: () {},
                           ),
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -214,7 +222,12 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       final geolocation = await place.geolocation;
                       double lat = geolocation.Lat();
                       double lng = geolocation.Lng();
-                      end = DbPlace(placeId: place.placeId,description: place.description,longitude: lng,latitude: lat,mainText: place.mainText);
+                      end = PlaceInfo(
+                          placeId: place.placeId,
+                          description: place.description,
+                          longitude: lng,
+                          latitude: lat,
+                          mainText: place.mainText);
                     }),
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 120,
@@ -234,7 +247,12 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       final geolocation = await place.geolocation;
                       double lat = geolocation.Lat();
                       double lng = geolocation.Lng();
-                      start = DbPlace(placeId: place.placeId,description: place.description,longitude: lng,latitude: lat,mainText: place.mainText);
+                      start = PlaceInfo(
+                          placeId: place.placeId,
+                          description: place.description,
+                          longitude: lng,
+                          latitude: lat,
+                          mainText: place.mainText);
                     }),
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 50,
@@ -246,4 +264,120 @@ class _NewSearchPageState extends State<NewSearchPage> {
   }
 }
 
+_viewFavorite( BuildContext context, String id, String mainText ) {
+  PlaceInfo favoriteInfo;
+  final favoriteController = new TextEditingController();
 
+  // update favorite
+//  if( mainText != '' ) {
+    Alert(
+      context: context,
+      title: '즐겨찾기 수정',
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          SearchMapPlaceWidget(
+              apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
+              language: 'ko',
+              controller: favoriteController,
+              hasClearButton: true,
+              iconColor: Color(0xFFF0AD74),
+              placeholder: '',
+              lableText: '내 위치: ',
+              onSelected: (place) async {
+                final geolocation = await place.geolocation;
+                double lat = geolocation.Lat();
+                double lng = geolocation.Lng();
+                favoriteInfo = PlaceInfo(
+                    placeId: place.placeId,
+                    description: place.description,
+                    longitude: lng,
+                    latitude: lat,
+                    mainText: place.mainText);
+              }),
+          Row(
+            children: <Widget>[
+              CircleAvatar(radius: 30,
+                child: Icon(Icons.book, color: Colors.white, size: 40,),
+                backgroundColor: Colors.purple,),
+              CircleAvatar(radius: 30,
+                child: Icon(Icons.add, color: Colors.white, size: 40,),
+                backgroundColor: Color(0xFFF0AD74),),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+
+        ],
+      ),
+      buttons: [
+        DialogButton(
+          onPressed: () {
+            KikeeDB.instance.updateFavorite(favoriteInfo);
+            print('db update');
+          },
+          child: Text(
+            "수정",
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          ),
+        ),
+      ],
+    ).show();
+//  }
+
+  // insert favorite
+//  else {
+//    Alert(
+//      context: context,
+//      title: '즐겨찾기 추가',
+//      content: Column(
+//        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//        children: <Widget>[
+//          SearchMapPlaceWidget(
+//              apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
+//              language: 'ko',
+//              controller: favoriteController,
+//              hasClearButton: true,
+//              iconColor: Color(0xFFF0AD74),
+//              placeholder: '',
+//              lableText: '내 위치: ',
+//              onSelected: (place) async {
+//                final geolocation = await place.geolocation;
+//                double lat = geolocation.Lat();
+//                double lng = geolocation.Lng();
+//                favoriteInfo = PlaceInfo(
+//                    placeId: place.placeId,
+//                    description: place.description,
+//                    longitude: lng,
+//                    latitude: lat,
+//                    mainText: place.mainText);
+//                KikeeDB.instance.insertFavorite(favoriteInfo);
+//              }),
+//          Row(
+//            children: <Widget>[
+//              CircleAvatar(radius: 30,
+//                child: Icon(Icons.book, color: Colors.white, size: 40,),
+//                backgroundColor: Colors.purple,),
+//              CircleAvatar(radius: 30,
+//                child: Icon(Icons.add, color: Colors.white, size: 40,),
+//                backgroundColor: Color(0xFFF0AD74),),
+//            ],
+//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//          ),
+//
+//        ],
+//      ),
+//      buttons: [
+//        DialogButton(
+//          onPressed: () {
+//            KikeeDB.instance.insertFavorite(favoriteInfo);
+//            print('db insert');
+//          },
+//          child: Text(
+//            "저장",
+//            style: TextStyle(color: Colors.white, fontSize: 15),
+//          ),
+//        ),
+//      ],
+//    ).show();
+//  }
+}

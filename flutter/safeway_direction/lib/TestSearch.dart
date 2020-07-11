@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart';
@@ -19,13 +20,13 @@ class _TestSearchState extends State<TestSearch> {
   Timer _throttle;
   DataBase db = new DataBase();
   bool firstTime = true;
-  List<DbPlace> args = List<DbPlace>();
-  DbPlace start;
-  DbPlace end;
+  List<PlaceInfo> args = List<PlaceInfo>();
+  PlaceInfo start;
+  PlaceInfo end;
 
   final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
-  List<DbPlace> _placesList;
-  List<DbPlace> _suggestedList = [];
+  List<PlaceInfo> _placesList;
+  List<PlaceInfo> _suggestedList = [];
   String title1 = "최근 검색";
   String title2 = "검색 내용";
   String heading;
@@ -47,7 +48,7 @@ class _TestSearchState extends State<TestSearch> {
     });
   }
 
-  Future<List<DbPlace>> _fetchData() async {
+  Future<List<PlaceInfo>> _fetchData() async {
     db.databaseInit();
     await Future.delayed(const Duration(seconds: 1), () {});
     return db.GetRecentSearch();
@@ -81,14 +82,14 @@ class _TestSearchState extends State<TestSearch> {
 
     final predictions = response.data['predictions'];
 
-    List<DbPlace> _displayResults = [];
+    List<PlaceInfo> _displayResults = [];
 
     for (var i = 0; i < predictions.length; i++) {
       String description = predictions[i]['description'];
       String placeId = predictions[i]['place_id'];
       String main_text = predictions[i]['structured_formatting']['main_text'];
       print(main_text);
-      _displayResults.add(DbPlace(
+      _displayResults.add(PlaceInfo(
           placeId: placeId,
           description: description,
           mainText: main_text));
@@ -354,3 +355,4 @@ class _TestSearchState extends State<TestSearch> {
     );
   }
 }
+*/

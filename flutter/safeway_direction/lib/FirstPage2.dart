@@ -87,7 +87,7 @@ class _FirstPage2State extends State<FirstPage2> {
                 print('get response');
                 final predictions = response.data['results'];
                 String address = predictions[0]['formatted_address'];
-                DbPlace place = new DbPlace(latitude: lat,longitude: long,description: address,mainText: address );
+                PlaceInfo place = new PlaceInfo(latitude: lat,longitude: long,description: address,mainText: address );
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NewSearchPage(),settings: RouteSettings(arguments: place),));
               },
             ),

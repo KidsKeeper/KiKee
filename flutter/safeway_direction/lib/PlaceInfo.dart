@@ -1,10 +1,10 @@
-class DbPlace {
+class PlaceInfo {
   final String placeId;
   final String description;
   final String mainText;
   double longitude;
   double latitude;
-  DbPlace({this.placeId, this.description, this.longitude, this.latitude,this.mainText});
+  PlaceInfo({this.placeId, this.description, this.longitude, this.latitude,this.mainText});
   Map<String, dynamic> toMap() {
     return {
       'placeId': placeId,
