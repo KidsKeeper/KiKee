@@ -36,7 +36,7 @@ class DataBase {
     // Dog를 올바른 테이블에 추가하세요. 또한
     // `conflictAlgorithm`을 명시할 것입니다. 본 예제에서는
     // 만약 동일한 dog가 여러번 추가되면, 이전 데이터를 덮어쓸 것입니다.
-    Place place = Place(description: des,latitude: Lat,longitude: lon,placeId: id,mainText: mainText);
+    DbPlace place = DbPlace(description: des,latitude: Lat,longitude: lon,placeId: id,mainText: mainText);
     await db.insert(
       'RecentSearch',
       place.toMap(),
@@ -55,7 +55,7 @@ class DataBase {
     };
   }
 
-  Future<List<Place>> GetRecentSearch() async {
+  Future<List<DbPlace>> GetRecentSearch() async {
     // 데이터베이스 reference를 얻습니다.
     final Database db = await database;
 
@@ -64,7 +64,7 @@ class DataBase {
 
     // List<Map<String, dynamic>를 List<Dog>으로 변환합니다.
     return List.generate(maps.length, (i) {
-      return Place(
+      return DbPlace(
           placeId: maps[i]['placeId'],
           description: maps[i]['description'],
           longitude: maps[i]['longitude'],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:safewaydirection/NewSearchPage.dart';
-import 'iPhoneXXSpage221/iPhoneXXSmainpage5.dart';
-import 'iPhoneXXSpage221/iPhoneXXSpage21.dart';
+import 'package:safewaydirection/FirstPage2.dart';
+import 'package:safewaydirection/SecondPage.dart';
 
 void main() => runApp(KidsKeeper());
 
@@ -9,7 +8,6 @@ class KidsKeeper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home : NewSearchPage()//iPhoneXXSmainpage5(),
-    );
+      home : FirstPage2());
   }
 }

@@ -42,15 +42,16 @@ class DirectionPageState extends State<DirectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Place> Route = ModalRoute.of(context).settings.arguments;
-    Place start = Route[0];
-    Place end = Route[1];
+    List<DbPlace> Route = ModalRoute.of(context).settings.arguments;
+    DbPlace start = Route[0];
+    DbPlace end = Route[1];
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
           GoogleMap(
+            zoomControlsEnabled: false,
             mapType: MapType.normal,
             initialCameraPosition: _initialCamera,
             onMapCreated: (GoogleMapController controller) {

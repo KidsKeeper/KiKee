@@ -19,11 +19,14 @@ class SearchMapPlaceWidget extends StatefulWidget {
     this.placeType,
     this.darkMode = false,
     this.key,
-    this.lableText
+    this.lableText,
+    this.controller
   })  : assert((location == null && radius == null) || (location != null && radius != null)),
         super(key: key);
 
   final Key key;
+
+  final TextEditingController controller;
 
   /// API Key of the Google Maps API.
   final String apiKey;
@@ -87,7 +90,7 @@ class SearchMapPlaceWidget extends StatefulWidget {
 }
 
 class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerProviderStateMixin {
-  TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _textEditingController;
   AnimationController _animationController;
   // SearchContainer height.
   Animation _containerHeight;
@@ -109,6 +112,7 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
   void initState() {
     geocode = Geocoding(apiKey: widget.apiKey, language: widget.language);
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _textEditingController = widget.controller;
     _containerHeight = Tween<double>(begin: 55, end: 364).animate(
       CurvedAnimation(
         curve: Interval(0.0, 0.5, curve: Curves.easeInOut),
@@ -221,7 +225,8 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
   }
 
   Widget _placeOption(Place prediction) {
-    String place = prediction.description;
+    String place = prediction.mainText;
+    //String mainPlace = prediction.mainText;
 
     return MaterialButton(
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),

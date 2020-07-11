@@ -19,13 +19,13 @@ class _TestSearchState extends State<TestSearch> {
   Timer _throttle;
   DataBase db = new DataBase();
   bool firstTime = true;
-  List<Place> args = List<Place>();
-  Place start;
-  Place end;
+  List<DbPlace> args = List<DbPlace>();
+  DbPlace start;
+  DbPlace end;
 
   final String PLACES_API_KEY = "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU";
-  List<Place> _placesList;
-  List<Place> _suggestedList = [];
+  List<DbPlace> _placesList;
+  List<DbPlace> _suggestedList = [];
   String title1 = "최근 검색";
   String title2 = "검색 내용";
   String heading;
@@ -47,7 +47,7 @@ class _TestSearchState extends State<TestSearch> {
     });
   }
 
-  Future<List<Place>> _fetchData() async {
+  Future<List<DbPlace>> _fetchData() async {
     db.databaseInit();
     await Future.delayed(const Duration(seconds: 1), () {});
     return db.GetRecentSearch();
@@ -81,14 +81,14 @@ class _TestSearchState extends State<TestSearch> {
 
     final predictions = response.data['predictions'];
 
-    List<Place> _displayResults = [];
+    List<DbPlace> _displayResults = [];
 
     for (var i = 0; i < predictions.length; i++) {
       String description = predictions[i]['description'];
       String placeId = predictions[i]['place_id'];
       String main_text = predictions[i]['structured_formatting']['main_text'];
       print(main_text);
-      _displayResults.add(Place(
+      _displayResults.add(DbPlace(
           placeId: placeId,
           description: description,
           mainText: main_text));
