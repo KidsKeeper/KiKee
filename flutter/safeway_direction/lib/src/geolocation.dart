@@ -35,12 +35,12 @@ class Geolocation {
     }
   }
 
-  double Lat()
+  double lat()
   {
     return _coordinates["lat"];
   }
 
-  double Lng()
+  double lng()
   {
     return _coordinates["lng"];
   }

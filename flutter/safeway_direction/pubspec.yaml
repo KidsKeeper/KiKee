@@ -35,7 +35,10 @@ dependencies:
   flutter_google_places: ^0.2.5
   adobe_xd: ^0.1.4
   dio: ^3.0.9
-
+  location: ^3.0.2
+  bubble: ^1.1.9+1
+  geolocator: ^5.3.2+2
+  rflutter_alert: ^1.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -53,6 +56,8 @@ flutter:
   uses-material-design: true
   assets:
     - image/_303.png
+    - image/_304.png
+    - image/KakaoTalk_20200709_214841133.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

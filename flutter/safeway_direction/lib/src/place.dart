@@ -15,7 +15,7 @@ class Place {
       this.description = place["description"];
       this.placeId = place["place_id"];
       this.types = place["types"];
-
+      this.mainText = place['structured_formatting']['main_text'];
       this._geocode = geocode;
       this.fullJSON = place;
     } catch (e) {
@@ -23,9 +23,9 @@ class Place {
     }
   }
 
+  String mainText;
   /// Contains the human-readable name for the returned result. For establishment results, this is usually the business name.
   String description;
-
   /// A textual identifier that uniquely identifies a place. To retrieve information about the place, pass this identifier in the placeId field of a Places API request. For more information about place IDs, see the [Place IDs](https://developers.google.com/places/web-service/place-id) overview.
   String placeId;
 

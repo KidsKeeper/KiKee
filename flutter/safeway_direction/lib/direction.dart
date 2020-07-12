@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+// import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TmapServices {
@@ -30,7 +30,7 @@ class TmapServices {
 
     for (int i = 0; i < values.length; i++) {
       var geometry = values[i]['geometry'];
-      var properties = values[i]['properties'];
+      // var properties = values[i]['properties'];
       if (geometry['type'] == "LineString") {
         LatLng start = LatLng(geometry['coordinates'][0][1], geometry['coordinates'][0][0]);
         LatLng end = LatLng(geometry['coordinates'][1][1], geometry['coordinates'][1][0]);
