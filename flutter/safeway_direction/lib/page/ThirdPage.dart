@@ -1,28 +1,35 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'PlaceInfo.dart';
-import 'detour.dart';
-import 'route.dart' as way;
+import 'package:safewaydirection/models/PlaceInfo.dart';
+import 'package:location/location.dart';
 import 'package:safewaydirection/RouteSelectCard.dart';
+import 'package:safewaydirection/detour.dart';
+import 'package:safewaydirection/route.dart' as way;
+
+LocationData currentLocation;// a reference to the destination location
+LocationData destinationLocation;// wrapper around the location API
+Location location;
+
+
 BorderRadiusGeometry radius = BorderRadius.only(
   topLeft: Radius.circular(24.0),
   topRight: Radius.circular(24.0),
 );
 
-class thirdPage extends StatefulWidget {
+class ThirdPage extends StatefulWidget {
   @override
-  State<thirdPage> createState() => thirdPageState();
+  State<ThirdPage> createState() => ThirdPageState();
 }
 
-class thirdPageState extends State<thirdPage> {
+class ThirdPageState extends State<ThirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> markers = {};
   Set<Polyline> polylines ={};
   List<routeSelectionClass> routeSelectionList = [];
   //[DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
   Detour detour;
-  Place start,end;
+  PlaceInfo start,end;
 
   int _selectedIndex = 0;
 
@@ -33,7 +40,7 @@ class thirdPageState extends State<thirdPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Place> Route = ModalRoute.of(context).settings.arguments;
+    List<PlaceInfo> Route = ModalRoute.of(context).settings.arguments;
     List<way.Route> routes = [];
     start = Route[0];
     end = Route[1];
@@ -138,7 +145,7 @@ class thirdPageState extends State<thirdPage> {
   }
 
   void setPolylines() async{
-    print("==================Function setPolylines in thirdPage.dart is CALLED!==================");
+    print("==================Function setPolylines in ThirdPage.dart is CALLED!==================");
     detour = Detour.map(LatLng(start.latitude,start.longitude),LatLng(end.latitude,end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
@@ -152,3 +159,32 @@ class thirdPageState extends State<thirdPage> {
     });
   }
 }
+/*
+
+Widget directionCard(DirectionClass dir)
+{
+  return Card(
+    color: Color(0xFFDFFBFF),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+    child: Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            radius: 20,
+            child : Icon(Icons.directions_walk,color: Colors.white,),
+            backgroundColor: Colors.lightBlue,
+          ),
+        ),
+        Text('${dir.distance}km',style: TextStyle(color: Colors.lightBlue,fontSize: 20,fontFamily: 'BMJUA',textBaseline: TextBaseline.alphabetic ),),
+        SizedBox(width: 10,),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('${dir.time}분',style: TextStyle(color: Color(0xFF0D47A1),fontSize: 40,fontFamily: 'BMJUA'),),
+        ),
+      ],
+    ),
+
+  );
+}
+ */

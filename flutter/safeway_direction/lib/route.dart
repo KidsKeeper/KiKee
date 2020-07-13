@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
-import 'dart:math';
 import 'api/store.dart';
 import 'api/accidentInformation.dart';
 
