@@ -23,6 +23,14 @@ class thirdPageState extends State<thirdPage> {
   //[DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
   Detour detour;
   Place start,end;
+
+  int _selectedIndex = 0;
+
+  _onSelected ( int index ) {
+    setState(() => _selectedIndex = index);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     List<Place> Route = ModalRoute.of(context).settings.arguments;
@@ -98,12 +106,31 @@ class thirdPageState extends State<thirdPage> {
               bottom: 30,
               left: 20,
               width: MediaQuery.of(context).size.width,
-              height: 100,
+              height: 100 ,
               child: ListView.builder(
+                scrollDirection: Axis.horizontal,
                 itemCount: routeSelectionList.length, //슬라이드 카드 정보 리스트
-                itemBuilder: (BuildContext context, int index) =>
-                    routeSelectionCard(routeSelectionList[index]), scrollDirection: Axis.horizontal,
-              )
+                itemBuilder: (BuildContext context, int index) => GestureDetector(
+                  child: routeSelectionCard(routeSelectionList[index]),
+                  onTap: () {
+                    int len = routeSelectionList.length;
+                    for(int id=len-1; id>index; id--){
+                      routeSelectionList.removeAt(id);
+                      polylines.remove((polylines.toList())[id]);
+                      print(id);
+                    }
+                    for(int id=index-1; id>-1; id--){
+                      routeSelectionList.removeAt(id);
+                      polylines.remove((polylines.toList())[id]);
+                      print(id);
+                    }
+                    print(routeSelectionList.length);
+                    setState(() {
+
+                    });
+                  },
+                )
+              ),
           ),
         ],
       ),
@@ -117,7 +144,7 @@ class thirdPageState extends State<thirdPage> {
     polylines = detour.polylines;
     for(int i=0; i<detour.sortRoute.length&&i<6; i++){
       routeSelectionList.add(
-          routeSelectionClass(distance: detour.sortRoute[i].distance.toString(),color: detour.colorsId[i],time:detour.sortRoute[i].totalMinute.toString())
+          routeSelectionClass(distance: detour.sortRoute[i].distance.toString(),colorId: detour.colorsId[i],time:detour.sortRoute[i].totalMinute.toString())
       );
     }
     setState(() {
