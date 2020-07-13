@@ -24,7 +24,7 @@ class Pair<E, F> {
   static Pair<double,double> geometryFloor(LatLng data, [int i = 7]){
     String str1 = data.latitude.toString();
     String str2 = data.longitude.toString();
-    
+
     try {
       str1 = str1.substring(0, str1.indexOf('.')+i);
     }
@@ -38,5 +38,3 @@ class Pair<E, F> {
     return Pair<double,double>(double.parse(str1), double.parse(str2));
   }
 }
-
-

@@ -2,24 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/utility.dart';
 import 'package:safewaydirection/tMap.dart';
-
+import 'dart:math';
 import 'api/store.dart';
 import 'api/accidentInformation.dart';
 
 class Route{
-  int _distance;  // 거리 m
-
-  // 소요 시간. 시간 분으로 나눠서 저장
-  int _totalHour;
-  int _totalMinute;
-
-  //경로 위험도
+  int distance;  
+  int totalHour;
+  int totalMinute;
   int totalDanger = 0;
-
-  int get distance => _distance;
-  int get totalHour => _totalHour;
-  int get totalMinute => _totalMinute;
-
 
   List<_Point> locations = [];
   List<LatLng> crossWalks = [];
@@ -31,7 +22,7 @@ class Route{
       hashCode ^= iter.hashCode;
     return hashCode;
   }
-  
+
   @override
   bool operator ==(dynamic other) => 
     other is !Route ? false : listEquals(this.locations, other.locations);
@@ -39,46 +30,41 @@ class Route{
   Route();
 
   Route.map(Map<String,dynamic> data){
-    // 총 거리, 소요 시간 입력.
-    _distance = data['features'][0]["properties"]["totalDistance"];
+    distance = data['features'][0]["properties"]["totalDistance"];
     int time = data['features'][0]["properties"]["totalTime"];
-    _totalHour = (time / 3600).round();
-    _totalMinute = ((time % 3600) / 60).round();
+    totalHour = (time / 3600).round();
+    totalMinute = ((time % 3600) / 60).round();
 
     String str ="";
     // 각 경로 입력
-    locations.add(
-      _Point(
-        LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]),
-        0, "",""));
+    locations.add(_Point(LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]), 0, "",""));
     for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString')
         for(int i = 1; i< iter['geometry']['coordinates'].length ; i++){
-          locations.add(
-            _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]),
-            0, iter['properties']['name'], str));
+          locations.add(_Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str));
           str ="";
         }
-          
+
       else if(iter['geometry']['type'] == 'Point'){
         str = iter['properties']['description'];
       }
     }
-     
+
     // 횡단보도 좌표 정리
     for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString' && iter['properties']['facilityType'] == '15'){
         int i = iter['geometry']['coordinates'].length;
-          if( i % 2 == 0)
-            crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
-                  (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));
-          else
-            crossWalks.add(LatLng(iter['geometry']['coordinates'][(i/2).round()-1][1],iter['geometry']['coordinates'][(i/2).round()-1][0]));
+
+        if( i % 2 == 0)
+          crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
+              (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));
+        else
+          crossWalks.add(LatLng(iter['geometry']['coordinates'][(i/2).round()-1][1],iter['geometry']['coordinates'][(i/2).round()-1][0]));
       }
     }
-    
+
   }
-  
+
 
   List<LatLng> toLatLngList(){
     List<LatLng> result = [];
@@ -123,11 +109,11 @@ class _Point{
 
   @override
   int get hashCode => location.hashCode;
-  
+
   @override
   bool operator ==(dynamic other) =>
-    other is !_Point ? false : (location == other.location);
-  
+      other is !_Point ? false : (location.latitude - other.location.latitude).abs()<0.001&&(location.longitude - other.location.longitude).abs()<0.001 ; //(location == other.location)
+
 }
 class BadPoint{
   Pair<double,double> badLocation;
@@ -151,22 +137,22 @@ class BadPoint{
   toLatLng(){
     return LatLng(badLocation.first, badLocation.last);
   }
-  
+
   static Future<void> updateBadPointbyStore(Set<BadPoint> result, List<Store> dangerList) async{
     for(Store danger in dangerList){
       List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in latlngList){
         String roadName = await TmapServices.reverseGeocoding(iter);
         //only test
-          if(danger.rdnm != roadName)
-            print("roadName different : " + danger.rdnm + " != " + roadName);
+        if(danger.rdnm != roadName)
+          print("roadName different : " + danger.rdnm + " != " + roadName);
         //
         Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
-          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
-          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
+                (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+            orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger +=1;
       }
-    } 
+    }
   }
 
   static Future<void> updateBadPointbyAccident(Set<BadPoint> result, List<AccidentArea> dangerList) async{
@@ -176,8 +162,8 @@ class BadPoint{
         String roadName = await TmapServices.reverseGeocoding(iter);
         Pair<double,double> pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
-          (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
-          orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger += danger.occrrncCnt;
+                (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+            orElse :( ) { result.add(BadPoint(Pair.geometryFloor(iter),roadName)); return result.last;}).danger += danger.occrrncCnt;
       }
     }
 
@@ -197,4 +183,3 @@ class BadPoint{
     return result;
   }
 }
-
