@@ -5,10 +5,10 @@ import 'package:safewaydirection/keys.dart';
 
 const _servicekey = Keys.database;
 
+
 class Store{
   String bizesNm; //'땡땡땡다방'; // 상호명
   String indsSclsNm; // '커피전문점/카페/다방'; // 업종소분류명
-
   String lnoAdr;  //"대전광역시 서구 ~~"; // 지번주소
   String rdnm; //둔산로51번길// 도로명
   String rdnmAdr; // '대전광역시 서구 둔산로 51번길 66'; // 도로명 주소

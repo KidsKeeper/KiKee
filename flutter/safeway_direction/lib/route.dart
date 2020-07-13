@@ -7,19 +7,10 @@ import 'api/store.dart';
 import 'api/accidentInformation.dart';
 
 class Route{
-  int distance;  // 거리 m
-
-  // 소요 시간. 시간 분으로 나눠서 저장
+  int distance;  
   int totalHour;
   int totalMinute;
-
-  //경로 위험도
   int totalDanger = 0;
-/*
-  int get distance => _distance;
-  int get totalHour => _totalHour;
-  int get totalMinute => _totalMinute;*/
-
 
   List<_Point> locations = [];
   List<LatLng> crossWalks = [];
@@ -33,13 +24,12 @@ class Route{
   }
 
   @override
-  bool operator ==(dynamic other) =>
-      other is !Route ? false : listEquals(this.locations, other.locations);
+  bool operator ==(dynamic other) => 
+    other is !Route ? false : listEquals(this.locations, other.locations);
 
   Route();
 
   Route.map(Map<String,dynamic> data){
-    // 총 거리, 소요 시간 입력.
     distance = data['features'][0]["properties"]["totalDistance"];
     int time = data['features'][0]["properties"]["totalTime"];
     totalHour = (time / 3600).round();
@@ -64,6 +54,7 @@ class Route{
     for(var iter in data['features']){
       if(iter['geometry']['type'] == 'LineString' && iter['properties']['facilityType'] == '15'){
         int i = iter['geometry']['coordinates'].length;
+
         if( i % 2 == 0)
           crossWalks.add(LatLng((iter['geometry']['coordinates'][(i/2).round()][1] + iter['geometry']['coordinates'][(i/2 -1).round()][1])/2,
               (iter['geometry']['coordinates'][(i/2).round()][0] + iter['geometry']['coordinates'][(i/2 - 1).round()][0])/2));

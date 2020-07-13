@@ -4,7 +4,11 @@
 
 1. 각자의 Workspace폴더(폴더이름자유)를 자신의 컴퓨터에 만들기
 
-1. 생성된 Worksapce에 `git clone` 하기
+1. 생성된 Workspace에 `git clone` 하기
+
+1. 클론하면 파일이 Workspace/KiKee/flutter로 생길텐데 각각 AndroidStudio나 Vscode에서 flutter폴더로 프로젝트를 열어줌
+
+1. 지금부터 Vscode나 AndroidStudio 하단에 있는 Terminal 이용 
 
 1. `git config --global user.name "jaewonhan"` 이렇게 자기이름 설정하고
 

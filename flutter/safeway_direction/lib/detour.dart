@@ -17,12 +17,9 @@ class Detour{
   LatLng destination;
 
   Detour();
-
   Detour.map(this.source, this.destination){
-
     print("mapped");
   }
-
 
   Future<void> getRouteOrDetour() async{ //이 함수가 호출되면, polylinePoints 리스트의 값이 채워짐.
     route = await TmapServices.getRoute(source, destination);  // get route infomation
@@ -106,6 +103,7 @@ class Detour{
         polylineId: PolylineId(polylines.length.toString()),
         points:polylinePoints[i],
         color: colors[colorsId[i]],
+
         visible: true,
       ));
     }

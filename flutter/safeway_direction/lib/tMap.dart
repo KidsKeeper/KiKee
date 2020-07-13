@@ -7,13 +7,14 @@ import 'keys.dart';
 import 'package:safewaydirection/route.dart';
 class TmapServices{
   static const String projectKey = Keys.tMap;
+
   static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
     origin = origindata != null ? _getPointMeetLine(origindata, origin) : origin;
     List<LatLng> destinationData = await getNearRoadInformation(destination);
     destination = destinationData != null ? _getPointMeetLine(destinationData, destination) : destination;
 
-    Map<String, dynamic> requestData ={
+  Map<String, dynamic> requestData ={
       "appKey" : projectKey,
       "startX" : origin.longitude, // 경도
       "startY" : origin.latitude,
@@ -46,7 +47,6 @@ class TmapServices{
         },
         body: body
     );
-
     try{
       Map<String,dynamic> values = jsonDecode(response.body);
       Route result = Route.map(values);
@@ -102,5 +102,5 @@ class TmapServices{
 
     return LatLng(x,y);
   }
-
 }
+
