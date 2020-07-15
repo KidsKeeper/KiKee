@@ -14,8 +14,9 @@
 
 ### 기존 파일에서 `stash`를 생성해 `stash` 저장을 해준 후 `master`파일을 받아오기
 
-Android stuido 에서는 VCS -> Git -> stash 있고
-Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번째꺼)에서 ''' 누르고 밑에 stash 있음
+(Android stuido 에서는 VCS -> Git -> stash 있고
+
+Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번째꺼)에서 ''' 누르고 밑에 stash 있음)
 
 
 -> 이렇게 하면 기존에 있던 파일은 `stash`파일에 저장됩니다. 하지만 `unstash`했을 때 충돌나는건 여전하겠죠. (vs code는 pop stash)
