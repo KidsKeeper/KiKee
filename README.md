@@ -1,41 +1,59 @@
 # KidsKeeper
 
-## 깃 브랜치를 이용해 협업하는 법
+## 업데이트
 
-1. 각자의 Workspace폴더(폴더이름자유)를 자신의 컴퓨터에 만들기
-
-1. 생성된 Workspace에 `git clone` 하기
-
-1. 클론하면 파일이 Workspace/KiKee/flutter로 생길텐데 각각 AndroidStudio나 Vscode에서 flutter폴더로 프로젝트를 열어줌
-
-1. 지금부터 Vscode나 AndroidStudio 하단에 있는 Terminal 이용 
-
-1. `git config --global user.name "jaewonhan"` 이렇게 자기이름 설정하고
+```
+다들 현재 합쳐진 파일로 업데이트를 하기위해
 
 
-   `git config --global user.email "asdf@asdf.com"` 이렇게 이메일 설정하기
-   
-1. `git branch 브랜치이름` 
+본인 작업 브랜치에서 `git pull origin master`를 해주시기 바랍니다!
 
-1. `git checkout 브랜치이름`
+만약 충돌로 인해 `aborting`이 난 경우 해결 방안은 두 가지 입니다.
+```
 
-1. `git branch` 로 현재 브랜치 화인 **master에서 하면 안됨!!**
 
-1. 이후 각자 맡은 작업을 수행을 완료 했다면,
+> (만약 딱히 충돌도 안났는데 업데이트도 안됐다 하면... git fetch origin 한번 해보십숑)
 
-1. `git commit -m "message"` 로 커밋을 하거나 각각 android studio, vscode에 딸린 기능을 사용해서 commit 하면 됨
 
-    - 커밋 메세지 규칙: [이름이니셜] 작업 내용 간단 설명 ex) [JW] 메인화면 테마 블랙으로 바꿈 
-    
-    - 이미지를 첨부하고 싶지만 귀찮아서 어디에 어떤 버튼이 있는지 모르면 만나서 알려주겠음
 
-1. Android Studio에서는 `VCS` -> `git` -> `push` 눌러서 푸쉬하기 
+### 1. 기존 파일에서 `stash`를 생성해 `stash` 저장을 해준 후 `master`파일을 받아오기
 
-1. 깃허브 프로젝트 레파지토리로 돌아와서 `pull requests` -> `New pull request`클릭
+(Android stuido 에서는 VCS -> Git -> stash 있고
 
-1. 커밋메세지에서 간략하게 썼던 설명 자세히 기술 후 우측 하단의 `create pull request`클릭
+Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번째꺼)에서 ''' 누르고 밑에 stash 있음)
 
-1. 나중에 내가 보고 Merge 함. Merge가 완료되면 다들 터미널에서 `git pull origin master` 한번씩 해주기.
 
-1. 그전까지는 새로운 branch만들어서 작업 수행.
-   
+> 이렇게 하면 기존에 있던 파일은 `stash`파일에 저장됩니다. 하지만 `unstash`했을 때 충돌나는건 여전하겠죠. (vs code는 apply stash)
+
+> > 그냥 기존 파일 쓸 생각 없단 마음으로 하는 방안입니다.
+> > 주로 제가 새로운 브랜치 만들기 귀찮은데 충돌 해결을 직접하고 싶진 않다 싶을 때 사용하는 방법입니다.
+
+
+
+
+
+### 2. 새로운 브랜치를 만든 후 위 방법 사용하기.
+
+> 이렇게 하면 기존에 있던 브랜치의 파일들은 보존할 수 있습니다. 하지만 어차피 깃허브에 히스토리에 다 보존이 되어있는데 .. (생략)
+
+
+
+
+#### ▶︎ 파일을 pull받고 실행시켜보기전에 `safeway_direction/lib/` 에 `keys.dart` 파일을 만들어야 합니다.
+
+
+```dart
+class Keys{
+  static const String googleMap =  "******";
+  static const String database = "******";
+  static const String tMap = "******";
+  static const String place = "******";
+}
+```
+
+
+
+> 근데 여기서 googleMap이랑 place랑 키가 같은 경우 그냥 googleMap 키랑 place키에 값을 같은걸 넣어주면 됩니다.
+
+
+(나중에 정리합시다ㅋㅋ)
