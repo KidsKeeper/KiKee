@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'keys.dart';
+import '../keys.dart';
 
-import 'package:safewaydirection/route.dart';
+import 'package:safewaydirection/models/route.dart';
 class TmapServices{
   static const String projectKey = Keys.tMap;
 

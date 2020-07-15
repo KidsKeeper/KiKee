@@ -1,9 +1,9 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/tMap.dart';
+import 'package:safewaydirection/api/tMap.dart';
 import 'package:flutter/material.dart';
 import 'package:safewaydirection/api/store.dart';
 import 'package:safewaydirection/api/accidentInformation.dart';
-import 'package:safewaydirection/route.dart' as way;
+import 'package:safewaydirection/models/route.dart' as way;
 class Detour{
   List<Color> colors = [Colors.red,Colors.yellow,Colors.orange,Colors.blue];
   List<int> colorsId = [];

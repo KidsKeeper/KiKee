@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:safewaydirection/models/PlaceInfo.dart';
 import 'package:location/location.dart';
-import 'package:safewaydirection/RouteSelectCard.dart';
+import 'package:safewaydirection/models/RouteSelectCard.dart';
 import 'package:safewaydirection/detour.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 

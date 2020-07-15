@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
-import 'package:safewaydirection/search_map_place.dart';
+import 'package:safewaydirection/models/search_map_place.dart';
 import 'package:safewaydirection/models/PlaceInfo.dart';
 import 'package:safewaydirection/models/RecentSearch.dart';
 import 'package:safewaydirection/page/ThirdPage.dart';
