@@ -12,7 +12,7 @@
 
 
 
-### 기존 파일에서 `stash`를 생성해 `stash` 저장을 해준 후 `master`파일을 받아오기
+### 1. 기존 파일에서 `stash`를 생성해 `stash` 저장을 해준 후 `master`파일을 받아오기
 
 (Android stuido 에서는 VCS -> Git -> stash 있고
 
@@ -30,14 +30,14 @@ Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번
 
 
 
-### 새로운 브랜치를 만든 후 위 방법 사용하기.
+### 2. 새로운 브랜치를 만든 후 위 방법 사용하기.
 
 -> 이렇게 하면 기존에 있던 브랜치의 파일들은 보존할 수 있습니다. 하지만 어차피 깃허브에 히스토리에 다 보존이 되어있는데 .. (생략)
 
 
 
 
-#### 파일을 pull받고 실행시켜보기전에 `safeway_direction/lib/` 에 `keys.dart` 파일을 만들어야 합니다.
+#### ▶︎ 파일을 pull받고 실행시켜보기전에 `safeway_direction/lib/` 에 `keys.dart` 파일을 만들어야 합니다.
 
 
 ```dart
