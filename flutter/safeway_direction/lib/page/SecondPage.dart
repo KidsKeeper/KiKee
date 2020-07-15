@@ -62,7 +62,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     );
                   },
                 ),
-              ),
+              ),//kiki icon to step nextpage
               Positioned(
                 top: 90,
                 right: (MediaQuery.of(context).size.width / 20),
@@ -80,7 +80,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     start = end;
                   },
                 ),
-              ),
+              ),//swap source and destination
               Positioned(
                 bottom: 100,
                 left: 50,
@@ -100,7 +100,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   nip: BubbleNip.rightTop,
                   radius: Radius.circular(30.0),
                 ),
-              ),
+              ),//bubble, '나를 누르면 길찾기가 시작돼'
               Positioned(
                 top: 220,
                 left: (MediaQuery.of(context).size.width / 20),
@@ -234,7 +234,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ],
                   ),
                 ),
-              ),
+              ),//short cut buttons
               Positioned(
                 child: SearchMapPlaceWidget(
                     apiKey: Keys.place,
@@ -269,7 +269,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 120,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),
+              ),//도착지 검색바
               Positioned(
                 child: SearchMapPlaceWidget(
                     apiKey: Keys.place,
@@ -306,7 +306,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 50,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),
+              ),//출발지 검색바
             ],
           ),
         ));

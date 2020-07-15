@@ -5,7 +5,7 @@ import 'package:safewaydirection/models/PlaceInfo.dart';
 import 'package:location/location.dart';
 import 'package:safewaydirection/RouteSelectCard.dart';
 import 'package:safewaydirection/detour.dart';
-import 'package:safewaydirection/route.dart' as way;
+import 'package:geolocator/geolocator.dart' as geo;
 
 LocationData currentLocation;// a reference to the destination location
 LocationData destinationLocation;// wrapper around the location API
@@ -25,34 +25,55 @@ class ThirdPage extends StatefulWidget {
 class ThirdPageState extends State<ThirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> markers = {};
+  Set<Marker> _markers = {};
   Set<Polyline> polylines ={};
   List<routeSelectionClass> routeSelectionList = [];
-  //[DirectionClass(distance: '10',time: '30'),DirectionClass(distance: '5',time: '15'),DirectionClass(distance: '15',time:'45')];
+  List<BitmapDescriptor> locationIcon = List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
   Detour detour;
   PlaceInfo start,end;
 
-  int _selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    location = new Location();
+    location.onLocationChanged.listen((LocationData cLoc) {
+      currentLocation = cLoc;
+      updatePinOnMap(cLoc);
+    });
 
-  _onSelected ( int index ) {
-    setState(() => _selectedIndex = index);
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+        'image/currentLocation1.png')
+        .then((onValue) {
+      locationIcon[0] = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+        'image/currentLocation2.png')
+        .then((onValue) {
+      locationIcon[1] = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+        'image/currentLocation3.png')
+        .then((onValue) {
+      locationIcon[2] = onValue;
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
     List<PlaceInfo> Route = ModalRoute.of(context).settings.arguments;
-    List<way.Route> routes = [];
     start = Route[0];
     end = Route[1];
+
     for(int i=0; i<2; i++){
-      markers.add(
+      _markers.add(
         Marker(
-          markerId:MarkerId(markers.length.toString()),
+          markerId:MarkerId(_markers.length.toString()),
           position:LatLng(Route[i].latitude,Route[i].longitude),
           icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         )
       );
     }
+      //출발지, 도착지에 마커 찍는 부분.
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -64,7 +85,7 @@ class ThirdPageState extends State<ThirdPage> {
               target: LatLng((Route[0].latitude+Route[1].latitude)/2,(Route[0].longitude+Route[1].longitude)/2),
               zoom: 15.0,
             ),
-            markers: markers,
+            markers: _markers,
             polylines: polylines,
             onMapCreated: (GoogleMapController controller) {
               _mapController.complete(controller);
@@ -107,7 +128,24 @@ class ThirdPageState extends State<ThirdPage> {
           Positioned(
             bottom: 150,
             right: 20,
-            child: FloatingActionButton(child: Icon(Icons.gps_fixed,color: Colors.black,),backgroundColor: Colors.white,),
+            child: FloatingActionButton(
+                child: Icon(
+                  Icons.gps_fixed,
+                  color: Colors.black,
+                ),
+                backgroundColor: Colors.white,
+                onPressed: () async {
+                  geo.Position currentLocation = await geo.Geolocator()
+                      .getLastKnownPosition(
+                      desiredAccuracy: geo.LocationAccuracy.high);
+                  final GoogleMapController controller =
+                  await _mapController.future;
+                  controller.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                          target: LatLng(currentLocation.latitude,
+                              currentLocation.longitude),
+                          zoom: 15.500)));
+                }),
           ),
           Positioned(
               bottom: 30,
@@ -142,6 +180,18 @@ class ThirdPageState extends State<ThirdPage> {
         ],
       ),
     );
+  }
+
+  Future<void> updatePinOnMap(LocationData location) async {
+    final GoogleMapController controller = await _mapController.future;
+    setState(() {
+      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
+      _markers.add(Marker(
+          markerId: MarkerId('sourcePin'),
+          position:
+          LatLng(location.latitude, location.longitude), // updated position
+          icon: locationIcon[0]));
+    });
   }
 
   void setPolylines() async{

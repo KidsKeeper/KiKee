@@ -1,12 +1,7 @@
-// import 'dart:async';
-
 import 'package:flutter/material.dart';
-// import 'package:dio/dio.dart';
-// import 'package:path/path.dart';
-
 import 'package:safewaydirection/models/RecentSearch.dart';
 import 'package:safewaydirection/db/KikeeDB.dart';
-// import 'package:safewaydirection/page/DirectionPage.dart';
+
 
 class RecentSearchPage extends StatefulWidget {
   @override
