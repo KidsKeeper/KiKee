@@ -21,7 +21,7 @@
 Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번째꺼)에서 ''' 누르고 밑에 stash 있음)
 
 
--> 이렇게 하면 기존에 있던 파일은 `stash`파일에 저장됩니다. 하지만 `unstash`했을 때 충돌나는건 여전하겠죠. (vs code는 pop stash)
+-> 이렇게 하면 기존에 있던 파일은 `stash`파일에 저장됩니다. 하지만 `unstash`했을 때 충돌나는건 여전하겠죠. (vs code는 apply stash)
 
 그냥 기존 파일 쓸 생각 없단 마음으로 하는 방안입니다.
 
