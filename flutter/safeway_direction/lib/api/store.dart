@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:safewaydirection/keys.dart';
+
+import '../keys.dart';
 
 const _servicekey = Keys.database;
 

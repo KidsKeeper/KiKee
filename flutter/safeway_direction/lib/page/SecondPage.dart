@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 
-import '../search_map_place.dart';
+import '../models/search_map_place.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
 import '../page/ThirdPage.dart';

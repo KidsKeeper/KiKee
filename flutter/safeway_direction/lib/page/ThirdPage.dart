@@ -6,7 +6,7 @@ import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 
 import '../models/PlaceInfo.dart';
-import '../RouteSelectCard.dart';
+import '../models/RouteSelectCard.dart';
 import '../detour.dart';
 
 
