@@ -1,14 +1,15 @@
 class PlaceInfo {
-  final String placeId;
   final int id;
-  int icon;
+
+  final String placeId;
   final String description;
   final String mainText;
+
   double longitude;
   double latitude;
 
-  
-  PlaceInfo({this.placeId, this.id, this.description, this.longitude, this.latitude,this.mainText, this.icon});
+  PlaceInfo( {this.placeId, this.id, this.description, this.longitude, this.latitude,this.mainText });
+
   Map<String, dynamic> toMap() {
     return {
       'placeId': placeId,
@@ -16,8 +17,7 @@ class PlaceInfo {
       'description': description,
       'longitude': longitude,
       'latitude': latitude,
-      'mainText' : mainText,
-      'icon': icon
+      'mainText' : mainText
     };
   }
 }
