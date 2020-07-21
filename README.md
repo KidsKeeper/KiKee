@@ -1,6 +1,15 @@
 # KidsKeeper
 
-## 업데이트
+## 업데이트2 (2020.07.21)
+```
+새로운 업데이트입니다.
+설이가 수정한 파일을 master에 합쳤습니다.
+android/src/main/manifest..어쩌구 이놈의 key값이 ****로 변경되었으며
+ios/Runner/어쩌구dele어쩌구(?) 이놈의 key값도 ****로 변경되어
+master 코드를 pull 하신경우 이 두 부분을 각각 google map key값으로 수정한뒤 실행해야 합니다.
+```
+
+
 
 ```
 다들 현재 합쳐진 파일로 업데이트를 하기위해
