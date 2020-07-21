@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:safewaydirection/page/FirstPage2.dart';
+
+import 'page/FirstPage2.dart';
 
 void main() => runApp(KidsKeeper());
 

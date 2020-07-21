@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:safewaydirection/keys.dart';
-import 'package:safewaydirection/page/SecondPage.dart';
-import 'package:safewaydirection/models/PlaceInfo.dart';
+
+import '../keys.dart';
+import '../page/SecondPage.dart';
+import '../models/PlaceInfo.dart';
 
 class FirstPage2 extends StatefulWidget {
   @override
@@ -76,20 +77,20 @@ class _FirstPage2State extends State<FirstPage2> {
               child: Text('건너뛰기',style: TextStyle(color: Color(0xFFF0AD74),fontFamily: 'BMJUA',fontSize: 17),) ,
               onPressed: () async
               {
-                const String PLACES_API_KEY = Keys.place;
+                // const String PLACES_API_KEY = Keys.place;
 
-                Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
-                double long = position.longitude;
-                double lat = position.latitude;
-                print('geocode : $long , $lat');
+                // Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
+                // double long = position.longitude;
+                // double lat = position.latitude;
+                // print('geocode : $long , $lat');
 
-                String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
-                Response response = await Dio().get(url);
-                print('get response');
-                final predictions = response.data['results'];
-                String address = predictions[0]['formatted_address'];
-                PlaceInfo place = new PlaceInfo(latitude: lat,longitude: long,description: address,mainText: address );
-                // PlaceInfo place = PlaceInfo( mainText: 'test', latitude: 35.2335912, longitude: 129.0798862, description: 'desc', icon: 0 );
+                // String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
+                // Response response = await Dio().get(url);
+                // print('get response');
+                // final predictions = response.data['results'];
+                // String address = predictions[0]['formatted_address'];
+                // PlaceInfo place = new PlaceInfo(latitude: lat,longitude: long,description: address,mainText: address );
+                PlaceInfo place = PlaceInfo( mainText: 'test', latitude: 35.2335912, longitude: 129.0798862, description: 'desc');
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NewSearchPage(), settings: RouteSettings(arguments: place),));
               },
             ),

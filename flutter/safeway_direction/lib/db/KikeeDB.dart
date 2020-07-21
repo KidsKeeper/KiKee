@@ -2,7 +2,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-// import 'package:safewaydirection/models/PlaceInfo.dart';
 import 'package:safewaydirection/models/Favorite.dart';
 import 'package:safewaydirection/models/RecentSearch.dart';
 
@@ -30,8 +29,15 @@ class KikeeDB {
   }
 
   // Future<void> 추가?
-  insertRecentSearch( RecentSearch data  ) async {
+  insertRecentSearch( RecentSearch data ) async {
     final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('recentsearch');
+    int length = maps.length;
+
+    if( length == 21 ) deleteRecentSearch(maps[0]['id']); // user can save recentsearch data up to 20
+
+    for( var i = 0; i < length; i++ ) // to avoid duplication of recentsearch
+      if( data.placeId == maps[i]['placeId'] ) return;
 
     await db.insert(
       'recentsearch',
@@ -42,7 +48,7 @@ class KikeeDB {
 
   Future<List<RecentSearch>> getRecentSearch() async {
     final Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('recentsearch');
+    final List<Map<String, dynamic>> maps = await db.query( 'recentsearch', orderBy: 'id DESC' );
 
     return List.generate(maps.length, (i) {
       return RecentSearch(

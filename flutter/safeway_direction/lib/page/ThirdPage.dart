@@ -1,16 +1,18 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:safewaydirection/models/PlaceInfo.dart';
 import 'package:location/location.dart';
-import 'package:safewaydirection/models/RouteSelectCard.dart';
-import 'package:safewaydirection/detour.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 
-LocationData currentLocation;// a reference to the destination location
-LocationData destinationLocation;// wrapper around the location API
-Location location;
+import '../models/PlaceInfo.dart';
+import '../models/RouteSelectCard.dart';
+import '../detour.dart';
 
+
+LocationData currentLocation; // a reference to the destination location
+LocationData destinationLocation; // wrapper around the location API
+Location location;
 
 BorderRadiusGeometry radius = BorderRadius.only(
   topLeft: Radius.circular(24.0),
@@ -26,11 +28,12 @@ class ThirdPageState extends State<ThirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> markers = {};
   Set<Marker> _markers = {};
-  Set<Polyline> polylines ={};
-  List<routeSelectionClass> routeSelectionList = [];
-  List<BitmapDescriptor> locationIcon = List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
+  Set<Polyline> polylines = {};
+  List<RouteSelectionClass> routeSelectionList = [];
+  List<BitmapDescriptor> locationIcon =
+      List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
   Detour detour;
-  PlaceInfo start,end;
+  PlaceInfo start, end;
 
   @override
   void initState() {
@@ -60,20 +63,18 @@ class ThirdPageState extends State<ThirdPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<PlaceInfo> Route = ModalRoute.of(context).settings.arguments;
-    start = Route[0];
-    end = Route[1];
+    List<PlaceInfo> route = ModalRoute.of(context).settings.arguments;
+    start = route[0];
+    end = route[1];
 
-    for(int i=0; i<2; i++){
-      _markers.add(
-        Marker(
-          markerId:MarkerId(_markers.length.toString()),
-          position:LatLng(Route[i].latitude,Route[i].longitude),
-          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        )
-      );
+    for (int i = 0; i < 2; i++) {
+      _markers.add(Marker(
+        markerId: MarkerId(_markers.length.toString()),
+        position: LatLng(route[i].latitude, route[i].longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      ));
     }
-      //출발지, 도착지에 마커 찍는 부분.
+    //출발지, 도착지에 마커 찍는 부분.
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -82,7 +83,8 @@ class ThirdPageState extends State<ThirdPage> {
           GoogleMap(
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
-              target: LatLng((Route[0].latitude+Route[1].latitude)/2,(Route[0].longitude+Route[1].longitude)/2),
+              target: LatLng((route[0].latitude + route[1].latitude) / 2,
+                  (route[0].longitude + route[1].longitude) / 2),
               zoom: 15.0,
             ),
             markers: _markers,
@@ -98,7 +100,7 @@ class ThirdPageState extends State<ThirdPage> {
             height: 90.0,
           ),
           Positioned(
-            top:10.0,
+            top: 10.0,
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Row(
@@ -108,11 +110,15 @@ class ThirdPageState extends State<ThirdPage> {
                     child: InkWell(
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: Text(' ${start.mainText} -> ${end.mainText}',
-                          style: TextStyle(fontSize: 20,fontFamily: 'BMJUA',color: Colors.orange),),
+                        child: Text(
+                          ' ${start.mainText} -> ${end.mainText}',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'BMJUA',
+                              color: Colors.orange),
+                        ),
                       ),
-                      onTap: ()
-                      {
+                      onTap: () {
                         Navigator.pop(context);
                       },
                     ),
@@ -137,9 +143,9 @@ class ThirdPageState extends State<ThirdPage> {
                 onPressed: () async {
                   geo.Position currentLocation = await geo.Geolocator()
                       .getLastKnownPosition(
-                      desiredAccuracy: geo.LocationAccuracy.high);
+                          desiredAccuracy: geo.LocationAccuracy.high);
                   final GoogleMapController controller =
-                  await _mapController.future;
+                      await _mapController.future;
                   controller.animateCamera(CameraUpdate.newCameraPosition(
                       CameraPosition(
                           target: LatLng(currentLocation.latitude,
@@ -148,34 +154,32 @@ class ThirdPageState extends State<ThirdPage> {
                 }),
           ),
           Positioned(
-              bottom: 30,
-              left: 20,
-              width: MediaQuery.of(context).size.width,
-              height: 100 ,
-              child: ListView.builder(
+            bottom: 30,
+            left: 20,
+            width: MediaQuery.of(context).size.width,
+            height: 100,
+            child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: routeSelectionList.length, //슬라이드 카드 정보 리스트
-                itemBuilder: (BuildContext context, int index) => GestureDetector(
-                  child: routeSelectionCard(routeSelectionList[index]),
-                  onTap: () {
-                    int len = routeSelectionList.length;
-                    for(int id=len-1; id>index; id--){
-                      routeSelectionList.removeAt(id);
-                      polylines.remove((polylines.toList())[id]);
-                      print(id);
-                    }
-                    for(int id=index-1; id>-1; id--){
-                      routeSelectionList.removeAt(id);
-                      polylines.remove((polylines.toList())[id]);
-                      print(id);
-                    }
-                    print(routeSelectionList.length);
-                    setState(() {
-
-                    });
-                  },
-                )
-              ),
+                itemBuilder: (BuildContext context, int index) =>
+                    GestureDetector(
+                      child: routeSelectionCard(routeSelectionList[index]),
+                      onTap: () {
+                        int len = routeSelectionList.length;
+                        for (int id = len - 1; id > index; id--) {
+                          routeSelectionList.removeAt(id);
+                          polylines.remove((polylines.toList())[id]);
+                          print(id);
+                        }
+                        for (int id = index - 1; id > -1; id--) {
+                          routeSelectionList.removeAt(id);
+                          polylines.remove((polylines.toList())[id]);
+                          print(id);
+                        }
+                        print(routeSelectionList.length);
+                        setState(() {});
+                      },
+                    )),
           ),
         ],
       ),
@@ -189,24 +193,25 @@ class ThirdPageState extends State<ThirdPage> {
       _markers.add(Marker(
           markerId: MarkerId('sourcePin'),
           position:
-          LatLng(location.latitude, location.longitude), // updated position
+              LatLng(location.latitude, location.longitude), // updated position
           icon: locationIcon[0]));
     });
   }
 
-  void setPolylines() async{
-    print("==================Function setPolylines in ThirdPage.dart is CALLED!==================");
-    detour = Detour.map(LatLng(start.latitude,start.longitude),LatLng(end.latitude,end.longitude));
+  void setPolylines() async {
+    print(
+        "==================Function setPolylines in ThirdPage.dart is CALLED!==================");
+    detour = Detour.map(LatLng(start.latitude, start.longitude),
+        LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
-    for(int i=0; i<detour.sortRoute.length&&i<6; i++){
-      routeSelectionList.add(
-          routeSelectionClass(distance: detour.sortRoute[i].distance.toString(),colorId: detour.colorsId[i],time:detour.sortRoute[i].totalMinute.toString())
-      );
+    for (int i = 0; i < detour.sortRoute.length && i < 6; i++) {
+      routeSelectionList.add(RouteSelectionClass(
+          distance: detour.sortRoute[i].distance.toString(),
+          colorId: detour.colorsId[i],
+          time: detour.sortRoute[i].totalMinute.toString()));
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 }
 /*

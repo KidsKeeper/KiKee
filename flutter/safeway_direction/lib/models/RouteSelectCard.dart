@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-List<Color> Red = [Colors.red[50],Colors.red,Colors.red[900]];
-List<Color> Orange = [Colors.orange[50],Colors.orange,Colors.orange[900]];
-List<Color> Yellow = [Colors.yellow[50],Colors.yellow,Colors.yellow[900]];
-List<Color> Blue = [Colors.blue[50],Colors.blue,Colors.blue[900]];
-List<List<Color>> colors =[Red,Orange,Yellow,Blue];
+List<Color> red = [Colors.red[50],Colors.red,Colors.red[900]];
+List<Color> orange = [Colors.orange[50],Colors.orange,Colors.orange[900]];
+List<Color> yellow = [Colors.yellow[50],Colors.yellow,Colors.yellow[900]];
+List<Color> blue = [Colors.blue[50],Colors.blue,Colors.blue[900]];
+List<List<Color>> colors =[ red, orange, yellow, blue ];
 
-Widget routeSelectionCard(routeSelectionClass rs)
-{
+Widget routeSelectionCard( RouteSelectionClass rs ) {
   return Card(
     color: colors[rs.colorId][0],
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
@@ -33,10 +32,10 @@ Widget routeSelectionCard(routeSelectionClass rs)
   );
 }
 
-class routeSelectionClass
-{
+class RouteSelectionClass {
   String distance;
   String time;
   int colorId;
-  routeSelectionClass({this.distance,this.colorId,this.time});
+  
+  RouteSelectionClass({ this.distance,this.colorId,this.time });
 }

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
-import 'package:safewaydirection/models/search_map_place.dart';
-import 'package:safewaydirection/models/PlaceInfo.dart';
-import 'package:safewaydirection/models/RecentSearch.dart';
-import 'package:safewaydirection/page/ThirdPage.dart';
-import 'package:safewaydirection/page/RecentSearchPage.dart';
-import 'package:safewaydirection/src/viewFavorite.dart';
-import 'package:safewaydirection/db/KikeeDB.dart';
-import 'package:safewaydirection/keys.dart';
+
+import '../models/search_map_place.dart';
+import '../models/PlaceInfo.dart';
+import '../models/RecentSearch.dart';
+import '../page/ThirdPage.dart';
+import '../page/RecentSearchPage.dart';
+import '../src/viewFavorite.dart';
+import '../db/KikeeDB.dart';
+import '../keys.dart';
 
 class NewSearchPage extends StatefulWidget {
   @override
@@ -17,26 +18,37 @@ class NewSearchPage extends StatefulWidget {
 class _NewSearchPageState extends State<NewSearchPage> {
   bool first = true;
 
-  PlaceInfo start; //시작위치
-  PlaceInfo end; //도착위치
+  PlaceInfo start; // start location class variable
+  PlaceInfo end; // end location class variable
+  PlaceInfo updateend; // end location given from recent search data
 
-  RecentSearch recentSearchInfo; // 최근검색기록
+  RecentSearch recentSearchInfo; // recent search class variable
 
-  TextEditingController searchController  =  new TextEditingController(); // SearchBox controller
-  TextEditingController searchController2 = new TextEditingController();
+  TextEditingController searchController  =  new TextEditingController(); // start location controller
+  TextEditingController searchController2 = new TextEditingController(); // end location controller
 
-  final List<IconData> icons = [
+  final List<IconData> icons = [ // favorite icons list
     Icons.add,
     Icons.home,
     Icons.star,
     Icons.school
   ];
 
-  int iconNumber = 0;
+  int iconNumber = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
+
+  void updateEndplace( PlaceInfo end ) { // update end data fetched from recent search
+    setState(() { end = updateend; searchController2.text = updateend.mainText; });
+    print(end.mainText);
+  }
+
+  void moveRecentSearchPage() async { // navigate to recent search page and save its location data using updateend
+    updateend = await Navigator.push( context, MaterialPageRoute(builder: (context) => RecentSearchPage()) );
+    updateEndplace(updateend);
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (first) {
+    if(first) {
       start = ModalRoute.of(context).settings.arguments;
       searchController.text = start.description;
     }
@@ -62,7 +74,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     );
                   },
                 ),
-              ),//kiki icon to step nextpage
+              ), // kiki icon to step nextpage
               Positioned(
                 top: 90,
                 right: (MediaQuery.of(context).size.width / 20),
@@ -80,7 +92,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     start = end;
                   },
                 ),
-              ),//swap source and destination
+              ), // swap source and destination
               Positioned(
                 bottom: 100,
                 left: 50,
@@ -100,7 +112,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   nip: BubbleNip.rightTop,
                   radius: Radius.circular(30.0),
                 ),
-              ),//bubble, '나를 누르면 길찾기가 시작돼'
+              ), // bubble, '나를 누르면 길찾기가 시작돼'
               Positioned(
                 top: 220,
                 left: (MediaQuery.of(context).size.width / 20),
@@ -133,7 +145,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.orange,
                             ),
-                            onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => RecentSearchPage(),)); },
+                            onTap: () { moveRecentSearchPage(); },
                           ),
                           InkWell(
                             child: CircleAvatar(
@@ -234,7 +246,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ],
                   ),
                 ),
-              ),//short cut buttons
+              ), // short cut buttons
               Positioned(
                 child: SearchMapPlaceWidget(
                     apiKey: Keys.place,
@@ -269,7 +281,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 120,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),//도착지 검색바
+              ), // 도착지 검색바
               Positioned(
                 child: SearchMapPlaceWidget(
                     apiKey: Keys.place,
@@ -306,7 +318,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 50,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),//출발지 검색바
+              ), // 출발지 검색바
             ],
           ),
         ));

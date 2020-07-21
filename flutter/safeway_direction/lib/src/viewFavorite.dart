@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:safewaydirection/db/KikeeDB.dart';
-import 'package:safewaydirection/models/Favorite.dart';
-import 'package:safewaydirection/models/RecentSearch.dart';
-import 'package:safewaydirection/models/search_map_place.dart';
+
+import '../db/KikeeDB.dart';
+import '../models/Favorite.dart';
+import '../models/RecentSearch.dart';
+import '../models/search_map_place.dart';
 
 viewFavorite(BuildContext context, int id, var data) {
   Favorite favoriteInfo;
