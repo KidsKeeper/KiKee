@@ -10,7 +10,7 @@
         android:label="safewaydirection"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU"/>
+            android:value="****"/>
 
         <activity
             android:name=".MainActivity"
