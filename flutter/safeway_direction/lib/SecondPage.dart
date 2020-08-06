@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'DirectionPage.dart';
-import 'search_map_place.dart';
 import 'package:bubble/bubble.dart';
-import 'PlaceInfo.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'LocalDB.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:safewaydirection/models/search_map_place.dart';
+import 'package:safewaydirection/models/PlaceInfo.dart';
+import 'package:safewaydirection/models/RecentSearch.dart';
+import 'package:safewaydirection/page/ThirdPage.dart';
+import 'package:safewaydirection/page/RecentSearchPage.dart';
+import 'package:safewaydirection/src/viewFavorite.dart';
+import 'package:safewaydirection/db/KikeeDB.dart';
+import 'package:safewaydirection/keys.dart' as Keys;
 
 class NewSearchPage extends StatefulWidget {
   @override
@@ -14,18 +17,30 @@ class NewSearchPage extends StatefulWidget {
 
 class _NewSearchPageState extends State<NewSearchPage> {
   bool first = true;
+
   PlaceInfo start; //시작위치
   PlaceInfo end; //도착위치
-  TextEditingController controller =
-      new TextEditingController(); //SearchBox controller
-  TextEditingController controller2 = new TextEditingController();
 
+  RecentSearch recentSearchInfo; // 최근검색기록
+
+  TextEditingController searchController  =  new TextEditingController(); // SearchBox controller
+  TextEditingController searchController2 = new TextEditingController();
+
+
+  final List<IconData> icons = [
+    Icons.add,
+    Icons.home,
+    Icons.star,
+    Icons.school
+  ];
+
+  int iconNumber = 0;
 
   @override
   Widget build(BuildContext context) {
     if (first) {
       start = ModalRoute.of(context).settings.arguments;
-      controller.text = start.description;
+      searchController.text = start.description;
     }
     return Scaffold(
         backgroundColor: Color(0xfffcefa3),
@@ -44,12 +59,12 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DirectionPage(),
+                          builder: (context) => ThirdPage(),
                           settings: RouteSettings(arguments: args)),
                     );
                   },
                 ),
-              ),
+              ),//kiki icon to step nextpage
               Positioned(
                 top: 90,
                 right: (MediaQuery.of(context).size.width / 20),
@@ -60,15 +75,14 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     size: 40,
                   ),
                   onPressed: () {
-                    String tmp = controller2.text;
-                    controller2.text = controller.text;
-                    controller.text = tmp;
-                    var tmp2 = end;
+                    String tmp = searchController2.text;
+                    searchController2.text = searchController.text;
+                    searchController.text = tmp;
                     end = start;
                     start = end;
                   },
                 ),
-              ),
+              ),//swap source and destination
               Positioned(
                 bottom: 100,
                 left: 50,
@@ -88,7 +102,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   nip: BubbleNip.rightTop,
                   radius: Radius.circular(30.0),
                 ),
-              ),
+              ),//bubble, '나를 누르면 길찾기가 시작돼'
               Positioned(
                 top: 220,
                 left: (MediaQuery.of(context).size.width / 20),
@@ -121,31 +135,45 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Colors.orange,
                             ),
-                            onTap: () {},
+                            onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => RecentSearchPage(),)); },
                           ),
                           InkWell(
                             child: CircleAvatar(
                               radius: 50,
                               child: Icon(
-                                Icons.home,
+                                icons[iconNumber],
                                 color: Colors.white,
                                 size: 70,
                               ),
                               backgroundColor: Colors.greenAccent,
                             ),
                             onTap: () {
-                              KikeeDB.instance.getFavorite('1').then((data) {
-                                try { controller2.text = data[0]['mainText']; }
-                                catch(error) { print(error); }
+                              KikeeDB.instance.getFavorite(1).then((data) {
+                                try {
+                                  setState(() {
+                                    iconNumber = data[0]['icon'];
+                                  });
+
+                                  print(iconNumber);
+                                  searchController2.text = data[0]['mainText'];
+                                  end = PlaceInfo(
+                                      // placeId: place.placeId,
+                                      description: data[0]['description'],
+                                      longitude: data[0]['longitude'],
+                                      latitude: data[0]['latitude'],
+                                      mainText: data[0]['mainText']);
+                                } catch (error) {
+                                  print(error);
+                                }
                               });
                             },
-                            onLongPress: ()
-                            {
-//                              _viewFavorite( context, 1, 'test');
-                              print('1');
-                              KikeeDB.instance.getFavorite('1').then((data) {
-                                try { _viewFavorite( context, '1', data[0]['mainText']); }
-                                catch(error) { _viewFavorite( context, '1', ''); }
+                            onLongPress: () {
+                              KikeeDB.instance.getFavorite(1).then((data) {
+                                try {
+                                  viewFavorite(context, 1, data);
+                                } catch (error) {
+                                  viewFavorite(context, 1, data);
+                                }
                               });
                             },
                           ),
@@ -208,176 +236,87 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ],
                   ),
                 ),
-              ),
+              ),//short cut buttons
               Positioned(
                 child: SearchMapPlaceWidget(
-                    apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
+                    apiKey: Keys.place,
                     language: 'ko',
-                    controller: controller2,
+                    controller: searchController2,
                     hasClearButton: true,
                     iconColor: Color(0xFFF0AD74),
                     placeholder: '',
                     lableText: '도착지: ',
+                    location: LatLng(35.1379222,129.05562775),
+                    radius: 100,
+                    boxShadowColor: Color(0xffe5d877),
                     onSelected: (place) async {
                       final geolocation = await place.geolocation;
-                      double lat = geolocation.Lat();
-                      double lng = geolocation.Lng();
+
+                      double lat = geolocation.lat();
+                      double lng = geolocation.lng();
+
                       end = PlaceInfo(
                           placeId: place.placeId,
                           description: place.description,
                           longitude: lng,
                           latitude: lat,
                           mainText: place.mainText);
+
+                      recentSearchInfo = RecentSearch(
+                          placeId: place.placeId,
+                          description: place.description,
+                          longitude: lng,
+                          latitude: lat,
+                          mainText: place.mainText);
+
+                      KikeeDB.instance.insertRecentSearch(recentSearchInfo);
                     }),
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 120,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),
+              ),//도착지 검색바
               Positioned(
                 child: SearchMapPlaceWidget(
-                    apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
+                    apiKey: Keys.place,
                     language: 'ko',
-                    controller: controller,
+                    controller: searchController,
                     hasClearButton: true,
                     iconColor: Color(0xFFF0AD74),
                     placeholder: '',
-                    lableText: '내 위치: ',
+                    lableText: '출발지: ',
+                    boxShadowColor: Color(0xffe5d877),
+                    location: LatLng(35.1379222,129.05562775),
+                    radius: 100,
                     onSelected: (place) async {
                       first = false;
+
                       final geolocation = await place.geolocation;
-                      double lat = geolocation.Lat();
-                      double lng = geolocation.Lng();
+
+                      double lat = geolocation.lat();
+                      double lng = geolocation.lng();
+
                       start = PlaceInfo(
                           placeId: place.placeId,
                           description: place.description,
                           longitude: lng,
                           latitude: lat,
                           mainText: place.mainText);
+
+                      recentSearchInfo = RecentSearch(
+                          placeId: place.placeId,
+                          description: place.description,
+                          longitude: lng,
+                          latitude: lat,
+                          mainText: place.mainText);
+
+                      KikeeDB.instance.insertRecentSearch(recentSearchInfo);
                     }),
                 width: (MediaQuery.of(context).size.width / 5) * 4,
                 top: 50,
                 left: (MediaQuery.of(context).size.width / 20),
-              ),
+              ),//출발지 검색바
             ],
           ),
         ));
   }
-}
-
-_viewFavorite( BuildContext context, String id, String mainText ) {
-  PlaceInfo favoriteInfo;
-  final favoriteController = new TextEditingController();
-
-  // update favorite
-//  if( mainText != '' ) {
-    Alert(
-      context: context,
-      title: '즐겨찾기 수정',
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          SearchMapPlaceWidget(
-              apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
-              language: 'ko',
-              controller: favoriteController,
-              hasClearButton: true,
-              iconColor: Color(0xFFF0AD74),
-              placeholder: '',
-              lableText: '내 위치: ',
-              onSelected: (place) async {
-                final geolocation = await place.geolocation;
-                double lat = geolocation.Lat();
-                double lng = geolocation.Lng();
-                favoriteInfo = PlaceInfo(
-                    placeId: place.placeId,
-                    description: place.description,
-                    longitude: lng,
-                    latitude: lat,
-                    mainText: place.mainText);
-              }),
-          Row(
-            children: <Widget>[
-              CircleAvatar(radius: 30,
-                child: Icon(Icons.book, color: Colors.white, size: 40,),
-                backgroundColor: Colors.purple,),
-              CircleAvatar(radius: 30,
-                child: Icon(Icons.add, color: Colors.white, size: 40,),
-                backgroundColor: Color(0xFFF0AD74),),
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          ),
-
-        ],
-      ),
-      buttons: [
-        DialogButton(
-          onPressed: () {
-            KikeeDB.instance.updateFavorite(favoriteInfo);
-            print('db update');
-          },
-          child: Text(
-            "수정",
-            style: TextStyle(color: Colors.white, fontSize: 15),
-          ),
-        ),
-      ],
-    ).show();
-//  }
-
-  // insert favorite
-//  else {
-//    Alert(
-//      context: context,
-//      title: '즐겨찾기 추가',
-//      content: Column(
-//        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//        children: <Widget>[
-//          SearchMapPlaceWidget(
-//              apiKey: "AIzaSyArqnmN1rdVusSOjatWg7n-Y4M37x6Y7wU",
-//              language: 'ko',
-//              controller: favoriteController,
-//              hasClearButton: true,
-//              iconColor: Color(0xFFF0AD74),
-//              placeholder: '',
-//              lableText: '내 위치: ',
-//              onSelected: (place) async {
-//                final geolocation = await place.geolocation;
-//                double lat = geolocation.Lat();
-//                double lng = geolocation.Lng();
-//                favoriteInfo = PlaceInfo(
-//                    placeId: place.placeId,
-//                    description: place.description,
-//                    longitude: lng,
-//                    latitude: lat,
-//                    mainText: place.mainText);
-//                KikeeDB.instance.insertFavorite(favoriteInfo);
-//              }),
-//          Row(
-//            children: <Widget>[
-//              CircleAvatar(radius: 30,
-//                child: Icon(Icons.book, color: Colors.white, size: 40,),
-//                backgroundColor: Colors.purple,),
-//              CircleAvatar(radius: 30,
-//                child: Icon(Icons.add, color: Colors.white, size: 40,),
-//                backgroundColor: Color(0xFFF0AD74),),
-//            ],
-//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//          ),
-//
-//        ],
-//      ),
-//      buttons: [
-//        DialogButton(
-//          onPressed: () {
-//            KikeeDB.instance.insertFavorite(favoriteInfo);
-//            print('db insert');
-//          },
-//          child: Text(
-//            "저장",
-//            style: TextStyle(color: Colors.white, fontSize: 15),
-//          ),
-//        ),
-//      ],
-//    ).show();
-//  }
 }

@@ -20,7 +20,7 @@ class SearchMapPlaceWidget extends StatefulWidget {
     this.darkMode = false,
     this.key,
     this.lableText,
-    this.controller
+    this.controller, this.boxShadowColor
   })  : assert((location == null && radius == null) || (location != null && radius != null)),
         super(key: key);
 
@@ -74,6 +74,8 @@ class SearchMapPlaceWidget extends StatefulWidget {
 
   /// The color of the icon to show in the search box
   final Color iconColor;
+
+  final Color boxShadowColor;
 
   /// Enables Dark Mode when set to `true`. Default value is `false`.
   final bool darkMode;
@@ -272,7 +274,7 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
       borderRadius: BorderRadius.all(Radius.circular(30.0)),
       boxShadow: [
         BoxShadow(
-          color: Color(0xffe5d877),
+          color: widget.boxShadowColor,
           spreadRadius: 1,
           blurRadius: 7,
           offset: Offset(0, 3), // changes position of shadow
@@ -321,6 +323,7 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
 
   /// API request function. Returns the Predictions
   Future<dynamic> _makeRequest(input) async {
+
     String url =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=${widget.apiKey}&language=${widget.language}";
     if (widget.location != null && widget.radius != null) {

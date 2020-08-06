@@ -1,6 +1,6 @@
 part of custom_search_map_place;
 
-class Geocoding {
+class Geocoding{
   Geocoding({this.apiKey, language = 'en'});
   String apiKey;
   String language;
