@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../keys.dart';
+import '../db/KikeeDB.dart';
 import '../page/SecondPage.dart';
 import '../models/PlaceInfo.dart';
 
@@ -77,6 +78,7 @@ class _FirstPage2State extends State<FirstPage2> {
               child: Text('건너뛰기',style: TextStyle(color: Color(0xFFF0AD74),fontFamily: 'BMJUA',fontSize: 17),) ,
               onPressed: () async
               {
+                KikeeDB.instance.insertKidsId();
                 // const String PLACES_API_KEY = Keys.place;
 
                 // Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);

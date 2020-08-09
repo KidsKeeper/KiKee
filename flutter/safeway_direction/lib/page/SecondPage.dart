@@ -6,6 +6,7 @@ import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
 import '../page/ThirdPage.dart';
 import '../page/RecentSearchPage.dart';
+import '../page/DBpage.dart';
 import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
@@ -238,7 +239,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               ),
                               backgroundColor: Color(0xFFF0AD74),
                             ),
-                            onTap: () {},
+                            onTap: () { Navigator.push( context, MaterialPageRoute(builder: (context) => DBpage()) );},
                           ),
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
