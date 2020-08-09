@@ -153,7 +153,7 @@ class ThirdPageState extends State<ThirdPage> {
                           zoom: 15.500)));
                 }),
           ),
-          Positioned(
+          Positioned(//내가 작업해야하는 부분.
             bottom: 30,
             left: 20,
             width: MediaQuery.of(context).size.width,
@@ -166,18 +166,69 @@ class ThirdPageState extends State<ThirdPage> {
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
                         int len = routeSelectionList.length;
-                        for (int id = len - 1; id > index; id--) {
-                          routeSelectionList.removeAt(id);
-                          polylines.remove((polylines.toList())[id]);
-                          print(id);
+                        var id = routeSelectionList[index].polylineId;
+                        for (int i = len - 1; i > -1; i--) {
+                          if(i!=index){
+                            routeSelectionList.removeAt(i);
+                          }
                         }
-                        for (int id = index - 1; id > -1; id--) {
-                          routeSelectionList.removeAt(id);
-                          polylines.remove((polylines.toList())[id]);
-                          print(id);
+                        for(int i=polylines.length-1; i>-1; i--){
+                          if(polylines.toList()[i].polylineId!=id){
+                            polylines.remove(polylines.toList()[i]);
+                          }else{
+                            void sendData(){
+                              //polylines.toList()[i].points;
+                            }
+                          }
                         }
-                        print(routeSelectionList.length);
                         setState(() {});
+                      },
+                      onLongPressStart: (Details) {
+                        var id = routeSelectionList[index].polylineId;
+                        var temp;
+                        for(int i=polylines.length-1; i>-1; i--){
+                          if(polylines.toList()[i].polylineId==id){
+                            temp = polylines.toList()[i];
+                            polylines.remove(polylines.toList()[i]);
+                          }
+                        }
+                        polylines.add(Polyline(
+                          polylineId: id,
+                          points:temp.points,
+                          color:Colors.tealAccent,
+                          visible: true,
+                          zIndex: 300,
+                        ));
+                        setState((){});
+                      },
+                      onLongPressEnd: (Details) {
+                        List<Color> colors = [ Colors.red, Colors.yellow, Colors.orange, Colors.blue ];
+                        int setColorId(int danger){
+                          if(danger<1){ //파랑
+                            return 0;
+                          }else if(danger<5){//노랑
+                            return 1;
+                          }else if(danger<10){//주황
+                            return 2;
+                          }else{//빨강
+                            return 3;
+                          }
+                        }
+                        var id = routeSelectionList[index].polylineId;
+                        var temp;
+                        for(int i=polylines.length-1; i>-1; i--){
+                          if(polylines.toList()[i].polylineId==id){
+                            temp = polylines.toList()[i];
+                            polylines.remove(polylines.toList()[i]);
+                          }
+                        }
+                        polylines.add(Polyline(
+                          polylineId: id,
+                          points:temp.points,
+                          color:colors[setColorId(routeSelectionList[index].danger)],
+                          visible: true,
+                        ));
+                        setState((){});
                       },
                     )),
           ),
@@ -205,41 +256,7 @@ class ThirdPageState extends State<ThirdPage> {
         LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
-    for (int i = 0; i < detour.sortRoute.length && i < 6; i++) {
-      routeSelectionList.add(RouteSelectionClass(
-          distance: detour.sortRoute[i].distance.toString(),
-          colorId: detour.colorsId[i],
-          time: detour.sortRoute[i].totalMinute.toString()));
-    }
+    routeSelectionList =detour.routeSelectionList;
     setState(() {});
   }
 }
-/*
-
-Widget directionCard(DirectionClass dir)
-{
-  return Card(
-    color: Color(0xFFDFFBFF),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-    child: Row(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            radius: 20,
-            child : Icon(Icons.directions_walk,color: Colors.white,),
-            backgroundColor: Colors.lightBlue,
-          ),
-        ),
-        Text('${dir.distance}km',style: TextStyle(color: Colors.lightBlue,fontSize: 20,fontFamily: 'BMJUA',textBaseline: TextBaseline.alphabetic ),),
-        SizedBox(width: 10,),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text('${dir.time}분',style: TextStyle(color: Color(0xFF0D47A1),fontSize: 40,fontFamily: 'BMJUA'),),
-        ),
-      ],
-    ),
-
-  );
-}
- */

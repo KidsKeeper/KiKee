@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'models/RouteSelectCard.dart';
 import 'api/tMap.dart';
 import 'api/store.dart';
 import 'api/accidentInformation.dart';
@@ -11,6 +11,7 @@ class Detour{
   List<int> colorsId = [];
   Set<Polyline> polylines = {};
   List<List<LatLng>> polylinePoints = [];
+  List<RouteSelectionClass> routeSelectionList = [];
   way.Route route = way.Route();
   Set<way.Route> routes = {};
   List<LatLng> passPoints = [];
@@ -116,13 +117,19 @@ class Detour{
 
   Future<void> drawAllPolyline() async{
     await getRouteOrDetour();
-
     for( int i = 0; i < polylinePoints.length; i++ ) {
+      routeSelectionList.add(RouteSelectionClass(
+          distance: sortRoute[i].distance.toString(),
+          colorId: colorsId[i],
+          time: sortRoute[i].totalMinute.toString(),
+          polylineId:PolylineId(polylines.length.toString()),
+          danger: sortRoute[i].totalDanger,
+      ));
+      routeSelectionList.sort();
       polylines.add(Polyline(
         polylineId: PolylineId(polylines.length.toString()),
         points:polylinePoints[i],
         color: colors[colorsId[i]],
-
         visible: true,
       ));
     }
