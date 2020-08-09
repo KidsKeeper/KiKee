@@ -1,0 +1,94 @@
+const helpers = require('./helpers');
+const parentsModel = require("../models/parents");
+const parentskidsModel = require("../models/parentskids");
+const kidsModel = require("../models/kids");
+
+// /parents/id/compare
+exports.compare = function (req, res) {
+    console.log('parents id compare connect');
+    
+    const parentsId = req.body['parentsId'];
+
+    if( parentsId ) {
+        parentsModel.find({ parentsId: parentsId }, (err, data) => {
+            if(err) console.log(err);
+
+            if( Object.keys(data).length === 0 ) {
+                var parents = new parentsModel({ parentsId: parentsId, key: null }); // make parents data form.
+                parents.save(function (err, data) {});
+
+                res.send( parentsId.toString() ); // db insert success.
+            }
+
+            else {
+                parentsModel.find({}, (err, data) => {
+                    let savedId = helpers.makeRandomNumber(); // generate a new key when parentsid is duplicated from flutter.
+                    let count = 0;
+
+                    const length = data.length;
+
+                    while( count < 1 ) { // to avoid duplication of parentsid, loop the function.
+                        for( let i = 0; i < length; i++ ) {
+                            if( data[i]['parentsId'] == savedId ) savedId = helpers.makeRandomNumber(); // if parentsid is duplicated, regenerate.
+                            else count++;
+                        }
+                    }
+
+                    var parents = new parentsModel({ parentsId: savedId, key: null }); // make parents data form.
+                    parents.save(function (err, data) {}); // insert data.
+
+                    res.send( savedId.toString() ); // throw parentsid not duplicated.
+                });
+            }
+        });
+    }
+
+    else res.send('no id');
+}
+
+// /parents/kidsId/get
+
+
+// /parents/key/confirm
+exports.confirm = function (req, res) {
+    const parentsId = req.body['parentsId'];
+    const name = req.body['name'];
+    const key = req.body['key'];
+
+    if( parentsId && key ) {
+        kidsModel.find({ key: key }, (err, kdata) => { // check key from parents app with kids key saved before. kdata => kids data.
+            if(err) console.log(err);
+
+            if( Object.keys(kdata).length === 0 ) res.status(401).json({ 'result': 0, 'kidsId': -1 });// res.send('key is wrong');
+
+            else {
+                parentsModel.updateOne({ parentsId: parentsId }, { key: key }, { upsert: true }, function (err, data) {
+                    if(err) {
+                        console.log(err);
+                        res.send('db error');
+                    }
+
+                    var kidsId = kdata[0]['kidsId'];
+
+                    parentskidsModel.find({ kidsId: kidsId }, (err, pkdata) => {
+                        if( Object.keys(pkdata).length === 0 ) {
+                            var parentskids = new parentskidsModel({ parentsId: parentsId, kidsId: kidsId, name: name });
+                            parentskids.save(function (err, data) {});
+                        }
+
+                        else {
+                            console.log('parentskids => kidsid is duplicated');
+                        }
+                    })
+
+                    res.status(401).json({ 'result': 1, 'kidsId': kidsId });
+                    // res.send(key);
+                });
+            }
+        });
+    }
+
+    else res.send('no id or key');
+}
+
+// /parents/key/insert
