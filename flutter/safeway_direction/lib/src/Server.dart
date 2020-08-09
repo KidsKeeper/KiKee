@@ -12,7 +12,7 @@ Future<int> kidsIdCompare( int kidsId ) async {
 
   print('kidsId comparing');
 
-  const String URL = 'http://10.0.2.2:8088/kids/id/compare';
+  const String URL = 'http://3.34.194.177:8088/kids/id/compare';
 
   try {
     final response = await http.post(
@@ -35,7 +35,7 @@ Future<String> kidsKeyCreate( int kidsId ) async {
 
   print('get a key');
 
-  const String URL = 'http://10.0.2.2:8088/kids/key/create';
+  const String URL = 'http://3.34.194.177:8088/kids/key/create';
 
   try {
     final response = await http.post(

@@ -15,6 +15,21 @@ class FirstPage2 extends StatefulWidget {
 }
 
 class _FirstPage2State extends State<FirstPage2> {
+  String myCode =  "미생성";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      _getKidsKey();
+    });
+  }
+
+  _getKidsKey() async {
+    try { myCode = await KikeeDB.instance.getKidsKey(); }
+    catch (e) { print(e); }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,27 +51,35 @@ class _FirstPage2State extends State<FirstPage2> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(15),
-                  child: Text('내 코드를 알려 주세요',style: TextStyle(color: Colors.white,fontFamily: 'BMJUA',fontSize: 20),),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      color: Colors.orange,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xffe5d877),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ]),
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    child: Text('내 코드를 알려 주세요',style: TextStyle(color: Colors.white,fontFamily: 'BMJUA',fontSize: 20),),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                        color: Colors.orange,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xffe5d877),
+                            spreadRadius: 1,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ]),
+                  ),
+                  onTap: () async {
+                    KikeeDB.instance.insertKidsId();
+                    myCode = await KikeeDB.instance.getKidsKey();
+                    print(myCode);
+                    setState(() {});
+                  }
                 ),
                 SizedBox(
                   width: 20,
                 ),
                 Container(
                   padding: EdgeInsets.all(15),
-                  child: Text('A5E2',style: TextStyle(color: Colors.blue,fontFamily: 'BMJUA',fontSize: 20),),
+                  child: Text(myCode,style: TextStyle(color: Colors.blue,fontFamily: 'BMJUA',fontSize: 20),),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                       color: Colors.white,
@@ -78,7 +101,7 @@ class _FirstPage2State extends State<FirstPage2> {
               child: Text('건너뛰기',style: TextStyle(color: Color(0xFFF0AD74),fontFamily: 'BMJUA',fontSize: 17),) ,
               onPressed: () async
               {
-                KikeeDB.instance.insertKidsId();
+//                KikeeDB.instance.insertKidsId();
                 // const String PLACES_API_KEY = Keys.place;
 
                 // Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);

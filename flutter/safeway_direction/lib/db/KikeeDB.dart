@@ -85,6 +85,18 @@ class KikeeDB {
     catch (e) { print('nunu'); print(e); }
   }
 
+  Future<String> getKidsKey() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('kids');
+    int length = maps.length;
+    String kidsKey = "";
+
+    try { kidsKey = maps[0]['key']; }
+    catch (e) { print(e); }
+
+    return kidsKey;
+  }
+
   // Future<void> 추가?
   insertRecentSearch( RecentSearch data ) async {
     final Database db = await database;
