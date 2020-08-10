@@ -38,7 +38,7 @@ class RouteSelectionClass implements Comparable<RouteSelectionClass>{
   int colorId;
   dynamic polylineId;
   int danger;
-  RouteSelectionClass({ this.distance,this.colorId,this.time,this.polylineId,this.danger});
+  RouteSelectionClass({ this.distance,this.colorId,this.time,this.polylineId, this.danger});
   @override
   int compareTo(RouteSelectionClass other) {
     return other.danger - danger;

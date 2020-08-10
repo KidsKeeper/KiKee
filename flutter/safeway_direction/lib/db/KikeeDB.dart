@@ -1,4 +1,3 @@
-// import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:safewaydirection/src/Server.dart';
 import 'package:sqflite/sqflite.dart';
@@ -24,13 +23,13 @@ class KikeeDB {
 
   Future<Database> initDB() async {
     return await openDatabase(
-      join( await getDatabasesPath(), databaseName ),
-      version: 1,
-      onCreate: ( Database db, int version ) async {
-        await db.execute( "CREATE TABLE recentsearch (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, placeId TEXT, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT)" );
-        await db.execute( "CREATE TABLE favorite (id INTEGER PRIMARY KEY, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
-        await db.execute( "CREATE TABLE kids (id INTEGER PRIMARY KEY, kidsId INTEGER, key TEXT)" );
-      }
+        join( await getDatabasesPath(), databaseName ),
+        version: 1,
+        onCreate: ( Database db, int version ) async {
+          await db.execute( "CREATE TABLE recentsearch (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, placeId TEXT, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT)" );
+          await db.execute( "CREATE TABLE favorite (id INTEGER PRIMARY KEY, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
+          await db.execute( "CREATE TABLE kids (id INTEGER PRIMARY KEY, kidsId INTEGER, key TEXT)" );
+        }
     );
   }
 
@@ -46,9 +45,9 @@ class KikeeDB {
       print(kidsId);
 
       Kids kids = Kids(
-        id: 1,
-        kidsId: kidsId,
-        key: null
+          id: 1,
+          kidsId: kidsId,
+          key: null
       );
 
       await db.insert( 'kids', kids.toMap(), conflictAlgorithm: ConflictAlgorithm.replace );
@@ -139,7 +138,7 @@ class KikeeDB {
   getFavorite( int id ) async {
     final db = await database;
     var data = await db.query( 'favorite', where: 'id = ?', whereArgs: [id] );
-  
+
     return data;
   }
 
@@ -159,9 +158,9 @@ class KikeeDB {
     final db = await database;
 
     await db.update( 'favorite', data.toMap(),
-      where: 'id = ?',
-      whereArgs: [data.id],
-      conflictAlgorithm: ConflictAlgorithm.replace
+        where: 'id = ?',
+        whereArgs: [data.id],
+        conflictAlgorithm: ConflictAlgorithm.replace
     );
   }
 

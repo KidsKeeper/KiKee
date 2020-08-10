@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -9,6 +8,7 @@ import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
 import '../detour.dart';
 
+import '../src/Server.dart';
 
 LocationData currentLocation; // a reference to the destination location
 LocationData destinationLocation; // wrapper around the location API
@@ -34,7 +34,7 @@ class ThirdPageState extends State<ThirdPage> {
       List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
   Detour detour;
   PlaceInfo start, end;
-
+  Polyline temp;
   @override
   void initState() {
     super.initState();
@@ -153,7 +153,7 @@ class ThirdPageState extends State<ThirdPage> {
                           zoom: 15.500)));
                 }),
           ),
-          Positioned(//내가 작업해야하는 부분.
+          Positioned(
             bottom: 30,
             left: 20,
             width: MediaQuery.of(context).size.width,
@@ -162,7 +162,7 @@ class ThirdPageState extends State<ThirdPage> {
                 scrollDirection: Axis.horizontal,
                 itemCount: routeSelectionList.length, //슬라이드 카드 정보 리스트
                 itemBuilder: (BuildContext context, int index) =>
-                    GestureDetector(
+                    GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
                         int len = routeSelectionList.length;
@@ -176,12 +176,11 @@ class ThirdPageState extends State<ThirdPage> {
                           if(polylines.toList()[i].polylineId!=id){
                             polylines.remove(polylines.toList()[i]);
                           }else{
-                            void sendData(){
-                              //polylines.toList()[i].points;
-                            }
+                            updatePolygon(polylines.toList()[i].points);//List<LatLng>
                           }
                         }
-                        setState(() {});
+                        updateLocation();
+                        setState(() { print('set state!'); });
                       },
                       onLongPressStart: (Details) {
                         var id = routeSelectionList[index].polylineId;

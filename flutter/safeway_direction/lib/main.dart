@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safewaydirection/page/ThirdPage.dart';
 
 import 'page/FirstPage2.dart';
 
@@ -8,6 +9,6 @@ class KidsKeeper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home : FirstPage2());
+      home : ThirdPage());
   }
 }
