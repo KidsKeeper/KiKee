@@ -32,10 +32,15 @@ Widget routeSelectionCard( RouteSelectionClass rs ) {
   );
 }
 
-class RouteSelectionClass {
+class RouteSelectionClass implements Comparable<RouteSelectionClass>{
   String distance;
   String time;
   int colorId;
-  
-  RouteSelectionClass({ this.distance,this.colorId,this.time });
+  dynamic polylineId;
+  int danger;
+  RouteSelectionClass({ this.distance,this.colorId,this.time,this.polylineId, this.danger});
+  @override
+  int compareTo(RouteSelectionClass other) {
+    return other.danger - danger;
+  }
 }
