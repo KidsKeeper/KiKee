@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart' as geo;
-
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
 import '../detour.dart';
-
 import '../src/Server.dart';
 
 LocationData currentLocation; // a reference to the destination location
@@ -184,7 +182,6 @@ class ThirdPageState extends State<ThirdPage> {
                       },
                       onLongPressStart: (Details) {
                         var id = routeSelectionList[index].polylineId;
-                        var temp;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
                             temp = polylines.toList()[i];
@@ -214,7 +211,7 @@ class ThirdPageState extends State<ThirdPage> {
                           }
                         }
                         var id = routeSelectionList[index].polylineId;
-                        var temp;
+                        var color = temp.color;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
                             temp = polylines.toList()[i];
@@ -224,7 +221,7 @@ class ThirdPageState extends State<ThirdPage> {
                         polylines.add(Polyline(
                           polylineId: id,
                           points:temp.points,
-                          color:colors[setColorId(routeSelectionList[index].danger)],
+                          color:color,//colors[setColorId(routeSelectionList[index].danger)]
                           visible: true,
                         ));
                         setState((){});
