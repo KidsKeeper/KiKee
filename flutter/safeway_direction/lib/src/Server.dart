@@ -90,7 +90,7 @@ Future<void> updateLocation() async {
 
     Timer.periodic( new Duration(seconds: 1), (timer) async {
       print(count);
-      if( count < 10 ) {
+      if( count < 5 ) {
         Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
         double lon = position.longitude;
         double lat = position.latitude;

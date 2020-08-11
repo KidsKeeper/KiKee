@@ -198,18 +198,6 @@ class ThirdPageState extends State<ThirdPage> {
                         setState((){});
                       },
                       onLongPressEnd: (Details) {
-                        List<Color> colors = [ Colors.red, Colors.yellow, Colors.orange, Colors.blue ];
-                        int setColorId(int danger){
-                          if(danger<1){ //파랑
-                            return 0;
-                          }else if(danger<5){//노랑
-                            return 1;
-                          }else if(danger<10){//주황
-                            return 2;
-                          }else{//빨강
-                            return 3;
-                          }
-                        }
                         var id = routeSelectionList[index].polylineId;
                         var color = temp.color;
                         for(int i=polylines.length-1; i>-1; i--){
