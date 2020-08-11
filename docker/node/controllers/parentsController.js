@@ -2,6 +2,7 @@ const helpers = require('./helpers');
 const parentsModel = require("../models/parents");
 const parentskidsModel = require("../models/parentskids");
 const kidsModel = require("../models/kids");
+const kidslocationModel = require("../models/kidslocation");
 
 // /parents/id/compare
 exports.compare = function (req, res) {
@@ -46,9 +47,6 @@ exports.compare = function (req, res) {
     else res.send('no id');
 }
 
-// /parents/kidsId/get
-
-
 // /parents/key/confirm
 exports.confirm = function (req, res) {
     const parentsId = req.body['parentsId'];
@@ -91,4 +89,24 @@ exports.confirm = function (req, res) {
     else res.send('no id or key');
 }
 
-// /parents/key/insert
+// /parents/location/get
+exports.get = function (req, res) {
+    console.log('parents start to get location');
+
+    const kidsId = req.body['kidsId'];
+    const key = req.body['key'];
+
+    if( kidsId && key ) {
+        kidslocationModel.find({ kidsId: kidsId, key: key }, (err, data) => {
+            if(err) console.log(err);
+
+            const length = Object.keys(kdata).length;
+
+            if( length === 0 ) res.send('no data');
+
+            else res.json({ data });
+        });
+    }
+
+    else res.send('no id or key');
+}

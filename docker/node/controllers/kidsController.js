@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-// const parentsModel = require("../models/parents");
 const kidsModel = require("../models/kids");
 const kidslocationModel = require("../models/kidslocation");
 
@@ -84,47 +83,99 @@ exports.create = function (req, res) {
     else res.status(401).json({ 'result': 0, 'key': null });
 }
 
-// /kids/key/confirm
-
-
 // /kids/location/start
-exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값이 있는지 확인하고 이 쪽으로 들어옴
+exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값이 있는지 확인하고 이 쪽으로 들어옴.
     console.log('map start');
 
     const kidsId = req.body['kidsId'];
     const key = req.body['key'];
 
     if( kidsId && key ) {
-        kidslocationModel.find({ kidsId: kidsId }, (err, kdata) => {
+        kidslocationModel.find({ kidsId: kidsId, key: key }, (err, kdata) => {
+            if(err) console.log(err);
             console.log(kdata);
-            if( Object.keys(kdata).length === 0 ) res.send('key is wrong');
 
-            if( kdata[0]['status'] == false ) { // 처음으로 길 찾기를 시작 했을 때 초기 정보 업데이트.
-                console.log('status is false');
+            const length = Object.keys(kdata).length;
 
-                const start = req.body['start'];
-                const end = req.body['end'];
-                const polygon = req.body['polygon'];
+            if( length === 0 ) res.send('id is wrong');
 
-                kidslocationModel.updateOne(
-                    { kidsId: kidsId },
-                    { start: start, end: end, polygon: polygon, status: true },
-                    function (err, data) { if(err) console.log(err); });
-                
-                res.send('1');
+            const polygon = req.body['polygon'];
+            const start = req.body['start'];
+            const end = req.body['end'];
+
+            if( polygon ) {
+                if( kdata[0]['status'] == false ) { // 처음으로 길 찾기를 시작 했을 때 초기 정보 업데이트.
+                    var moment = require('moment');
+                    var currentDate = moment().format('YYYY-MM-DD HH:mm');
+
+                    kidslocationModel.updateOne({ kidsId: kidsId }, {
+                        start: start,
+                        end: end,
+                        polygon: polygon,
+                        status: true,
+                        date: currentDate
+                    }, { upsert: true }, function (err, data) { if(err) console.log(err); });
+                    // kidslocationModel.insertOne({
+                    //     kidsId: kidsId,
+                    //     start: start,
+                    //     end: end,
+                    //     polygon: polygon,
+                    //     status: true
+                    // }, function (err, data) { if(err) console.log(err); });
+                }
+
+                else { // 초기 정보를 넣고 나서 지속적으로 위경도 데이터 업데이트.
+                    var lon = req.body['lon'];
+                    var lat = req.body['lat'];
+
+                    while( kdata[ length - 1 ]['status'] == false ) { // 마지막 기록이 false가 될 때 까지 반복.
+                        kidslocationModel.updateOne({ kidsId: kidsId }, {
+                            lat: lat,
+                            lon: lon,
+                        }, { upsert: true }, function (err, data) { if(err) console.log(err); });
+                    }
+                }
+
+                // if( kdata[0]['status'] == false ) { // 처음으로 길 찾기를 시작 했을 때 초기 정보 업데이트.
+                //     console.log('status is false');
+
+                //     // print(polygon);
+
+                //     kidslocationModel.insertOne({
+                //         kidsId: kidsId,
+                //         start: start,
+                //         end: end,
+                //         polygon: polygon,
+                //         status: true
+                //     }, function (err, data) { if(err) console.log(err); });
+
+                //     // kidslocationModel.updateOne(
+                //     //     { kidsId: kidsId },
+                //     //     { start: start, end: end, polygon: polygon, status: true },
+                //     //     function (err, data) { if(err) console.log(err); });
+
+                //     res.send('1');
+                // }
+
+                // else { // 초기 정보를 넣고 나서 지속적으로 위경도 데이터 업데이트.
+                //     const lon = req.body['lon'];
+                //     const lat = req.body['lat'];
+
+                //     // kidslocationModel.updateOne(
+                //     //     { kidsId: kidsId },
+                //     //     { lon: lon, lat: lat },
+                //     //     function (err, data) { if(err) console.log(err); });
+
+                //     kidslocationModel.insertOne({
+                //         lon: lon,
+                //         lat: lat
+                //     }, function (err, data) { if(err) console.log(err); });
+
+                //     res.send('1'); // 위경도 데이터를 잘 받고 저장 했다면 1를 던져줌.
+                // }
             }
 
-            else { // 초기 정보를 넣고 나서 지속적으로 위경도 데이터 업데이트.
-                const lon = req.body['lon'];
-                const lat = req.body['lat'];
-                
-                kidslocationModel.updateOne(
-                    { kidsId: kidsId },
-                    { lon: lon, lat: lat },
-                    function (err, data) { if(err) console.log(err); });
-
-                res.send('1'); // 위경도 데이터를 잘 받고 저장 했다면 1를 던져줌.
-            }
+            else res.send('no polygon or current ');
         });
     }
 
@@ -137,13 +188,23 @@ exports.end = function (req, res) {
     const key = req.body['key'];
 
     if( kidsId && key ) {
-        kidslocationModel.find({ key: key }, (err, kdata) => {
+        kidslocationModel.find({ kidsId: kidsId, key: key }, (err, kdata) => {
             if( Object.keys(kdata).length === 0 ) res.send('key is wrong');
 
-            if( kdata[0]['status'] == 1 ) { // 길 찾기를 종료하는데 status가 1이면 0으로 업데이트 하기.
-                kidslocationModel.updateOne({ status: 0 }, { upsert: true }, function (err, data) {});
-                return res.send(1);
-            }
+            kidslocationModel.insertOne({
+                kidsId: kidsId,
+                // lat: lat,
+                // lon: lon,
+                // start: start,
+                // end: end,
+                // polygon: polygon,
+                status: false
+            }, function (err, data) { if(err) console.log(err); });
+
+            // if( kdata[0]['status'] == 1 ) { // 길 찾기를 종료하는데 status가 1이면 0으로 업데이트 하기.
+            //     kidslocationModel.updateOne({ status: false }, { upsert: true }, function (err, data) {});
+            //     return res.send(1);
+            // }
         });
     }
 

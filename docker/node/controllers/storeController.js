@@ -24,9 +24,12 @@ exports.index = function (req, res) {
             else {
                 storeModel.find((err, data) => {
                     if(err) return res.status(500).json({ error: 'db error' });
-                    res.json({ data })
+                    if( Object.keys(data).length === 0 ) return res.status(404).json({ error: 'no data'});
+                    res.json({ data });
                 });
             }
+
+            break;
 
         case 2:
             res.status(401).json({ error: 'key is invalid' });
