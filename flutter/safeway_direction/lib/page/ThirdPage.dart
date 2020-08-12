@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:safewaydirection/models/routeGuide.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
 import '../detour.dart';
@@ -37,20 +38,18 @@ class ThirdPageState extends State<ThirdPage> {
   Polyline temp;
 
   // 경로안내 관련 데이터
-  int selectRoute = -1;
-  int routeLength;
-  int pointIndex = 0;
-  String roadName = "";
-  String description = "";
-  LatLng nextStop;
-  //
+  RouteGuide routeGuide;
+
   @override
   void initState() {
     super.initState();
     location = new Location();
+
     location.onLocationChanged.listen((LocationData cLoc) {
       currentLocation = cLoc;
       updatePinOnMap(cLoc);
+      if(routeGuide != null)
+        routeGuide.locationStream.add(cLoc);
     });
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
@@ -169,22 +168,17 @@ class ThirdPageState extends State<ThirdPage> {
             height: 100,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: selectRoute == -1
+              itemCount: routeGuide == null
                   ? routeSelectionList.length
                   : 1, //슬라이드 카드 정보 리스트
               itemBuilder: (BuildContext context, int index) {
-                return selectRoute == -1
+                return routeGuide == null
                     ? GestureDetector(
                         //선택한거 빼고 지우는 부분.
                         child: routeSelectionCard(routeSelectionList[index]),
                         onTap: () {
-                          selectRoute = index;
-                          detour.selectRoute = detour.sortRoute[index];
-                          roadName = detour.selectRoute.locations[0].roadName;
-                          description = detour.selectRoute.locations[0]
-                              .description; // 어느 경로 저장했는지 표시.
-                          nextStop = detour.selectRoute.locations[1].location;
-                          routeLength = detour.selectRoute.locations.length;
+                          routeGuide = RouteGuide(detour.sortRoute[index]);
+                          routeGuide.start();
                           updateLocation();
                           setState(() {
                             print('set state!');
@@ -241,7 +235,7 @@ class ThirdPageState extends State<ThirdPage> {
                             child: Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(description),
+                                child: Text(routeGuide.description),
                               ),
                             )),
                       );
@@ -255,10 +249,6 @@ class ThirdPageState extends State<ThirdPage> {
 
   Future<void> updatePinOnMap(LocationData location) async {
     final GoogleMapController controller = await _mapController.future;
-    double result = 100;
-    if (nextStop != null)
-      result = distanceInMeterByHaversine(
-          LatLng(location.latitude, location.longitude), nextStop);
     setState(() {
       _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
       _markers.add(Marker(
@@ -266,26 +256,14 @@ class ThirdPageState extends State<ThirdPage> {
           position:
               LatLng(location.latitude, location.longitude), // updated position
           icon: locationIcon[0]));
-      if (nextStop != null) {
-        _markers.removeWhere((m) => m.markerId.value == 'testpin');
-        _markers.add(Marker(
-            markerId: MarkerId('testpin'),
-            position: nextStop, // updated position
-            icon: locationIcon[1]));
-      }
-      if (result < 20.00 && pointIndex != routeLength) {
-        roadName = detour.selectRoute.locations[pointIndex].roadName;
-        description = detour.selectRoute.locations[pointIndex].description;
-        pointIndex += 1;
-        nextStop = detour.selectRoute.locations[pointIndex].location;
-      }
     });
   }
 
   void setPolylines() async {
     print(
         "==================Function setPolylines in ThirdPage.dart is CALLED!==================");
-    detour = Detour.map(LatLng(start.latitude, start.longitude), LatLng(end.latitude, end.longitude));
+    detour = Detour.map(LatLng(start.latitude, start.longitude),
+        LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
     routeSelectionList = detour.routeSelectionList;
