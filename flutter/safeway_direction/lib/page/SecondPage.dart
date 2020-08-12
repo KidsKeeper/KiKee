@@ -11,6 +11,8 @@ import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
 import '../src/Server.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
 class NewSearchPage extends StatefulWidget {
   @override
   _NewSearchPageState createState() => _NewSearchPageState();
@@ -21,7 +23,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
 
   PlaceInfo start; // start location class variable
   PlaceInfo end; // end location class variable
-  PlaceInfo updateend; // end location given from recent search data
+  PlaceInfo update; // end location given from recent search data
 
   RecentSearch recentSearchInfo; // recent search class variable
 
@@ -37,14 +39,56 @@ class _NewSearchPageState extends State<NewSearchPage> {
 
   int iconNumber = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
 
-  void updateEndplace( PlaceInfo end ) { // update end data fetched from recent search
-    setState(() { end = updateend; searchController2.text = updateend.mainText; });
+  void updateEndPlace( ) { // update end data fetched from recent search
+    setState(() { end = update; searchController2.text = update.mainText; });
     print(end.mainText);
   }
 
+  void updateStartPlace( ) { // update end data fetched from recent search
+    setState(() { start = update; searchController.text = update.mainText; });
+    print(start.mainText);
+  }
+
+
   void moveRecentSearchPage() async { // navigate to recent search page and save its location data using updateend
-    updateend = await Navigator.push( context, MaterialPageRoute(builder: (context) => RecentSearchPage()) );
-    updateEndplace(updateend);
+    update = await Navigator.push( context, MaterialPageRoute(builder: (context) => RecentSearchPage()) );
+    Alert(
+      context: context,
+      title: "무엇으로 설정할까요?",
+      style: AlertStyle(
+        titleStyle: TextStyle(fontFamily: 'BMJUA',color: Colors.orangeAccent),
+      ),
+      buttons: [
+        DialogButton(
+          radius: BorderRadius.circular(30),
+         color: Colors.orangeAccent,
+          child: Text(
+            "출발지",
+            style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
+          ),
+          onPressed: (){
+            print('press1');
+            updateStartPlace();
+            Navigator.pop(context);
+            },
+          width: 120,
+        ),
+        DialogButton(
+          radius: BorderRadius.circular(30),
+        color: Colors.orangeAccent,
+          child: Text(
+            "도착지",
+            style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
+          ),
+          onPressed: (){
+            print('press1');
+            updateEndPlace();
+            Navigator.pop(context);
+          },
+          width: 120,
+        ),
+      ],
+    ).show();
   }
 
   @override
@@ -54,6 +98,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
     if(first) {
       start = ModalRoute.of(context).settings.arguments;
       searchController.text = start.description;
+      first = false;
     }
     return Scaffold(
       backgroundColor: Color(0xfffce76e),
