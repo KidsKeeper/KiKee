@@ -33,6 +33,7 @@ class ThirdPageState extends State<ThirdPage> {
   Detour detour;
   PlaceInfo start, end;
   Polyline temp;
+  bool isRoutingStart = false;
   @override
   void initState() {
     super.initState();
@@ -66,7 +67,7 @@ class ThirdPageState extends State<ThirdPage> {
     List<PlaceInfo> route = ModalRoute.of(context).settings.arguments;
     start = route[0];
     end = route[1];
-
+    print("we are here again.");
     for (int i = 0; i < 2; i++) {
       _markers.add(Marker(
         markerId: MarkerId(_markers.length.toString()),
@@ -141,16 +142,23 @@ class ThirdPageState extends State<ThirdPage> {
                 ),
                 backgroundColor: Colors.white,
                 onPressed: () async {
-                  geo.Position currentLocation = await geo.Geolocator()
-                      .getLastKnownPosition(
-                          desiredAccuracy: geo.LocationAccuracy.high);
-                  final GoogleMapController controller =
-                      await _mapController.future;
-                  controller.animateCamera(CameraUpdate.newCameraPosition(
-                      CameraPosition(
-                          target: LatLng(currentLocation.latitude,
-                              currentLocation.longitude),
-                          zoom: 15.500)));
+                  geo.Position currentLocation = await geo.Geolocator().getLastKnownPosition(desiredAccuracy: geo.LocationAccuracy.high);
+                  final GoogleMapController controller = await _mapController.future;
+                  if(isRoutingStart==false){
+                    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                        zoom: 15.800)));
+                    print('isRoutingStart is false');
+                  }else{
+                    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                        tilt: 59.440717697143555,
+                        bearing: 192.8334901395799,
+                        zoom: 19.151926040649414
+                         )));
+                    print('isRoutingStart is true');
+                  }
+
                 }),
           ),
           Positioned(
@@ -165,22 +173,24 @@ class ThirdPageState extends State<ThirdPage> {
                     GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
-                        int len = routeSelectionList.length;
+                        routeSelectionList.clear();
+                        _zoomStart();
+                        print("change isRoutingStart Value. Probably");
+                        try{
                         var id = routeSelectionList[index].polylineId;
-                        for (int i = len - 1; i > -1; i--) {
-                          if(i!=index){
-                            routeSelectionList.removeAt(i);
-                          }
-                        }
                         for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId!=id){
-                            polylines.remove(polylines.toList()[i]);
-                          }else{
+                          if(polylines.toList()[i].polylineId==id){
                             updatePolygon(polylines.toList()[i].points);//List<LatLng>
+                            break;
                           }
+                        }}
+                        catch(e){
+                          print(e);
                         }
                         updateLocation();
-                        setState(() { print('set state!'); });
+                        if(mounted){
+                          setState(() {isRoutingStart=true;print("onTap setState");});
+                        }
                       },
                       onLongPressStart: (Details) {
                         var id = routeSelectionList[index].polylineId;
@@ -223,18 +233,6 @@ class ThirdPageState extends State<ThirdPage> {
     );
   }
 
-  Future<void> updatePinOnMap(LocationData location) async {
-    final GoogleMapController controller = await _mapController.future;
-    setState(() {
-      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
-      _markers.add(Marker(
-          markerId: MarkerId('sourcePin'),
-          position:
-              LatLng(location.latitude, location.longitude), // updated position
-          icon: locationIcon[0]));
-    });
-  }
-
   void setPolylines() async {
     print(
         "==================Function setPolylines in ThirdPage.dart is CALLED!==================");
@@ -244,5 +242,27 @@ class ThirdPageState extends State<ThirdPage> {
     polylines = detour.polylines;
     routeSelectionList =detour.routeSelectionList;
     setState(() {});
+  }
+
+  void updatePinOnMap(LocationData location) {
+//    final GoogleMapController controller = await _mapController.future;
+    setState(() {
+      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
+      _markers.add(Marker(
+          markerId: MarkerId('sourcePin'),
+          position:
+          LatLng(location.latitude, location.longitude), // updated position
+          icon: locationIcon[0]));
+    });
+  }
+
+  Future<void> _zoomStart() async {
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(start.latitude,start.longitude),
+        bearing: 192.8334901395799,
+        tilt: 59.440717697143555,
+        zoom: 19.151926040649414))
+    );
   }
 }
