@@ -25,6 +25,10 @@ viewFavorite(BuildContext context, int id, var data) {
     Alert(
       context: context,
       title: '즐겨찾기 수정',
+      style: AlertStyle(
+        titleStyle: TextStyle( fontFamily: 'BMJUA',color: Color(0xffff9100),fontSize: 30),
+        backgroundColor: Color(0xfffdee96),
+      ),
       content: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -42,21 +46,21 @@ viewFavorite(BuildContext context, int id, var data) {
               double lat = geolocation.lat();
               double lng = geolocation.lng();
 
-              recentSearchInfo = RecentSearch(                
-                  // id: id,
-                  placeId: place.placeId,
-                  description: place.description,
-                  // longitude: lng,
-                  // latitude: lat,
-                  mainText: place.mainText,);
+              recentSearchInfo = RecentSearch(
+                // id: id,
+                placeId: place.placeId,
+                description: place.description,
+                // longitude: lng,
+                // latitude: lat,
+                mainText: place.mainText,);
 
               favoriteInfo = Favorite(
-                  // placeId: place.placeId,
-                  id: id,
-                  description: place.description,
-                  longitude: lng,
-                  latitude: lat,
-                  mainText: place.mainText,);
+                // placeId: place.placeId,
+                id: id,
+                description: place.description,
+                longitude: lng,
+                latitude: lat,
+                mainText: place.mainText,);
 
               _insertRecentSearch(recentSearchInfo);
             },
@@ -106,35 +110,42 @@ viewFavorite(BuildContext context, int id, var data) {
       ),
       buttons: [
         DialogButton(
+          color: Color(0xffff9100),
           onPressed: () {
             _updateFavorite(favoriteInfo);
             print('db update');
             Navigator.pop(context);
           },
           child:
-              Text("수정", style: TextStyle(color: Colors.white, fontSize: 15)),
+          Text("수정", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
         ),
         DialogButton(
+          color: Color(0xffff9100),
           onPressed: () {
             _deleteFavorite(id);
             print('db delete');
             Navigator.pop(context);
           },
           child:
-              Text("삭제", style: TextStyle(color: Colors.white, fontSize: 15)),
+          Text("삭제", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
         ),
       ],
     ).show();
   }
-  
+
   // insert favorite
   catch (error) {
     Alert(
       context: context,
       title: '즐겨찾기 추가',
+      style: AlertStyle(
+        titleStyle: TextStyle( fontFamily: 'BMJUA',color: Color(0xffff9100),fontSize: 30),
+        backgroundColor: Color(0xfffdee96),
+      ),
       content: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
+          SizedBox(height: 20,),
           SearchMapPlaceWidget(
             apiKey: "****",
             language: 'ko',
@@ -149,26 +160,27 @@ viewFavorite(BuildContext context, int id, var data) {
               double lat = geolocation.lat();
               double lng = geolocation.lng();
 
-              recentSearchInfo = RecentSearch(                
-                  // id: id,
-                  placeId: place.placeId,
-                  description: place.description,
-                  // longitude: lng,
-                  // latitude: lat,
-                  mainText: place.mainText,);
+              recentSearchInfo = RecentSearch(
+                // id: id,
+                placeId: place.placeId,
+                description: place.description,
+                // longitude: lng,
+                // latitude: lat,
+                mainText: place.mainText,);
 
               favoriteInfo = Favorite(
-                  // placeId: place.placeId,
-                  id: id,
-                  description: place.description,
-                  longitude: lng,
-                  latitude: lat,
-                  mainText: place.mainText,);
+                // placeId: place.placeId,
+                id: id,
+                description: place.description,
+                longitude: lng,
+                latitude: lat,
+                mainText: place.mainText,);
 
               _insertRecentSearch(recentSearchInfo);
               // KikeeDB.instance.insertRecentSearch(recentSearchInfo);
             },
           ),
+          SizedBox(height: 20,),
           Row(
             children: <Widget>[
               InkWell(
@@ -179,7 +191,7 @@ viewFavorite(BuildContext context, int id, var data) {
                     color: Colors.white,
                     size: 50,
                   ),
-                  backgroundColor: Color(0xFFF0AD74),
+                  backgroundColor: Color(0xff47c2bb),
                 ),
                 onTap: () { favoriteInfo.icon = 1; },
               ),
@@ -191,7 +203,7 @@ viewFavorite(BuildContext context, int id, var data) {
                     color: Colors.white,
                     size: 50,
                   ),
-                  backgroundColor: Color(0xFFF0AD74),
+                  backgroundColor: Color(0xffd979c6),
                 ),
                 onTap: () { favoriteInfo.icon = 2; },
               ),
@@ -203,7 +215,7 @@ viewFavorite(BuildContext context, int id, var data) {
                     color: Colors.white,
                     size: 50,
                   ),
-                  backgroundColor: Color(0xFFF0AD74),
+                  backgroundColor: Color(0xff75b8f4),
                 ),
                 onTap: () { favoriteInfo.icon = 3; },
               ),
@@ -214,13 +226,14 @@ viewFavorite(BuildContext context, int id, var data) {
       ),
       buttons: [
         DialogButton(
-          onPressed: () {
-            _insertFavorite(favoriteInfo);
-            print('db insert');
-            Navigator.pop(context);
-          },
-          child:
-              Text("저장", style: TextStyle(color: Colors.white, fontSize: 15))
+            color: Color(0xffff9100),
+            onPressed: () {
+              _insertFavorite(favoriteInfo);
+              print('db insert');
+              Navigator.pop(context);
+            },
+            child:
+            Text("저장", style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'))
         ),
       ],
     ).show();
