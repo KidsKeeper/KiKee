@@ -90,6 +90,7 @@ class ThirdPageState extends State<ThirdPage> {
             ),
             markers: _markers,
             polylines: polylines,
+            zoomControlsEnabled: false,
             onMapCreated: (GoogleMapController controller) {
               _mapController.complete(controller);
               setPolylines();
@@ -112,7 +113,7 @@ class ThirdPageState extends State<ThirdPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Text(
-                          ' ${start.mainText} -> ${end.mainText}',
+                          ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
                           style: TextStyle(
                               fontSize: 20,
                               fontFamily: 'BMJUA',
@@ -180,7 +181,7 @@ class ThirdPageState extends State<ThirdPage> {
                         var id = routeSelectionList[index].polylineId;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
-                            updatePolygon(polylines.toList()[i].points);//List<LatLng>
+                            updatePolygon(polylines.toList()[i].points,start.mainText,end.mainText);//List<LatLng>
                             break;
                           }
                         }}

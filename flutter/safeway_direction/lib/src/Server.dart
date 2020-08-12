@@ -63,7 +63,7 @@ Future<String> kidsKeyCreate( int kidsId ) async {
   return key;
 }
 
-Future<void> updatePolygon(List<LatLng> points) async {
+Future<void> updatePolygon(List<LatLng> points,String source, String destination) async {
   List<Kids> kids = await KikeeDB.instance.getKids();
   const String URL = 'http://3.34.194.177:8088/kids/location/start';
 
@@ -72,7 +72,7 @@ Future<void> updatePolygon(List<LatLng> points) async {
     int kidsId = kids[0].kidsId;
     String key = kids[0].key;
 
-    Map data = { 'kidsId': kidsId, 'key': key, 'polygon': points, 'start':points[0], 'end':points.last };
+    Map data = { 'kidsId': kidsId, 'key': key, 'polygon': points, 'start':points[0], 'end':points.last, 'source': source, 'destination':destination };
 
     final response = await http.post(
         Uri.encodeFull(URL),
