@@ -6,10 +6,11 @@ let kidslocationSchema = new Schema({
     kidsId: Number,
     lon: Number,
     lat: Number,
-    start: Number,
-    end: Number,
+    start: Array,
+    end: Array,
     polygon: Array,
-    status: Boolean
+    status: Boolean,
+    date: {type: Date, default: Date.now}
 }, { collection: 'kidslocation', versionKey: false });
 
 module.exports = mongoose.model( 'kidslocation', kidslocationSchema );

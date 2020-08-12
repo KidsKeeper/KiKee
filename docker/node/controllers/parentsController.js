@@ -94,13 +94,13 @@ exports.get = function (req, res) {
     console.log('parents start to get location');
 
     const kidsId = req.body['kidsId'];
-    const key = req.body['key'];
+    // const key = req.body['key'];
 
-    if( kidsId && key ) {
-        kidslocationModel.find({ kidsId: kidsId, key: key }, (err, data) => {
+    if( kidsId ) {
+        kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
             if(err) console.log(err);
 
-            const length = Object.keys(kdata).length;
+            const length = Object.keys(data).length;
 
             if( length === 0 ) res.send('no data');
 
