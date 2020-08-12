@@ -10,7 +10,7 @@ import '../page/DBpage.dart';
 import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
-
+import '../src/Server.dart';
 class NewSearchPage extends StatefulWidget {
   @override
   _NewSearchPageState createState() => _NewSearchPageState();
@@ -64,6 +64,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 child: InkWell(
                   child: Image.asset('image/_304.png'),
                   onTap: () {
+                    stopUpdateLocation();
                     List<PlaceInfo> args = [start, end];
                     print(start.mainText);
                     print(end.mainText);

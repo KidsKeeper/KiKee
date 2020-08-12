@@ -7,6 +7,11 @@ import 'dart:convert';
 
 import '../db/KikeeDB.dart';
 import '../models/Kids.dart';
+import 'package:location/location.dart';
+
+Location location;
+LocationData currentLocation;
+StreamSubscription<LocationData> locationSubscription;
 
 Map <String, String> headers = {
   'Content-type': 'application/json',
@@ -22,9 +27,9 @@ Future<int> kidsIdCompare( int kidsId ) async {
 
   try {
     final response = await http.post(
-      Uri.encodeFull(URL),
-      headers: headers,
-      body: jsonEncode(data)
+        Uri.encodeFull(URL),
+        headers: headers,
+        body: jsonEncode(data)
     );
 
     kidsId = int.parse(response.body);
@@ -45,9 +50,9 @@ Future<String> kidsKeyCreate( int kidsId ) async {
 
   try {
     final response = await http.post(
-      Uri.encodeFull(URL),
-      headers: headers,
-      body: jsonEncode(data)
+        Uri.encodeFull(URL),
+        headers: headers,
+        body: jsonEncode(data)
     );
 
     key = response.body;
@@ -84,35 +89,42 @@ Future<void> updateLocation() async {
   const String URL = 'http://3.34.194.177:8088/kids/location/start';
 
   try {
-    int count = 0;
     int kidsId = kids[0].kidsId;
     String key = kids[0].key;
 
-    Timer.periodic( new Duration(seconds: 1), (timer) async {
-      print(count);
-      if( count < 5 ) {
-        Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
-        double lon = position.longitude;
-        double lat = position.latitude;
+    location = new Location();
+    locationSubscription = location.onLocationChanged.listen((LocationData cLoc) async {
+      currentLocation = cLoc;
 
-        Map data = { 'kidsId': kidsId, 'key': key, 'lon': lon, 'lat': lat};
-
-        count++;
-
-        final response = await http.post(
-            Uri.encodeFull(URL),
-            headers: headers,
-            body: jsonEncode(data)
-        );
-      }
-
-      else {
-        count = 0;
-        timer.cancel();
-      }
+      Map data = { 'kidsId': kidsId, 'key': key, 'lon': cLoc.longitude, 'lat': cLoc.latitude };
+      await http.post(
+          Uri.encodeFull(URL),
+          headers: headers,
+          body: jsonEncode(data)
+      );
     });
   }
 
   catch (e) { print(e); }
+}
 
+Future<void> stopUpdateLocation() async {
+  locationSubscription.cancel();
+
+  List<Kids> kids = await KikeeDB.instance.getKids();
+  const String URL = 'http://3.34.194.177:8088/kids/location/end';
+
+  try {
+    int kidsId = kids[0].kidsId;
+    String key = kids[0].key;
+
+    Map data = { 'kidsId': kidsId, 'key': key };
+    await http.post(
+        Uri.encodeFull(URL),
+        headers: headers,
+        body: jsonEncode(data)
+    );
+  }
+
+  catch (e) { print(e); }
 }

@@ -36,6 +36,8 @@ class ThirdPageState extends State<ThirdPage> {
   @override
   void initState() {
     super.initState();
+    //make status false
+    //stopUpdateLocation();
     location = new Location();
     location.onLocationChanged.listen((LocationData cLoc) {
       currentLocation = cLoc;

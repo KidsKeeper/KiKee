@@ -19,9 +19,9 @@ class _FirstPage2State extends State<FirstPage2> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setState(() {
+
       _getKidsKey();
     });
   }
