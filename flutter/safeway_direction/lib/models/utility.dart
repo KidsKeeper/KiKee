@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -36,4 +37,28 @@ class Pair<E, F> {
 
     return Pair<double, double>(double.parse(str1), double.parse(str2));
   }
+}
+
+double distanceInMeterByHaversine(LatLng l1, LatLng l2) {
+  double x1 = l1.latitude;
+  double y1 = l1.longitude;
+  double x2 = l2.latitude;
+  double y2 = l2.longitude;
+
+  double distance;
+  double radius = 6371; // 지구 반지름(km)
+  double toRadian = pi / 180;
+
+  double deltaLatitude = (x1 - x2).abs() * toRadian;
+  double deltaLongitude = (y1 - y2).abs() * toRadian;
+
+  double sinDeltaLat = sin(deltaLatitude / 2);
+  double sinDeltaLng = sin(deltaLongitude / 2);
+  double squareRoot = sqrt(
+      sinDeltaLat * sinDeltaLat +
+          cos(x1 * toRadian) * cos(x2 * toRadian) * sinDeltaLng * sinDeltaLng);
+
+  distance = 2 * radius * asin(squareRoot);
+
+  return distance * 1000;
 }
