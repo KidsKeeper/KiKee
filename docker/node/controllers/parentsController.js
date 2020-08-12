@@ -104,7 +104,14 @@ exports.get = function (req, res) {
 
             if( length === 0 ) res.send('no data');
 
-            else res.json({ data });
+            else {
+                console.log('delete data ' + kidsId.toString() );
+                kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => {// 데이터를 가지고 가면 있던 데이터 삭제.
+                    if(err) console.log(err);
+                    res.send('db error');
+                });
+                res.json({ data });
+            }
         });
     }
 
