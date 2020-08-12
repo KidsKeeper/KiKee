@@ -49,116 +49,86 @@ class _NewSearchPageState extends State<NewSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     if(first) {
       start = ModalRoute.of(context).settings.arguments;
       searchController.text = start.description;
     }
     return Scaffold(
-        backgroundColor: Color(0xfffcefa3),
-        body: SafeArea(
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                bottom: 50,
-                right: (MediaQuery.of(context).size.width / 20),
-                child: InkWell(
-                  child: Image.asset('image/_304.png'),
-                  onTap: () {
-                    List<PlaceInfo> args = [start, end];
-                    print(start.mainText);
-                    print(end.mainText);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ThirdPage(),
-                          settings: RouteSettings(arguments: args)),
-                    );
-                  },
-                ),
-              ), // kiki icon to step nextpage
-              Positioned(
-                top: 90,
-                right: (MediaQuery.of(context).size.width / 20),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.swap_vert,
-                    color: Color(0xFFF0AD74),
-                    size: 40,
-                  ),
-                  onPressed: () {
-                    String tmp = searchController2.text;
-                    searchController2.text = searchController.text;
-                    searchController.text = tmp;
-                    end = start;
-                    start = end;
-                  },
-                ),
-              ), // swap source and destination
-              Positioned(
-                bottom: 100,
-                left: 50,
-                child: Bubble(
-                  padding: BubbleEdges.all(15),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        '나를 누르면 길찾기가 시작돼',
-                        style: TextStyle(
-                            fontFamily: 'BMJUA',
-                            fontSize: 15,
-                            color: Colors.orange),
+      backgroundColor: Color(0xfffce76e),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight((MediaQuery.of(context).size.height / 12)),
+        child: AppBar(
+          centerTitle: true,
+          backgroundColor: Color(0xfffdee96),
+          title: Text('KIKEE',style: TextStyle(fontFamily: 'BMJUA',color: Colors.orange,fontSize: 40),),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(30),
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: (width/5)*2 + (height/40)*9,
+              left: (MediaQuery.of(context).size.width / 20),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 20 * 18,
+                height: MediaQuery.of(context).size.height / 2.5,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    color: Color(0xfffdee96),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xffe5d877),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
                       ),
-                    ],
-                  ),
-                  nip: BubbleNip.rightTop,
-                  radius: Radius.circular(30.0),
-                ),
-              ), // bubble, '나를 누르면 길찾기가 시작돼'
-              Positioned(
-                top: 220,
-                left: (MediaQuery.of(context).size.width / 20),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 20 * 18,
-                  height: MediaQuery.of(context).size.height / 2.8,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xffe5d877),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ]),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                Icons.query_builder,
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Colors.orange,
+                    ]),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text('즐겨찾기',style: TextStyle(fontFamily: 'BMJUA',fontSize: 20),),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: () { moveRecentSearchPage(); },
+                            elevation: 0,
+                            fillColor: Color(0xffec748c),
+                            child: Icon(
+                              Icons.query_builder,
+                              color: Colors.white,
+                              size: width/8,
                             ),
-                            onTap: () { moveRecentSearchPage(); },
+                            shape: CircleBorder(),
                           ),
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                icons[iconNumber],
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Colors.greenAccent,
-                            ),
-                            onTap: () {
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: () {
                               KikeeDB.instance.getFavorite(1).then((data) {
                                 try {
                                   setState(() {
@@ -168,7 +138,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                                   print(iconNumber);
                                   searchController2.text = data[0]['mainText'];
                                   end = PlaceInfo(
-                                      // placeId: place.placeId,
+                                    // placeId: place.placeId,
                                       description: data[0]['description'],
                                       longitude: data[0]['longitude'],
                                       latitude: data[0]['latitude'],
@@ -187,141 +157,282 @@ class _NewSearchPageState extends State<NewSearchPage> {
                                 }
                               });
                             },
-                          ),
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                Icons.school,
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Colors.blueAccent,
+                            elevation: 0,
+                            fillColor: Color(0xff47c2bb),
+                            child: Icon(
+                              icons[iconNumber],
+                              color: Colors.white,
+                              size: width/8,
                             ),
-                            onTap: () {},
+                            shape: CircleBorder(),
                           ),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                Icons.book,
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Colors.purple,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: null,
+                            elevation: 0,
+                            fillColor: Colors.blueAccent,
+                            child: Icon(
+                              Icons.school,
+                              color: Colors.white,
+                              size: width/8,
                             ),
-                            onTap: () {},
+                            shape: CircleBorder(),
                           ),
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Color(0xFFF0AD74),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: null,
+                            elevation: 0,
+                            fillColor: Colors.purple,
+                            child: Icon(
+                              Icons.library_books,
+                              color: Colors.white,
+                              size: width/8,
                             ),
-                            onTap: () {},
+                            shape: CircleBorder(),
                           ),
-                          InkWell(
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 70,
-                              ),
-                              backgroundColor: Color(0xFFF0AD74),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: null,
+                            elevation: 0,
+                            fillColor: Color(0xFFF0AD74),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: width/8,
                             ),
-                            onTap: () { Navigator.push( context, MaterialPageRoute(builder: (context) => DBpage()) );},
+                            shape: CircleBorder(),
                           ),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      ),
-                    ],
-                  ),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                        Container(
+                          width : width/4,
+                          height: width/4,
+                          padding: EdgeInsets.all(width/32),
+                          child: RawMaterialButton(
+                            onPressed: null,
+                            elevation: 0,
+                            fillColor: Color(0xFFF0AD74),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: width/8,
+                            ),
+                            shape: CircleBorder(),
+                          ),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xffe2d485),
+                                  spreadRadius: 1,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 3), // changes position of shadow
+                                ),]
+                          ),
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    ),
+                  ],
                 ),
-              ), // short cut buttons
-              Positioned(
-                child: SearchMapPlaceWidget(
-                    apiKey: Keys.place,
-                    language: 'ko',
-                    controller: searchController2,
-                    hasClearButton: true,
-                    iconColor: Color(0xFFF0AD74),
-                    placeholder: '',
-                    lableText: '도착지: ',
-                    onSelected: (place) async {
-                      final geolocation = await place.geolocation;
+              ),
+            ), // short cut buttons
+            Positioned(
+              top: height/24,
+              right: (width / 10),
+              child: InkWell(
+                child: Image.asset('image/_304.png',width: (width/5),),
+                onTap: () {
+                  List<PlaceInfo> args = [start, end];
+                  print(start.mainText);
+                  print(end.mainText);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ThirdPage(),
+                        settings: RouteSettings(arguments: args)),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              top: (height/48)*3,
+              right: (width/10)*3,
+              child: Bubble(
+                padding: BubbleEdges.all(15),
+                shadowColor: Color(0xffe5d877),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      '나를 누르면 길찾기를 시작해!',
+                      style: TextStyle(
+                          fontFamily: 'BMJUA',
+                          fontSize: 15,
+                          color: Colors.orange),
+                    ),
+                  ],
+                ),
+                nip: BubbleNip.rightTop,
+                radius: Radius.circular(30.0),
+              ),
+            ),
+            Positioned(
+              child: SearchMapPlaceWidget(
+                  apiKey: Keys.place,
+                  language: 'ko',
+                  controller: searchController2,
+                  hasClearButton: true,
+                  iconColor: Color(0xFFF0AD74),
+                  placeholder: '',
+                  lableText: '도착지: ',
+                  onSelected: (place) async {
+                    final geolocation = await place.geolocation;
 
-                      double lat = geolocation.lat();
-                      double lng = geolocation.lng();
+                    double lat = geolocation.lat();
+                    double lng = geolocation.lng();
 
-                      end = PlaceInfo(
-                          placeId: place.placeId,
-                          description: place.description,
-                          longitude: lng,
-                          latitude: lat,
-                          mainText: place.mainText);
+                    end = PlaceInfo(
+                        placeId: place.placeId,
+                        description: place.description,
+                        longitude: lng,
+                        latitude: lat,
+                        mainText: place.mainText);
 
-                      recentSearchInfo = RecentSearch(
-                          placeId: place.placeId,
-                          description: place.description,
-                          longitude: lng,
-                          latitude: lat,
-                          mainText: place.mainText);
+                    recentSearchInfo = RecentSearch(
+                        placeId: place.placeId,
+                        description: place.description,
+                        longitude: lng,
+                        latitude: lat,
+                        mainText: place.mainText);
 
-                      KikeeDB.instance.insertRecentSearch(recentSearchInfo);
-                    }),
-                width: (MediaQuery.of(context).size.width / 5) * 4,
-                top: 120,
-                left: (MediaQuery.of(context).size.width / 20),
-              ), // 도착지 검색바
-              Positioned(
-                child: SearchMapPlaceWidget(
-                    apiKey: Keys.place,
-                    language: 'ko',
-                    controller: searchController,
-                    hasClearButton: true,
-                    iconColor: Color(0xFFF0AD74),
-                    placeholder: '',
-                    lableText: '출발지: ',
-                    onSelected: (place) async {
-                      first = false;
+                    KikeeDB.instance.insertRecentSearch(recentSearchInfo);
+                  }),
+              width: (MediaQuery.of(context).size.width / 5) * 4,
+              top: (width/5)*2 + (height/48)*5,
+              left: (MediaQuery.of(context).size.width / 20),
+            ), // 도착지 검색바
+            Positioned(
+              child: SearchMapPlaceWidget(
+                  apiKey: Keys.place,
+                  language: 'ko',
+                  controller: searchController,
+                  hasClearButton: true,
+                  iconColor: Color(0xFFF0AD74),
+                  placeholder: '',
+                  lableText: '출발지: ',
+                  onSelected: (place) async {
+                    first = false;
+                    final geolocation = await place.geolocation;
 
-                      final geolocation = await place.geolocation;
+                    double lat = geolocation.lat();
+                    double lng = geolocation.lng();
 
-                      double lat = geolocation.lat();
-                      double lng = geolocation.lng();
+                    start = PlaceInfo(
+                        placeId: place.placeId,
+                        description: place.description,
+                        longitude: lng,
+                        latitude: lat,
+                        mainText: place.mainText);
 
-                      start = PlaceInfo(
-                          placeId: place.placeId,
-                          description: place.description,
-                          longitude: lng,
-                          latitude: lat,
-                          mainText: place.mainText);
+                    recentSearchInfo = RecentSearch(
+                        placeId: place.placeId,
+                        description: place.description,
+                        longitude: lng,
+                        latitude: lat,
+                        mainText: place.mainText);
 
-                      recentSearchInfo = RecentSearch(
-                          placeId: place.placeId,
-                          description: place.description,
-                          longitude: lng,
-                          latitude: lat,
-                          mainText: place.mainText);
+                    KikeeDB.instance.insertRecentSearch(recentSearchInfo);
+                  }),
+              width: (MediaQuery.of(context).size.width / 5) * 4,
+              top: (width/5)*2,
+              left: (MediaQuery.of(context).size.width / 20),
+            ), // 출발지 검색바
+            Positioned(
+              top: (width/5)*2 + (height/96)*5,
+              right: 0,
+              child: RawMaterialButton(
+                onPressed: () {
+                  String tmp = searchController2.text;
+                  searchController2.text = searchController.text;
+                  searchController.text = tmp;
+                  end = start;
+                  start = end;
+                },
+                elevation: 2.0,
+                fillColor: Color(0xFFF0AD74),
+                child: Icon(
+                  Icons.swap_vert,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                shape: CircleBorder(),
+              ),
+            ),
 
-                      KikeeDB.instance.insertRecentSearch(recentSearchInfo);
-                    }),
-                width: (MediaQuery.of(context).size.width / 5) * 4,
-                top: 50,
-                left: (MediaQuery.of(context).size.width / 20),
-              ), // 출발지 검색바
-            ],
-          ),
-        ));
+          ],
+        ),
+      ),);
   }
 }
+
