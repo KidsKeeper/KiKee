@@ -8,6 +8,8 @@ import '../models/RouteSelectCard.dart';
 import '../detour.dart';
 import '../src/Server.dart';
 
+import 'package:safewaydirection/models/utility.dart';
+
 LocationData currentLocation; // a reference to the destination location
 LocationData destinationLocation; // wrapper around the location API
 Location location;
@@ -33,6 +35,15 @@ class ThirdPageState extends State<ThirdPage> {
   Detour detour;
   PlaceInfo start, end;
   Polyline temp;
+
+  // 경로안내 관련 데이터
+  int selectRoute = -1;
+  int routeLength;
+  int pointIndex = 0;
+  String roadName = "";
+  String description = "";
+  LatLng nextStop;
+  //
   @override
   void initState() {
     super.initState();
@@ -43,17 +54,17 @@ class ThirdPageState extends State<ThirdPage> {
     });
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation1.png')
+            'image/currentLocation1.png')
         .then((onValue) {
       locationIcon[0] = onValue;
     });
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation2.png')
+            'image/currentLocation2.png')
         .then((onValue) {
       locationIcon[1] = onValue;
     });
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation3.png')
+            'image/currentLocation3.png')
         .then((onValue) {
       locationIcon[2] = onValue;
     });
@@ -157,76 +168,85 @@ class ThirdPageState extends State<ThirdPage> {
             width: MediaQuery.of(context).size.width,
             height: 100,
             child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: routeSelectionList.length, //슬라이드 카드 정보 리스트
-                itemBuilder: (BuildContext context, int index) =>
-                    GestureDetector(//선택한거 빼고 지우는 부분.
-                      child: routeSelectionCard(routeSelectionList[index]),
-                      onTap: () {
-                        int len = routeSelectionList.length;
-                        var id = routeSelectionList[index].polylineId;
-                        for (int i = len - 1; i > -1; i--) {
-                          if(i!=index){
-                            routeSelectionList.removeAt(i);
+              scrollDirection: Axis.horizontal,
+              itemCount: selectRoute == -1
+                  ? routeSelectionList.length
+                  : 1, //슬라이드 카드 정보 리스트
+              itemBuilder: (BuildContext context, int index) {
+                return selectRoute == -1
+                    ? GestureDetector(
+                        //선택한거 빼고 지우는 부분.
+                        child: routeSelectionCard(routeSelectionList[index]),
+                        onTap: () {
+                          selectRoute = index;
+                          detour.selectRoute = detour.sortRoute[index];
+                          roadName = detour.selectRoute.locations[0].roadName;
+                          description = detour.selectRoute.locations[0]
+                              .description; // 어느 경로 저장했는지 표시.
+                          nextStop = detour.selectRoute.locations[1].location;
+                          routeLength = detour.selectRoute.locations.length;
+                          updateLocation();
+                          setState(() {
+                            print('set state!');
+                          });
+                        },
+                        onLongPressStart: (Details) {
+                          var id = routeSelectionList[index].polylineId;
+                          for (int i = polylines.length - 1; i > -1; i--) {
+                            if (polylines.toList()[i].polylineId == id) {
+                              temp = polylines.toList()[i];
+                              polylines.remove(polylines.toList()[i]);
+                            }
                           }
-                        }
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId!=id){
-                            polylines.remove(polylines.toList()[i]);
-                          }else{
-                            updatePolygon(polylines.toList()[i].points);//List<LatLng>
+                          polylines.add(Polyline(
+                            polylineId: id,
+                            points: temp.points,
+                            color: Colors.tealAccent,
+                            visible: true,
+                            zIndex: 300,
+                          ));
+                          setState(() {});
+                        },
+                        onLongPressEnd: (Details) {
+                          List<Color> colors = [
+                            Colors.red,
+                            Colors.yellow,
+                            Colors.orange,
+                            Colors.blue
+                          ];
+                          var id = routeSelectionList[index].polylineId;
+                          var color = temp.color;
+                          for (int i = polylines.length - 1; i > -1; i--) {
+                            if (polylines.toList()[i].polylineId == id) {
+                              temp = polylines.toList()[i];
+                              polylines.remove(polylines.toList()[i]);
+                            }
                           }
-                        }
-                        updateLocation();
-                        setState(() { print('set state!'); });
-                      },
-                      onLongPressStart: (Details) {
-                        var id = routeSelectionList[index].polylineId;
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId==id){
-                            temp = polylines.toList()[i];
-                            polylines.remove(polylines.toList()[i]);
-                          }
-                        }
-                        polylines.add(Polyline(
-                          polylineId: id,
-                          points:temp.points,
-                          color:Colors.tealAccent,
-                          visible: true,
-                          zIndex: 300,
-                        ));
-                        setState((){});
-                      },
-                      onLongPressEnd: (Details) {
-                        List<Color> colors = [ Colors.red, Colors.yellow, Colors.orange, Colors.blue ];
-                        int setColorId(int danger){
-                          if(danger<1){ //파랑
-                            return 0;
-                          }else if(danger<5){//노랑
-                            return 1;
-                          }else if(danger<10){//주황
-                            return 2;
-                          }else{//빨강
-                            return 3;
-                          }
-                        }
-                        var id = routeSelectionList[index].polylineId;
-                        var color = temp.color;
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId==id){
-                            temp = polylines.toList()[i];
-                            polylines.remove(polylines.toList()[i]);
-                          }
-                        }
-                        polylines.add(Polyline(
-                          polylineId: id,
-                          points:temp.points,
-                          color:color,//colors[setColorId(routeSelectionList[index].danger)]
-                          visible: true,
-                        ));
-                        setState((){});
-                      },
-                    )),
+                          polylines.add(Polyline(
+                            polylineId: id,
+                            points: temp.points,
+                            color:
+                                color, //colors[setColorId(routeSelectionList[index].danger)]
+                            visible: true,
+                          ));
+                          setState(() {});
+                        },
+                      )
+                    : Card(
+                        color: Colors.red[50],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0)),
+                        child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(description),
+                              ),
+                            )),
+                      );
+              },
+            ),
           ),
         ],
       ),
@@ -235,6 +255,10 @@ class ThirdPageState extends State<ThirdPage> {
 
   Future<void> updatePinOnMap(LocationData location) async {
     final GoogleMapController controller = await _mapController.future;
+    double result = 100;
+    if (nextStop != null)
+      result = distanceInMeterByHaversine(
+          LatLng(location.latitude, location.longitude), nextStop);
     setState(() {
       _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
       _markers.add(Marker(
@@ -242,17 +266,29 @@ class ThirdPageState extends State<ThirdPage> {
           position:
               LatLng(location.latitude, location.longitude), // updated position
           icon: locationIcon[0]));
+      if (nextStop != null) {
+        _markers.removeWhere((m) => m.markerId.value == 'testpin');
+        _markers.add(Marker(
+            markerId: MarkerId('testpin'),
+            position: nextStop, // updated position
+            icon: locationIcon[1]));
+      }
+      if (result < 20.00 && pointIndex != routeLength) {
+        roadName = detour.selectRoute.locations[pointIndex].roadName;
+        description = detour.selectRoute.locations[pointIndex].description;
+        pointIndex += 1;
+        nextStop = detour.selectRoute.locations[pointIndex].location;
+      }
     });
   }
 
   void setPolylines() async {
     print(
         "==================Function setPolylines in ThirdPage.dart is CALLED!==================");
-    detour = Detour.map(LatLng(start.latitude, start.longitude),
-        LatLng(end.latitude, end.longitude));
+    detour = Detour.map(LatLng(start.latitude, start.longitude), LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
-    routeSelectionList =detour.routeSelectionList;
+    routeSelectionList = detour.routeSelectionList;
     setState(() {});
   }
 }
