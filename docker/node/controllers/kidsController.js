@@ -63,21 +63,21 @@ exports.create = function (req, res) {
                     else {
                         console.log('key generated');
 
-                        console.log('create kidslocation');
-                        var kidslocation = new kidslocationModel({
-                            parentsId: null,
-                            kidsId: kidsId,
-                            source: null,
-                            destination: null,
-                            lon: null,
-                            lat: null,
-                            start: null,
-                            end: null,
-                            polygon: null,
-                            status: false,
-                            date: null
-                        }); // make kidslocation data form.
-                        kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+                        // console.log('create kidslocation');
+                        // var kidslocation = new kidslocationModel({
+                        //     parentsId: null,
+                        //     kidsId: kidsId,
+                        //     source: null,
+                        //     destination: null,
+                        //     lon: null,
+                        //     lat: null,
+                        //     start: null,
+                        //     end: null,
+                        //     polygon: null,
+                        //     status: false,
+                        //     date: null
+                        // }); // make kidslocation data form.
+                        // kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
                     }
                 });
 
@@ -103,7 +103,42 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
 
             const length = Object.keys(kdata).length;
 
-            if( length === 0 ) res.send('id is wrong');
+            if( length === 0 ) { // 첫 길 찾기를 할 경우 kidslocation 데이터 폼을 만든다 혹은 부모앱에서 데이터를 다 가져가서 kidslocation가 없을 경우 생성.
+                console.log('create kidslocation');
+                var kidslocation = new kidslocationModel({
+                    parentsId: null,
+                    kidsId: kidsId,
+                    source: null,
+                    destination: null,
+                    lon: null,
+                    lat: null,
+                    start: null,
+                    end: null,
+                    polygon: null,
+                    status: false,
+                    date: null
+                }); // make kidslocation data form.
+                kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+                // res.send('id is wrong');
+            }
+
+            if( kdata[length - 1]['status'] == false && kdata[length - 1]['polygon'] != null ) { // 한 번 이상의 길 찾기를 한 상태이고 새로운 길 찾기를 하는데 들어갈 데이터 폼이 없을 때.
+                console.log('make new kidslocation');
+                var kidslocation = new kidslocationModel({
+                    parentsId: null,
+                    kidsId: kidsId,
+                    source: null,
+                    destination: null,
+                    lon: null,
+                    lat: null,
+                    start: null,
+                    end: null,
+                    polygon: null,
+                    status: false,
+                    date: null
+                }); // make kidslocation data form.
+                kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+            }
 
             const source = req.body['source'];
             const destination = req.body['destination'];

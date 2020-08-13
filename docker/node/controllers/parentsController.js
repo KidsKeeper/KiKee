@@ -102,7 +102,7 @@ exports.nowget = function (req, res) { // 길 찾기 중이라면 현재 상태�
 
             if( length === 0 ) res.send('no data');
 
-            if( data[length - 1]['status'] == 'true' ) {
+            if( data[length - 1]['status'] == 'true' ) { // 마지막의 kidslocation 데이터가 길 찾기 중인 경우.
                 res.json({
                     'lat': data[length - 1]['lat'],
                     'lon': data[length - 1]['lon'],
