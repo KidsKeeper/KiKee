@@ -48,8 +48,7 @@ class ThirdPageState extends State<ThirdPage> {
     location.onLocationChanged.listen((LocationData cLoc) {
       currentLocation = cLoc;
       updatePinOnMap(cLoc);
-      if(routeGuide != null)
-        routeGuide.locationStream.add(cLoc);
+      if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
@@ -249,14 +248,15 @@ class ThirdPageState extends State<ThirdPage> {
 
   Future<void> updatePinOnMap(LocationData location) async {
     final GoogleMapController controller = await _mapController.future;
-    setState(() {
-      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
-      _markers.add(Marker(
-          markerId: MarkerId('sourcePin'),
-          position:
-              LatLng(location.latitude, location.longitude), // updated position
-          icon: locationIcon[0]));
-    });
+    if (mounted)
+      setState(() {
+        _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
+        _markers.add(Marker(
+            markerId: MarkerId('sourcePin'),
+            position: LatLng(
+                location.latitude, location.longitude), // updated position
+            icon: locationIcon[0]));
+      });
   }
 
   void setPolylines() async {
@@ -267,6 +267,12 @@ class ThirdPageState extends State<ThirdPage> {
     await detour.drawAllPolyline();
     polylines = detour.polylines;
     routeSelectionList = detour.routeSelectionList;
-    setState(() {});
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (routeGuide != null) routeGuide.stop();
   }
 }
