@@ -3,10 +3,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="safewaydirection"
+        android:label="키즈키퍼 길찾기"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="****"/>
+            android:value="AIzaSyDn5hYJ8ztN5iTsSYuXfApCPQjpvQSI-Gk"/>
 
         <activity
             android:name=".MainActivity"
