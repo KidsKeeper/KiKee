@@ -67,7 +67,7 @@ class ThirdPageState extends State<ThirdPage> {
     List<PlaceInfo> route = ModalRoute.of(context).settings.arguments;
     start = route[0];
     end = route[1];
-    print("we are here again.");
+    print("Third Page build runned! (it keeps running, did you know that? - 재원) ");
     for (int i = 0; i < 2; i++) {
       _markers.add(Marker(
         markerId: MarkerId(_markers.length.toString()),
@@ -174,7 +174,6 @@ class ThirdPageState extends State<ThirdPage> {
                     GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
-                        // routeSelectionList.clear();
                         _zoomStart();
                         print("change isRoutingStart Value. Probably");
                         try{
@@ -190,9 +189,10 @@ class ThirdPageState extends State<ThirdPage> {
                         }
                         updateLocation();
                         routeSelectionList.clear();
-                        if(mounted){
-                          setState(() {isRoutingStart=true;print("onTap setState");});
-                        }
+                        setState(() {isRoutingStart=true;print("onTap setState");});
+//                        if(mounted){
+//                          setState(() {isRoutingStart=true;print("onTap setState");});
+//                        }
                       },
                       onLongPressStart: (details) {
                         var id = routeSelectionList[index].polylineId;
