@@ -63,21 +63,21 @@ exports.create = function (req, res) {
                     else {
                         console.log('key generated');
 
-                        // console.log('create kidslocation');
-                        // var kidslocation = new kidslocationModel({
-                        //     parentsId: null,
-                        //     kidsId: kidsId,
-                        //     source: null,
-                        //     destination: null,
-                        //     lon: null,
-                        //     lat: null,
-                        //     start: null,
-                        //     end: null,
-                        //     polygon: null,
-                        //     status: false,
-                        //     date: null
-                        // }); // make kidslocation data form.
-                        // kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+                        console.log('create kidslocation');
+                        var kidslocation = new kidslocationModel({
+                            parentsId: null,
+                            kidsId: kidsId,
+                            source: null,
+                            destination: null,
+                            lon: null,
+                            lat: null,
+                            start: null,
+                            end: null,
+                            polygon: null,
+                            status: false,
+                            date: null
+                        }); // make kidslocation data form.
+                        kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
                     }
                 });
 
@@ -102,23 +102,24 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
             console.log(kdata);
 
             const length = Object.keys(kdata).length;
+            console.log(length);
 
             if( length === 0 ) { // 첫 길 찾기를 할 경우 kidslocation 데이터 폼을 만든다 혹은 부모앱에서 데이터를 다 가져가서 kidslocation가 없을 경우 생성.
-                console.log('create kidslocation');
-                var kidslocation = new kidslocationModel({
-                    parentsId: null,
-                    kidsId: kidsId,
-                    source: null,
-                    destination: null,
-                    lon: null,
-                    lat: null,
-                    start: null,
-                    end: null,
-                    polygon: null,
-                    status: false,
-                    date: null
-                }); // make kidslocation data form.
-                kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+                // console.log('create kidslocation');
+                // var kidslocation = new kidslocationModel({
+                //     parentsId: null,
+                //     kidsId: kidsId,
+                //     source: null,
+                //     destination: null,
+                //     lon: null,
+                //     lat: null,
+                //     start: null,
+                //     end: null,
+                //     polygon: null,
+                //     status: false,
+                //     date: null
+                // }); // make kidslocation data form.
+                // kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
                 // res.send('id is wrong');
             }
 
@@ -139,7 +140,6 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
                 }); // make kidslocation data form.
                 kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
             }
-
             const source = req.body['source'];
             const destination = req.body['destination'];
             const polygon = req.body['polygon'];
@@ -147,14 +147,11 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
             const end = req.body['end'];
             console.log(kdata);
             console.log(source);
-
             if( kdata[0]['status'] == false ) { // 처음으로 길 찾기를 시작 했을 때 초기 정보 업데이트.
                 console.log('status is false');
-
                 var moment = require('moment');
                 var currentDate = moment().format('YYYY-MM-DD HH:mm');
                 console.log( typeof(currentDate) );
-
                 // var kidslocation = new kidslocationModel({
                 //     kidsId: kidsId,
                 //     parentsId: null,
@@ -169,7 +166,6 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
                 //     date: currentDate.toString()
                 // }); // make kidslocation data form.
                 // kidslocation.save(function (err, data) {});
-
                 kidslocationModel.updateOne({ kidsId: kidsId }, {
                     source: source,
                     destination: destination,
@@ -183,13 +179,10 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
         
             else { // 초기 정보를 넣고 나서 지속적으로 위경도 데이터 업데이트.
                 console.log('status is true');
-
                 var lon = req.body['lon'];
                 var lat = req.body['lat'];
-
                 console.log(lat);
                 console.log(lon);
-
                 kidslocationModel.updateOne({ kidsId: kidsId }, {
                     lat: lat,
                     lon: lon,

@@ -139,6 +139,21 @@ exports.pastget = function (req, res) { // 이전 길 찾기 경로를 보내기
                         kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
                             if(err) console.log(err);
                         });
+
+                        var kidslocation = new kidslocationModel({ // 삭제 직후 새로운 폼 생성
+                                parentsId: null,
+                                kidsId: kidsId,
+                                source: null,
+                                destination: null,
+                                lon: null,
+                                lat: null,
+                                start: null,
+                                end: null,
+                                polygon: null,
+                                status: false,
+                                date: null
+                            }); // make kidslocation data form.
+                        kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
                         res.json({ data });
                     }
                 }
