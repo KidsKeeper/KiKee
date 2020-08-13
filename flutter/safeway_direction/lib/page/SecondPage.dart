@@ -56,42 +56,46 @@ class _NewSearchPageState extends State<NewSearchPage> {
 
 
   void moveRecentSearchPage() async { // navigate to recent search page and save its location data using updateend
+    update = null;
     update = await Navigator.push( context, MaterialPageRoute(builder: (context) => RecentSearchPage()) );
-    Alert(
-      context: context,
-      title: "무엇으로 설정할까요?",
-      style: AlertStyle(
-        titleStyle: TextStyle(fontFamily: 'BMJUA',color: Colors.orangeAccent),
-      ),
-      buttons: [
-        DialogButton(
-          radius: BorderRadius.circular(30),
-         color: Colors.orangeAccent,
-          child: Text(
-            "출발지",
-            style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
+    if(update!=null)
+      {
+        Alert(
+          context: context,
+          title: "무엇으로 설정할까요?",
+          style: AlertStyle(
+            titleStyle: TextStyle(fontFamily: 'BMJUA',color: Colors.orangeAccent),
           ),
-          onPressed: (){
-            updateStartPlace();
-            Navigator.pop(context);
-            },
-          width: 120,
-        ),
-        DialogButton(
-          radius: BorderRadius.circular(30),
-        color: Colors.orangeAccent,
-          child: Text(
-            "도착지",
-            style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
-          ),
-          onPressed: (){
-            updateEndPlace();
-            Navigator.pop(context);
-          },
-          width: 120,
-        ),
-      ],
-    ).show();
+          buttons: [
+            DialogButton(
+              radius: BorderRadius.circular(30),
+              color: Colors.orangeAccent,
+              child: Text(
+                "출발지",
+                style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
+              ),
+              onPressed: (){
+                updateStartPlace();
+                Navigator.pop(context);
+              },
+              width: 120,
+            ),
+            DialogButton(
+              radius: BorderRadius.circular(30),
+              color: Colors.orangeAccent,
+              child: Text(
+                "도착지",
+                style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
+              ),
+              onPressed: (){
+                updateEndPlace();
+                Navigator.pop(context);
+              },
+              width: 120,
+            ),
+          ],
+        ).show();
+      }
   }
 
   @override
