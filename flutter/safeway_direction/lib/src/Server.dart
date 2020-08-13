@@ -1,6 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 
 import 'dart:convert';
@@ -74,7 +73,7 @@ Future<void> updatePolygon(List<LatLng> points,String source, String destination
 
     Map data = { 'kidsId': kidsId, 'key': key, 'polygon': points, 'start':points[0], 'end':points.last, 'source': source, 'destination':destination };
 
-    final response = await http.post(
+    await http.post(
         Uri.encodeFull(URL),
         headers: headers,
         body: jsonEncode(data)

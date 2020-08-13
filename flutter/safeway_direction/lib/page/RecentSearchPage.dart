@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+// import 'package:rflutter_alert/rflutter_alert.dart';
 import '../models/RecentSearch.dart';
 import '../models/PlaceInfo.dart';
 import '../db/KikeeDB.dart';
@@ -48,7 +48,8 @@ class _RecentSearchPageState extends State<RecentSearchPage> {
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child:IconButton (
-                    icon: Icon(Icons.schedule,color: Color(0xfffdee96),size: 30,),
+                      icon: Icon(Icons.schedule,color: Color(0xfffdee96),size: 30,),
+                      onPressed: () {},
                   ),)
 
                     // IconButton(
