@@ -38,7 +38,7 @@ class ThirdPageState extends State<ThirdPage> {
   void initState() {
     super.initState();
     //make status false
-    //stopUpdateLocation();
+    stopUpdateLocation();
     location = new Location();
     location.onLocationChanged.listen((LocationData cLoc) {
       currentLocation = cLoc;
@@ -174,7 +174,7 @@ class ThirdPageState extends State<ThirdPage> {
                     GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
-                        routeSelectionList.clear();
+                        // routeSelectionList.clear();
                         _zoomStart();
                         print("change isRoutingStart Value. Probably");
                         try{
@@ -189,11 +189,12 @@ class ThirdPageState extends State<ThirdPage> {
                           print(e);
                         }
                         updateLocation();
+                        routeSelectionList.clear();
                         if(mounted){
                           setState(() {isRoutingStart=true;print("onTap setState");});
                         }
                       },
-                      onLongPressStart: (Details) {
+                      onLongPressStart: (details) {
                         var id = routeSelectionList[index].polylineId;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
@@ -210,7 +211,7 @@ class ThirdPageState extends State<ThirdPage> {
                         ));
                         setState((){});
                       },
-                      onLongPressEnd: (Details) {
+                      onLongPressEnd: (details) {
                         var id = routeSelectionList[index].polylineId;
                         var color = temp.color;
                         for(int i=polylines.length-1; i>-1; i--){
@@ -235,26 +236,29 @@ class ThirdPageState extends State<ThirdPage> {
   }
 
   void setPolylines() async {
-    print(
-        "==================Function setPolylines in ThirdPage.dart is CALLED!==================");
+    print("==================Function setPolylines in ThirdPage.dart is CALLED!==================");
     detour = Detour.map(LatLng(start.latitude, start.longitude),
         LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
     polylines = detour.polylines;
     routeSelectionList =detour.routeSelectionList;
-    setState(() {});
+    if( this.mounted ) { // setState() called after dispose() 오류 해결 방법
+      setState(() {});
+    }
   }
 
   void updatePinOnMap(LocationData location) {
 //    final GoogleMapController controller = await _mapController.future;
-    setState(() {
-      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
-      _markers.add(Marker(
-          markerId: MarkerId('sourcePin'),
-          position:
-          LatLng(location.latitude, location.longitude), // updated position
-          icon: locationIcon[0]));
-    });
+    if( this.mounted ) { // setState() called after dispose() 오류 해결 방법
+      setState(() {
+        _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
+        _markers.add(Marker(
+            markerId: MarkerId('sourcePin'),
+            position:
+            LatLng(location.latitude, location.longitude), // updated position
+            icon: locationIcon[0]));
+      });
+    }
   }
 
   Future<void> _zoomStart() async {

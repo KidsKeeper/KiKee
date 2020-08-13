@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
+import 'package:safewaydirection/page/DBpage.dart';
 
 import '../models/search_map_place.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
 import '../page/ThirdPage.dart';
 import '../page/RecentSearchPage.dart';
-import '../page/DBpage.dart';
+// import '../page/DBpage.dart';
 import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
-import '../src/Server.dart';
+// import '../src/Server.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class NewSearchPage extends StatefulWidget {
@@ -40,13 +41,17 @@ class _NewSearchPageState extends State<NewSearchPage> {
   int iconNumber = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
 
   void updateEndPlace( ) { // update end data fetched from recent search
-    setState(() { end = update; searchController2.text = update.mainText; });
-    print(end.mainText);
+    setState(() {
+      try { end = update; searchController2.text = update.mainText; }
+      catch (e) { print(e); }
+    });
   }
 
   void updateStartPlace( ) { // update end data fetched from recent search
-    setState(() { start = update; searchController.text = update.mainText; });
-    print(start.mainText);
+    setState(() {
+      try { start = update; searchController.text = update.mainText; }
+      catch(e) { print(e); }
+    });
   }
 
 
@@ -67,7 +72,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
             style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
           ),
           onPressed: (){
-            print('press1');
             updateStartPlace();
             Navigator.pop(context);
             },
@@ -81,7 +85,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
             style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'),
           ),
           onPressed: (){
-            print('press1');
             updateEndPlace();
             Navigator.pop(context);
           },
@@ -260,7 +263,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           height: width/4,
                           padding: EdgeInsets.all(width/32),
                           child: RawMaterialButton(
-                            onPressed: null,
+                            onPressed: () { Navigator.push( context, MaterialPageRoute(builder:(context) => DBpage())); },
                             elevation: 0,
                             fillColor: Colors.purple,
                             child: Icon(

@@ -12,7 +12,7 @@ import '../src/Helper.dart';
 class KikeeDB {
   KikeeDB._();
 
-  static const databaseName = "kikeeeeeeee.db";
+  static const databaseName = "kaka.db";
   static final KikeeDB instance = KikeeDB._();
   static Database _database;
 
@@ -87,7 +87,7 @@ class KikeeDB {
   Future<String> getKidsKey() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('kids');
-    int length = maps.length;
+    // int length = maps.length;
     String kidsKey = "";
 
     try { kidsKey = maps[0]['key']; }

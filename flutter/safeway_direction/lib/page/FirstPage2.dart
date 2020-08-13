@@ -69,7 +69,7 @@ class _FirstPage2State extends State<FirstPage2> {
                   ),
                   onTap: () async {
                     KikeeDB.instance.insertKidsId();
-                    Future.delayed(const Duration(seconds:2));
+                    await Future.delayed(const Duration(seconds: 2));
                     myCode = await KikeeDB.instance.getKidsKey();
                     print(myCode);
                     setState(() {});
@@ -102,21 +102,20 @@ class _FirstPage2State extends State<FirstPage2> {
               child: Text('건너뛰기',style: TextStyle(color: Color(0xFFF0AD74),fontFamily: 'BMJUA',fontSize: 17),) ,
               onPressed: () async
               {
-//                KikeeDB.instance.insertKidsId();
-                 const String PLACES_API_KEY = Keys.place;
+                  const String PLACES_API_KEY = Keys.place;
 
-                 Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
-                 double long = position.longitude;
-                 double lat = position.latitude;
-                 print('geocode : $long , $lat');
+                  Position position = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.high);
+                  double long = position.longitude;
+                  double lat = position.latitude;
+                  print('geocode : $long , $lat');
 
-                 String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
-                 Response response = await Dio().get(url);
-                 print('get response');
-                 final predictions = response.data['results'];
-                 String address = predictions[0]['formatted_address'];
-                 PlaceInfo place = new PlaceInfo(latitude: lat,longitude: long,description: address,mainText: "내위치" );
-//                PlaceInfo place = PlaceInfo( mainText: 'test 위치', latitude: 35.231618, longitude: 129.084071, description: '부산대학교 정문앞');
+                  String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
+                  Response response = await Dio().get(url);
+                  print('get response');
+                  final predictions = response.data['results'];
+                  String address = predictions[0]['formatted_address'];
+                  PlaceInfo place = new PlaceInfo(latitude: lat,longitude: long,description: address,mainText: "내위치" );
+//               PlaceInfo place = PlaceInfo( mainText: 'test 위치', latitude: 35.231618, longitude: 129.084071, description: '부산대학교 정문앞');
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NewSearchPage(), settings: RouteSettings(arguments: place),));
               },
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:safewaydirection/page/ThirdPage.dart';
+// import 'package:safewaydirection/page/ThirdPage.dart';
 
 import 'page/FirstPage2.dart';
 
