@@ -60,20 +60,26 @@ exports.create = function (req, res) {
 
                 kidsModel.updateOne({ kidsId: kidsId }, { key: key }, { upsert: true }, function (err, data) {
                     if(err) console.log(err);
-                    else console.log('key generated');
-                });
+                    else {
+                        console.log('key generated');
 
-                // var kidslocation = new kidslocationModel({
-                //     kidsId: kidsId,
-                //     parentsId: null,
-                //     lon: null,
-                //     lat: null,
-                //     start: null,
-                //     end: null,
-                //     polygon: null,
-                //     status: false
-                // }); // make kidslocation data form.
-                // kidslocation.save(function (err, data) {});
+                        console.log('create kidslocation');
+                        var kidslocation = new kidslocationModel({
+                            parentsId: null,
+                            kidsId: kidsId,
+                            source: null,
+                            destination: null,
+                            lon: null,
+                            lat: null,
+                            start: null,
+                            end: null,
+                            polygon: null,
+                            status: false,
+                            date: null
+                        }); // make kidslocation data form.
+                        kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
+                    }
+                });
 
                 res.status(401).json({ 'result': 1, 'key': key });
             }
@@ -112,28 +118,30 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
                 var currentDate = moment().format('YYYY-MM-DD HH:mm');
                 console.log( typeof(currentDate) );
 
-                var kidslocation = new kidslocationModel({
-                    kidsId: kidsId,
-                    parentsId: null,
-                    source: source,
-                    destination: destination,
-                    lon: null,
-                    lat: null,
-                    start: start,
-                    end: end,
-                    polygon: polygon,
-                    status: true,
-                    date: currentDate.toString()
-                }); // make kidslocation data form.
-                kidslocation.save(function (err, data) {});
-
-                // kidslocationModel.updateOne({ kidsId: kidsId }, {
+                // var kidslocation = new kidslocationModel({
+                //     kidsId: kidsId,
+                //     parentsId: null,
+                //     source: source,
+                //     destination: destination,
+                //     lon: null,
+                //     lat: null,
                 //     start: start,
                 //     end: end,
                 //     polygon: polygon,
                 //     status: true,
                 //     date: currentDate.toString()
-                // }, { upsert: true }, function (err, data) { if(err) console.log(err); });
+                // }); // make kidslocation data form.
+                // kidslocation.save(function (err, data) {});
+
+                kidslocationModel.updateOne({ kidsId: kidsId }, {
+                    source: source,
+                    destination: destination,
+                    start: start,
+                    end: end,
+                    polygon: polygon,
+                    status: true,
+                    date: currentDate.toString()
+                }, { upsert: true }, function (err, data) { if(err) console.log(err); });
             }
         
             else { // 초기 정보를 넣고 나서 지속적으로 위경도 데이터 업데이트.

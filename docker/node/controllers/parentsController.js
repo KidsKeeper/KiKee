@@ -80,7 +80,6 @@ exports.confirm = function (req, res) {
                     })
 
                     res.status(401).json({ 'result': 1, 'kidsId': kidsId });
-                    // res.send(key);
                 });
             }
         });
@@ -104,13 +103,17 @@ exports.get = function (req, res) {
 
             if( length === 0 ) res.send('no data');
 
-            else {
-                console.log('delete data ' + kidsId.toString() );
-                kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => {// 데이터를 가지고 가면 있던 데이터 삭제.
-                    if(err) console.log(err);
-                    res.send('db error');
-                });
-                res.json({ data });
+            else { // 데이터가 있고
+                for( var i = 0; i < length; i++ ) {
+                    if( data[i]['status'] == false && data[i]['polygon'] != null ) { // 길 찾기를 하고 길 찾기가 끝난 상태라면
+                        console.log('delete data ' + kidsId.toString() );
+                        kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
+                            if(err) console.log(err);
+                            res.send('db error');
+                        });
+                        res.json({ data });
+                    }
+                }
             }
         });
     }
