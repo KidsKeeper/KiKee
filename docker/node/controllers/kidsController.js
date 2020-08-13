@@ -110,6 +110,8 @@ exports.start = function (req, res) { // 로컬의 플루터 디비에서 키값
             const polygon = req.body['polygon'];
             const start = req.body['start'];
             const end = req.body['end'];
+            console.log(kdata);
+            console.log(source);
 
             if( kdata[0]['status'] == false ) { // 처음으로 길 찾기를 시작 했을 때 초기 정보 업데이트.
                 console.log('status is false');
@@ -170,7 +172,7 @@ exports.end = function (req, res) {
     const key = req.body['key'];
 
     if( kidsId && key ) {
-        console.log('status makes false!');
+        console.log('status changes false!');
 
         kidslocationModel.find({ kidsId: kidsId }, (err, kdata) => {
             if( Object.keys(kdata).length === 0 ) res.send('key is wrong');

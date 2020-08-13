@@ -88,9 +88,38 @@ exports.confirm = function (req, res) {
     else res.send('no id or key');
 }
 
-// /parents/location/get
-exports.get = function (req, res) {
-    console.log('parents start to get location');
+// /parents/nowlocation/get
+exports.nowget = function (req, res) { // 길 찾기 중이라면 현재 상태를 보낸다.
+    console.log('parents start to get now location');
+
+    const kidsId = req.body['kidsId'];
+
+    if( kidsId ) {
+        kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
+            if(err) console.log(err);
+
+            const length = Object.keys(data).length;
+
+            if( length === 0 ) res.send('no data');
+
+            if( data[length - 1]['status'] == 'true' ) {
+                res.json({
+                    'lat': data[length - 1]['lat'],
+                    'lon': data[length - 1]['lon'],
+                    'polygon': data[length - 1]['polygon']
+                });
+            }
+
+            else res.send('no data');
+        });
+    }
+
+    else res.send('no id');
+}
+
+// /parents/pastlocation/get
+exports.pastget = function (req, res) { // 이전 길 찾기 경로를 보내기 위해.
+    console.log('parents start to get past location');
 
     const kidsId = req.body['kidsId'];
     // const key = req.body['key'];
@@ -109,14 +138,14 @@ exports.get = function (req, res) {
                         console.log('delete data ' + kidsId.toString() );
                         kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
                             if(err) console.log(err);
-                            res.send('db error');
                         });
                         res.json({ data });
                     }
                 }
+                res.send('noting to update');
             }
         });
     }
 
-    else res.send('no id or key');
+    else res.send('no id');
 }
