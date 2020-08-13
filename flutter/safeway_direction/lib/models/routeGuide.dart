@@ -16,8 +16,10 @@ import 'package:safewaydirection/models/utility.dart';
 /// ```
 class RouteGuide {
   Route route;
+
   /// true일때 경로 안내 시작.
   bool started = false;
+
   /// Route의 locations(list<Point>) index
   int locationIndex = 0;
   String roadName = "";
@@ -28,7 +30,8 @@ class RouteGuide {
   /// 해당 위치에 도달하면 description이 변경됨.
   LatLng nextStop;
 
-  StreamController<LocationData> locationStream = StreamController<LocationData>.broadcast();
+  StreamController<LocationData> locationStream =
+      StreamController<LocationData>.broadcast();
 
   /// RouteGuide 생성자
   ///
@@ -40,11 +43,14 @@ class RouteGuide {
   RouteGuide(Route data) {
     route = data;
     roadName = route.locations[locationIndex].roadName;
-    description = route.locations[locationIndex].description;
+    description = "출발";
 
-    locationStream.stream.listen((LocationData data) { // 경로 안내중일때, 위치가 변경 될 경우 실행.
+    locationStream.stream.listen((LocationData data) {
+      // 경로 안내중일때, 위치가 변경 될 경우 실행.
       if (started) {
-        double distance = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
+        double distance = distanceInMeterByHaversine(
+            LatLng(data.latitude, data.longitude),
+            nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
         if (distance < 20.00 && locationIndex != route.locations.length) {
           locationIndex++;
           roadName = route.locations[locationIndex].roadName;
@@ -53,12 +59,11 @@ class RouteGuide {
           nextStop = route.locations[locationIndex + 1].location;
         }
 
-        if(description == "") description = "경로 따라 진행";
-        if(locationIndex == route.locations.length) description = "도착";
+        if (description == "") description = "경로 따라 진행";
+        if (locationIndex == route.locations.length) description = "도착";
       }
     });
   }
-
 
   /// 경로 안내 시작.
   ///
@@ -68,7 +73,5 @@ class RouteGuide {
   /// bool started = true;
   /// ```
   start() => started = true;
-  dispose() {
-    locationStream.close();
-  }
+  stop() => started = false;
 }
