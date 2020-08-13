@@ -468,8 +468,9 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   String tmp = searchController2.text;
                   searchController2.text = searchController.text;
                   searchController.text = tmp;
+                  var tmp2 = end;
                   end = start;
-                  start = end;
+                  start = tmp2;
                 },
                 elevation: 2.0,
                 fillColor: Color(0xFFF0AD74),
