@@ -79,6 +79,36 @@ class ThirdPageState extends State<ThirdPage> {
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70.0),
+        child: AppBar(
+
+          backgroundColor: Color(0xFFFFE600),
+          automaticallyImplyLeading: false,
+          title: Container(
+            width: MediaQuery.of(context).size.width,
+            child: InkWell(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'BMJUA',
+                      color: Colors.orange),
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.0),
+              color: Color(0xfffef8be),
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -96,43 +126,7 @@ class ThirdPageState extends State<ThirdPage> {
               setPolylines();
             },
           ),
-          Container(
-            color: Color(0xFFFFE600),
-            width: MediaQuery.of(context).size.width,
-            height: 90.0,
-          ),
-          Positioned(
-            top: 10.0,
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width - 40,
-                    child: InkWell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                          ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'BMJUA',
-                              color: Colors.orange),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50.0),
-                      color: Color(0xfffef8be),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+
           Positioned(
             bottom: 150,
             right: 20,
@@ -271,3 +265,43 @@ class ThirdPageState extends State<ThirdPage> {
     );
   }
 }
+
+/*
+          Container(
+            color: Color(0xFFFFE600),
+            width: MediaQuery.of(context).size.width,
+            height: 90.0,
+          ),
+          Positioned(
+            top: 10.0,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width - 40,
+                    child: InkWell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'BMJUA',
+                              color: Colors.orange),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.0),
+                      color: Color(0xfffef8be),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+ */
