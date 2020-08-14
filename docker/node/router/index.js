@@ -8,8 +8,8 @@ const kidsController = require('../controllers/kidsController');
 
 router.post( '/parents/id/compare', parentsController.compare );
 router.post( '/parents/key/confirm', parentsController.confirm );
-router.post( '/parents/location/nowget', parentsController.nowget );
-router.post( '/parents/location/pastget', parentsController.pastget );
+router.post( '/parents/location/get', parentsController.location );
+router.post( '/parents/polygon/get', parentsController.polygon );
 
 router.post( '/kids/id/compare', kidsController.compare );
 router.post( '/kids/key/create', kidsController.create );

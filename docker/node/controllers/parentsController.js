@@ -3,6 +3,7 @@ const parentsModel = require("../models/parents");
 const parentskidsModel = require("../models/parentskids");
 const kidsModel = require("../models/kids");
 const kidslocationModel = require("../models/kidslocation");
+const kidspolygonModel = require("../models/kidspolygon");
 
 // /parents/id/compare
 exports.compare = function (req, res) {
@@ -88,72 +89,53 @@ exports.confirm = function (req, res) {
     else res.send('no id or key');
 }
 
-// /parents/nowlocation/get
-exports.nowget = function (req, res) { // 길 찾기 중이라면 현재 상태를 보낸다.
-    console.log('parents start to get now location');
+// /parents/location/get
+exports.location = function (req, res) {
+    console.log('parents start to get location');
 
     const kidsId = req.body['kidsId'];
+    // const parnetsId = req.body['parnetsId'];
 
     if( kidsId ) {
-        kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
+        kidslocationModel.find({ kidsId: kidsId }, (err, ldata) => {
             if(err) console.log(err);
+            if( length == 0 ) res.send('no data');
+            if( ldata[0]['status'] == true ) {
+                // kidslocationModel.updateOne({ kidsId: kidsId }, {
+                //     parentsId: parnetsId
+                // }, { upsert: true }, function (err, data) { if(err) console.log(err); });
 
-            const length = Object.keys(data).length;
-
-            if( length === 0 ) res.send('no data');
-
-            if( data[length - 1]['status'] == 'true' ) { // 마지막의 kidslocation 데이터가 길 찾기 중인 경우.
-                res.json({
-                    'lat': data[length - 1]['lat'],
-                    'lon': data[length - 1]['lon'],
-                    'polygon': data[length - 1]['polygon']
-                });
+                res.json({ ldata });
             }
 
-            else res.send('no data');
+            res.send('no data');
         });
     }
 
     else res.send('no id');
 }
 
-// /parents/pastlocation/get
-exports.pastget = function (req, res) { // 이전 길 찾기 경로를 보내기 위해.
-    console.log('parents start to get past location');
+// /parents/polygon/get
+exports.polygon = function (req, res) {
+    console.log('parents start to get polygon');
 
     const kidsId = req.body['kidsId'];
-    // const key = req.body['key'];
 
     if( kidsId ) {
-        kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
-            if(err) console.log(err);
-
+        kidspolygonModel.find({ kidsId: kidsId }, (err, pdata) => {
             const length = Object.keys(data).length;
 
-            if( length === 0 ) res.send('no data');
-
-            else { // 데이터가 있고
+            if(err) console.log(err);
+            if( length == 0 ) res.send('no data');
+            else {
                 for( var i = 0; i < length; i++ ) {
-                    if( data[i]['status'] == false && data[i]['polygon'] != null ) { // 길 찾기를 하고 길 찾기가 끝난 상태라면
+                    if( pdata[i]['polygon'] != null ) { // 길 찾기를 하고 길 찾기가 끝난 상태라면
                         console.log('delete data ' + kidsId.toString() );
-                        kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
+
+                        kidspolygonModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
                             if(err) console.log(err);
                         });
 
-                        var kidslocation = new kidslocationModel({ // 삭제 직후 새로운 폼 생성
-                                parentsId: null,
-                                kidsId: kidsId,
-                                source: null,
-                                destination: null,
-                                lon: null,
-                                lat: null,
-                                start: null,
-                                end: null,
-                                polygon: null,
-                                status: false,
-                                date: null
-                            }); // make kidslocation data form.
-                        kidslocation.save(function (err, data) { if(err) console.log(err); else console.log(data); });
                         res.json({ data });
                     }
                 }
@@ -164,3 +146,66 @@ exports.pastget = function (req, res) { // 이전 길 찾기 경로를 보내기
 
     else res.send('no id');
 }
+
+// /parents/nowlocation/get
+// exports.nowget = function (req, res) { // 길 찾기 중이라면 현재 상태를 보낸다.
+//     console.log('parents start to get now location');
+
+//     const kidsId = req.body['kidsId'];
+
+//     if( kidsId ) {
+//         kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
+//             if(err) console.log(err);
+
+//             const length = Object.keys(data).length;
+
+//             if( length === 0 ) res.send('no data');
+
+//             if( data[length - 1]['status'] == 'true' ) { // 마지막의 kidslocation 데이터가 길 찾기 중인 경우.
+//                 res.json({
+//                     'lat': data[length - 1]['lat'],
+//                     'lon': data[length - 1]['lon'],
+//                     'polygon': data[length - 1]['polygon']
+//                 });
+//             }
+
+//             else res.send('no data');
+//         });
+//     }
+
+//     else res.send('no id');
+// }
+
+// // /parents/pastlocation/get
+// exports.pastget = function (req, res) { // 이전 길 찾기 경로를 보내기 위해.
+//     console.log('parents start to get past location');
+
+//     const kidsId = req.body['kidsId'];
+//     // const key = req.body['key'];
+
+//     if( kidsId ) {
+//         kidslocationModel.find({ kidsId: kidsId }, (err, data) => {
+//             if(err) console.log(err);
+
+//             const length = Object.keys(data).length;
+
+//             if( length === 0 ) res.send('no data');
+
+//             else { // 데이터가 있고
+//                 for( var i = 0; i < length; i++ ) {
+//                     if( data[i]['status'] == false && data[i]['polygon'] != null ) { // 길 찾기를 하고 길 찾기가 끝난 상태라면
+//                         console.log('delete data ' + kidsId.toString() );
+//                         kidslocationModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
+//                             if(err) console.log(err);
+//                         });
+
+//                         res.json({ data });
+//                     }
+//                 }
+//                 res.send('noting to update');
+//             }
+//         });
+//     }
+
+//     else res.send('no id');
+// }
