@@ -168,14 +168,14 @@ class ThirdPageState extends State<ThirdPage> {
                     GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
-                        _zoomStart();
                         print("change isRoutingStart Value. Probably");
                         try{
                         var id = routeSelectionList[index].polylineId;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
                             updatePolygon(polylines.toList()[i].points,start.mainText,end.mainText);//List<LatLng>
-                            break;
+                          }else{
+                            polylines.remove(polylines.toList()[i]);
                           }
                         }}
                         catch(e){
@@ -187,6 +187,7 @@ class ThirdPageState extends State<ThirdPage> {
 //                        if(mounted){
 //                          setState(() {isRoutingStart=true;print("onTap setState");});
 //                        }
+                        _zoomStart();
                       },
                       onLongPressStart: (details) {
                         var id = routeSelectionList[index].polylineId;
