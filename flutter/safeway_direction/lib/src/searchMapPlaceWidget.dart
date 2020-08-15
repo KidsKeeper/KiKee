@@ -112,8 +112,8 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
   void initState() {
     geocode = Geocoding(apiKey: widget.apiKey, language: widget.language);
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    _textEditingController = widget.controller;
-    _containerHeight = Tween<double>(begin: 55, end: 364).animate(
+    _textEditingController = widget.controller; //If you change end output, then you can change full length of container
+    _containerHeight = Tween<double>(begin: 55, end: 450).animate(
       CurvedAnimation(
         curve: Interval(0.0, 0.5, curve: Curves.easeInOut),
         parent: _animationController,
@@ -225,19 +225,28 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
   }
 
   Widget _placeOption(Place prediction) {
-    String place = prediction.mainText;
-    //String mainPlace = prediction.mainText;
+    String place = prediction.description;
+    String mainPlace = prediction.mainText;
 
     return MaterialButton(
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       onPressed: () => _selectPlace(prediction: prediction),
       child: ListTile(
         title: Text(
-          place.length < 45 ? "$place" : "${place.replaceRange(45, place.length, "")} ...",
+          mainPlace.length < 45 ? "$mainPlace" : "${mainPlace.replaceRange(45, mainPlace.length, "")} ...",
           style: TextStyle(
             fontSize: MediaQuery.of(context).size.width * 0.04,
               fontFamily: 'BMJUA',
             color: Color(0xFFF0AD74),
+          ),
+          maxLines: 1,
+        ),
+        subtitle: Text(
+          place.length < 45 ? "$place" : "${place.replaceRange(45, place.length, "")} ...",
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.04,
+            fontFamily: 'BMJUA',
+            color: Color(0xFFEACEB6),
           ),
           maxLines: 1,
         ),

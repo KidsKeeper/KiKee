@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -9,6 +10,7 @@ import '../models/RouteSelectCard.dart';
 import '../detour.dart';
 import '../src/Server.dart';
 import '../models/utility.dart';
+import '../models/DescriptionCard.dart';
 
 LocationData currentLocation; // a reference to the destination location
 LocationData destinationLocation; // wrapper around the location API
@@ -97,12 +99,24 @@ class ThirdPageState extends State<ThirdPage> {
             child: InkWell(
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'BMJUA',
-                      color: Colors.orange),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      ' ${start.mainText} ',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'BMJUA',
+                          color: Colors.orange),
+                    ),
+                    Icon(Icons.arrow_forward,color: Colors.orange,),
+                    Text(
+                      ' ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'BMJUA',
+                          color: Colors.orange),
+                    ),
+                  ],
                 ),
               ),
               onTap: () {
@@ -136,31 +150,37 @@ class ThirdPageState extends State<ThirdPage> {
           Positioned(
             bottom: 150,
             right: 20,
-            child: FloatingActionButton(
-                child: Icon(
-                  Icons.gps_fixed,
-                  color: Colors.black,
-                ),
-                backgroundColor: Colors.white,
-                onPressed: () async {
-                  geo.Position currentLocation = await geo.Geolocator().getLastKnownPosition(desiredAccuracy: geo.LocationAccuracy.high);
-                  final GoogleMapController controller = await _mapController.future;
-                  if(isRoutingStart==false){
-                    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-                        target: LatLng(currentLocation.latitude, currentLocation.longitude),
-                        zoom: 15.800)));
-                    print('isRoutingStart is false');
-                  }else{
-                    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-                        target: LatLng(currentLocation.latitude, currentLocation.longitude),
-                        tilt: 59.440717697143555,
-                        bearing: 192.8334901395799,
-                        zoom: 19.151926040649414
-                         )));
-                    print('isRoutingStart is true');
-                  }
+            child: Column(
+              children: <Widget>[
+                Text('내위치',style: TextStyle(fontFamily: 'BMJUA'),),
+                SizedBox(height: 5,),
+                FloatingActionButton(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Image.asset('image/CurrentLocation.png'),
+                    ),
+                    backgroundColor: Colors.white,
+                    onPressed: () async {
+                      geo.Position currentLocation = await geo.Geolocator().getLastKnownPosition(desiredAccuracy: geo.LocationAccuracy.high);
+                      final GoogleMapController controller = await _mapController.future;
+                      if(isRoutingStart==false){
+                        controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                            zoom: 15.800)));
+                        print('isRoutingStart is false');
+                      }else{
+                        controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                            tilt: 59.440717697143555,
+                            bearing: 192.8334901395799,
+                            zoom: 19.151926040649414
+                        )));
+                        print('isRoutingStart is true');
+                      }
 
-                }),
+                    }),
+              ],
+            ),
           ),
           Positioned(
             bottom: 30,
@@ -231,19 +251,7 @@ class ThirdPageState extends State<ThirdPage> {
                         ));
                         setState((){});
                       },
-                    ): Card(
-                      color: Colors.red[50],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0)),
-                      child: Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(routeGuide.description),
-                            ),
-                          )),
-                    )),
+                    ):descriptionCard("${routeGuide.description}", MediaQuery.of(context).size.width * 0.8),),
           ),
         ],
       ),
@@ -292,3 +300,4 @@ class ThirdPageState extends State<ThirdPage> {
     if (routeGuide != null) routeGuide.stop();
   }
 }
+
