@@ -13,6 +13,7 @@ import '../models/utility.dart';
 LocationData currentLocation; // a reference to the destination location
 LocationData destinationLocation; // wrapper around the location API
 Location location;
+List<LatLng> selectedPolylinePoints = [];
 
 BorderRadiusGeometry radius = BorderRadius.only(
   topLeft: Radius.circular(24.0),
@@ -30,11 +31,10 @@ class ThirdPageState extends State<ThirdPage> {
   Set<Marker> _markers = {};
   Set<Polyline> polylines = {};
   List<RouteSelectionClass> routeSelectionList = [];
-  List<BitmapDescriptor> locationIcon =
-      List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
+  List<BitmapDescriptor> locationIcon = List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
   Detour detour;
   PlaceInfo start, end;
-  Polyline temp;
+  Polyline temp,selectedRoute;
   bool isRoutingStart = false;
 
   // 경로안내 관련 데이터
@@ -52,21 +52,9 @@ class ThirdPageState extends State<ThirdPage> {
       if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
 
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation1.png')
-        .then((onValue) {
-      locationIcon[0] = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation2.png')
-        .then((onValue) {
-      locationIcon[1] = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/currentLocation3.png')
-        .then((onValue) {
-      locationIcon[2] = onValue;
-    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation1.png').then((onValue) {locationIcon[0] = onValue;});
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation2.png').then((onValue) {locationIcon[1] = onValue;});
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation3.png').then((onValue) {locationIcon[2] = onValue;});
   }
 
   @override
@@ -174,24 +162,34 @@ class ThirdPageState extends State<ThirdPage> {
                     routeGuide == null ? GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
-                        print("change isRoutingStart Value. Probably");
+                        print("ThirdPage: change isRoutingStart Value. Probably");
                         routeGuide = RouteGuide(detour.sortRoute[index]);
                         routeGuide.start();
                         try{
                         var id = routeSelectionList[index].polylineId;
                         for(int i=polylines.length-1; i>-1; i--){
                           if(polylines.toList()[i].polylineId==id){
-                            updatePolygon(polylines.toList()[i].points,start.mainText,end.mainText);//List<LatLng>
+                            updatePolygon(polylines.toList()[i].points,start.mainText,end.mainText);//부모앱에 아이 길찾기 정보 전송한 부분
+                            selectedPolylinePoints = polylines.toList()[i].points;
+                            selectedRoute = new Polyline(
+                              polylineId: PolylineId("selected_route"),
+                              points:selectedPolylinePoints,
+                              color: polylines.toList()[i].color,
+                              visible: true,
+                            );
                           }else{
                             polylines.remove(polylines.toList()[i]);
                           }
-                        }}
+                        }
+                        polylines.remove(polylines.last);
+                        polylines.add(selectedRoute);
+                        }
                         catch(e){
                           print(e);
                         }
-                        updateLocation();
+                        updateLocation();//부모앱에 아이의 현재위치 실시간 알려주는 부분
                         routeSelectionList.clear();
-                        setState(() {isRoutingStart=true;print("onTap setState");});
+                        setState(() {isRoutingStart=true;});
 //                        if(mounted){
 //                          setState(() {isRoutingStart=true;print("onTap setState");});
 //                        }
