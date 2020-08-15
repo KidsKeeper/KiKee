@@ -243,7 +243,7 @@ class ThirdPageState extends State<ThirdPage> {
                               child: Text(routeGuide.description),
                             ),
                           )),
-                    );),
+                    )),
           ),
         ],
       ),
