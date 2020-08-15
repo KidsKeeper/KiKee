@@ -19,6 +19,8 @@ class Detour{
   LatLng source;
   LatLng destination;
 
+  way.Route selectRoute;
+
   Detour();
   
   Detour.map(this.source, this.destination){
@@ -90,7 +92,11 @@ class Detour{
       await iter.updateDanger(accidentAreas);
 
     sortRoute = routes.toList();
-    sortRoute.sort((a,b) => a.totalDanger.compareTo(b.totalDanger));
+    sortRoute.sort((a, b) {
+      int result = a.totalDanger.compareTo(b.totalDanger);
+      if (result == 0) return a.distance.compareTo(b.distance);
+      return result;
+    });
 
     
     for(way.Route iter in sortRoute) {

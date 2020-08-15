@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import '../models/routeGuide.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
 import '../detour.dart';
 import '../src/Server.dart';
+import '../models/utility.dart';
 
 LocationData currentLocation; // a reference to the destination location
 LocationData destinationLocation; // wrapper around the location API
@@ -34,6 +36,10 @@ class ThirdPageState extends State<ThirdPage> {
   PlaceInfo start, end;
   Polyline temp;
   bool isRoutingStart = false;
+
+  // 경로안내 관련 데이터
+  RouteGuide routeGuide;
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +49,7 @@ class ThirdPageState extends State<ThirdPage> {
     location.onLocationChanged.listen((LocationData cLoc) {
       currentLocation = cLoc;
       updatePinOnMap(cLoc);
+      if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
@@ -126,7 +133,6 @@ class ThirdPageState extends State<ThirdPage> {
               setPolylines();
             },
           ),
-
           Positioned(
             bottom: 150,
             right: 20,
@@ -163,12 +169,14 @@ class ThirdPageState extends State<ThirdPage> {
             height: 100,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: routeSelectionList.length, //슬라이드 카드 정보 리스트
+                itemCount: routeGuide == null ? routeSelectionList.length : 1, //슬라이드 카드 정보 리스트
                 itemBuilder: (BuildContext context, int index) =>
-                    GestureDetector(//선택한거 빼고 지우는 부분.
+                    routeGuide == null ? GestureDetector(//선택한거 빼고 지우는 부분.
                       child: routeSelectionCard(routeSelectionList[index]),
                       onTap: () {
                         print("change isRoutingStart Value. Probably");
+                        routeGuide = RouteGuide(detour.sortRoute[index]);
+                        routeGuide.start();
                         try{
                         var id = routeSelectionList[index].polylineId;
                         for(int i=polylines.length-1; i>-1; i--){
@@ -223,7 +231,19 @@ class ThirdPageState extends State<ThirdPage> {
                         ));
                         setState((){});
                       },
-                    )),
+                    ): Card(
+                      color: Colors.red[50],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0)),
+                      child: Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(routeGuide.description),
+                            ),
+                          )),
+                    );),
           ),
         ],
       ),
@@ -265,44 +285,10 @@ class ThirdPageState extends State<ThirdPage> {
         zoom: 19.151926040649414))
     );
   }
-}
 
-/*
-          Container(
-            color: Color(0xFFFFE600),
-            width: MediaQuery.of(context).size.width,
-            height: 90.0,
-          ),
-          Positioned(
-            top: 10.0,
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width - 40,
-                    child: InkWell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                          ' ${start.mainText} -> ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'BMJUA',
-                              color: Colors.orange),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50.0),
-                      color: Color(0xfffef8be),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
- */
+  @override
+  void dispose() {
+    super.dispose();
+    if (routeGuide != null) routeGuide.stop();
+  }
+}
