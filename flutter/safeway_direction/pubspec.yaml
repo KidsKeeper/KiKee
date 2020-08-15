@@ -41,6 +41,7 @@ flutter:
     - image/currentLocation1.png
     - image/currentLocation2.png
     - image/currentLocation3.png
+    - image/CurrentLocation.png
   fonts:
     - family: BMJUA
       fonts:
