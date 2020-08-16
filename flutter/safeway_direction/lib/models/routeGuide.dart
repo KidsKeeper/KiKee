@@ -43,6 +43,7 @@ class RouteGuide {
   RouteGuide(Route data) {
     route = data;
     roadName = route.locations[locationIndex].roadName;
+    nextStop = route.locations[locationIndex+1].location;
     description = "출발";
 
     locationStream.stream.listen((LocationData data) {
@@ -69,9 +70,10 @@ class RouteGuide {
   ///
   /// 현재 위치에 따라 description이 변경됨.
   ///
-  /// ```
-  /// bool started = true;
-  /// ```
+  /// ` bool started = true; `
   start() => started = true;
-  stop() => started = false;
+  stop(){
+    started = false;
+    locationStream.close();
+  }
 }
