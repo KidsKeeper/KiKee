@@ -20,7 +20,8 @@ class SearchMapPlaceWidget extends StatefulWidget {
     this.darkMode = false,
     this.key,
     this.lableText,
-    this.controller
+    this.controller,
+    this.boxShadowColor
   })  : assert((location == null && radius == null) || (location != null && radius != null)),
         super(key: key);
 
@@ -33,6 +34,8 @@ class SearchMapPlaceWidget extends StatefulWidget {
 
   /// Placeholder text to show when the user has not entered any input.
   final String placeholder;
+
+  Color boxShadowColor;
 
   /// The callback that is called when one Place is selected by the user.
   final void Function(Place place) onSelected;
@@ -281,7 +284,7 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
       borderRadius: BorderRadius.all(Radius.circular(30.0)),
       boxShadow: [
         BoxShadow(
-          color: Color(0xffe5d877),
+          color: this.widget.boxShadowColor!=null?this.widget.boxShadowColor:Color(0xffe5d877),
           spreadRadius: 1,
           blurRadius: 7,
           offset: Offset(0, 3), // changes position of shadow
