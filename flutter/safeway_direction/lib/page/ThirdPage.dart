@@ -34,6 +34,7 @@ class ThirdPageState extends State<ThirdPage> {
   List<RouteSelectionClass> routeSelectionList = [];
   List<BitmapDescriptor> locationIcon =
       List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
+  List<BitmapDescriptor> startEndIcon = List<BitmapDescriptor>(2);
   Detour detour;
   PlaceInfo start, end;
   Polyline temp;
@@ -69,6 +70,19 @@ class ThirdPageState extends State<ThirdPage> {
         .then((onValue) {
       locationIcon[2] = onValue;
     });
+
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+        'image/startMarker.png')
+        .then((onValue) {
+      startEndIcon[0] = onValue;
+    });
+
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+        'image/endMarker.png')
+        .then((onValue) {
+      startEndIcon[1] = onValue;
+    });
+
   }
 
   @override
@@ -77,15 +91,17 @@ class ThirdPageState extends State<ThirdPage> {
     start = route[0];
     end = route[1];
     print("Third Page build runned! (it keeps running, did you know that? - 재원) ");
+    //addMarker(start,end);
+
     for (int i = 0; i < 2; i++) {
       _markers.add(Marker(
         markerId: MarkerId(_markers.length.toString()),
         position: LatLng(route[i].latitude, route[i].longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        icon: startEndIcon[i],
       ));
     }
     //출발지, 도착지에 마커 찍는 부분.
-
+//        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: PreferredSize(
@@ -104,17 +120,17 @@ class ThirdPageState extends State<ThirdPage> {
                   child: Row(
                     children: <Widget>[
                       Text(
-                        ' ${start.mainText} ',
+                        ' ${start.mainText.length>9?start.mainText.substring(0,9)+"...":start.mainText} ',
                         style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontFamily: 'BMJUA',
                             color: Color(0xffffbb81)),
                       ),
                       Icon(Icons.arrow_forward,color: Colors.orangeAccent,),
                       Text(
-                        ' ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
+                        ' ${end.mainText.length>9?end.mainText.substring(0,9)+"...":end.mainText}',
                         style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontFamily: 'BMJUA',
                             color: Color(0xffffbb81)),
                       ),

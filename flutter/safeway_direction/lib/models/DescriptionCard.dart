@@ -21,7 +21,7 @@ Widget descriptionCard(String description,double width)
         ),
         SizedBox(width: 5.0,),
         Text(
-          lineBreak(description,20),
+          lineBreak(description,25),
           style: TextStyle(
               color: Colors.orangeAccent,
               fontSize: 20,
