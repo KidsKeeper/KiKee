@@ -27,9 +27,9 @@ class RouteGuide {
   String description = "";
   
   /// 도착까지 남은 거리
-  int distanceRemain = -1;
+  int remainDistance = -1;
   /// 도착까지 남은 시간
-  int timeRemain = -1;
+  int remainTime = -1;
 
   /// 다음 경유지
   ///
@@ -52,8 +52,8 @@ class RouteGuide {
   RouteGuide(Route data) {
     route = data;
 
-    distanceRemain = route.distance;
-    timeRemain = route.totalHour * 3600 + route.totalMinute * 60;
+    remainDistance = route.distance;
+    remainTime = route.totalHour * 3600 + route.totalMinute * 60;
 
     roadName = route.locations[locationIndex].roadName;
     description = route.locations[locationIndex].description;
@@ -70,8 +70,8 @@ class RouteGuide {
         double distance = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
         if (distance < 20.00 && locationIndex != route.locations.length) {
           locationIndex++;
-          distanceRemain -= route.locations[locationIndex].time;
-          timeRemain -= route.locations[locationIndex].distance;
+          remainDistance -= route.locations[locationIndex].time;
+          remainTime -= route.locations[locationIndex].distance;
 
           roadName = route.locations[locationIndex].roadName;
           description = route.locations[locationIndex].description;
