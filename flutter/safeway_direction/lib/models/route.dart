@@ -36,20 +36,26 @@ class Route {
     totalMinute = ((time % 3600) / 60).round();
 
     String str ="";
+    int sectionTime;
+    int sectinoDistance;
     // 각 경로 입력
-    locations.add( _Point(LatLng(data['features'][0]['geometry']['coordinates'][1],data['features'][0]['geometry']['coordinates'][0]), 0, "","") );
     for( var iter in data['features'] ) {
-      if( iter['geometry']['type'] == 'LineString' )
-        for( int i = 1; i < iter['geometry']['coordinates'].length ; i++ ) {
-          locations.add( _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str) );
-          str = "";
+      if( iter['geometry']['type'] == 'LineString' ){
+        sectionTime = iter['properties']['time'];
+        sectinoDistance = iter['properties']['distance'];
+        for( int i = 0; i < iter['geometry']['coordinates'].length ; i++ ){
+            locations.add( _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str, sectinoDistance, sectionTime) );
+            sectionTime = 0;
+            sectinoDistance = 0;
+        }
+        str = "";
         }
 
       else if( iter['geometry']['type'] == 'Point' ) {
         str = iter['properties']['description'];
       }
     }
-
+    locations.last.description = str;
     // 횡단보도 좌표 정리
     for( var iter in data['features'] ) {
       if( iter['geometry']['type'] == 'LineString' && iter['properties']['facilityType'] == '15' ) {
@@ -112,8 +118,10 @@ class _Point {
   int danger = 0;
   String roadName;
   String description = "";
+  int distance;
+  int time;
 
-  _Point( this.location, this.danger, this.roadName, this.description );
+  _Point( this.location, this.danger, this.roadName, this.description, this.distance, this.time);
 
   @override
   int get hashCode => location.hashCode;
