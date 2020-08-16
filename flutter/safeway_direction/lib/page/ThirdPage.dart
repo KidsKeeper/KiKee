@@ -79,41 +79,44 @@ class ThirdPageState extends State<ThirdPage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.0),
         child: AppBar(
-
-          backgroundColor: Color(0xFFFFE600),
+          elevation: 0,
+          backgroundColor: Color(0xfffcefa3),
           automaticallyImplyLeading: false,
-          title: Container(
-            width: MediaQuery.of(context).size.width,
-            child: InkWell(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      ' ${start.mainText} ',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'BMJUA',
-                          color: Colors.orange),
-                    ),
-                    Icon(Icons.arrow_forward,color: Colors.orange,),
-                    Text(
-                      ' ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'BMJUA',
-                          color: Colors.orange),
-                    ),
-                  ],
+          title: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        ' ${start.mainText} ',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'BMJUA',
+                            color: Color(0xffffbb81)),
+                      ),
+                      Icon(Icons.arrow_forward,color: Colors.orangeAccent,),
+                      Text(
+                        ' ${end.mainText.length>10?end.mainText.substring(0,10)+"...":end.mainText}',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'BMJUA',
+                            color: Color(0xffffbb81)),
+                      ),
+                    ],
+                  ),
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50.0),
-              color: Color(0xfffef8be),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                color: Color(0xffffffff),
+              ),
             ),
           ),
         ),

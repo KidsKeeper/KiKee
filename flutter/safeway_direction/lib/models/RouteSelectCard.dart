@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-List<Color> red = [Colors.red[50], Colors.red, Colors.red[900]];
+List<Color> red = [Color(0xFFFFA590), Color(0xFFFF876B),Color(0xFFFF4B21)];
 List<Color> orange = [Colors.orange[50], Colors.orange, Colors.orange[900]];
-List<Color> yellow = [Colors.yellow[50], Colors.yellow, Colors.yellow[900]];
-List<Color> blue = [Colors.blue[50], Colors.blue, Colors.blue[900]];
+List<Color> yellow = [Color(0xfffef8be), Color(0xFFFFBF20), Colors.yellow[900]];
+List<Color> blue = [Color(0xffdffbff),Color(0xff00c4ff), Color(0xff0088ff)];
 List<List<Color>> colors = [red, orange, yellow, blue];
 
 Widget routeSelectionCard(RouteSelectionClass rs) {
@@ -15,16 +15,17 @@ Widget routeSelectionCard(RouteSelectionClass rs) {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
-            radius: 20,
+            radius: 25,
             child: Icon(
               Icons.directions_walk,
               color: Colors.white,
+              size: 40,
             ),
             backgroundColor: colors[rs.colorId][1],
           ),
         ),
         Text(
-          '${rs.distance}m',
+          rs.distance.length>=4?calculateDistance(rs.distance):'${rs.distance}m',
           style: TextStyle(
               color: colors[rs.colorId][1],
               fontSize: 20,
@@ -64,4 +65,12 @@ class RouteSelectionClass implements Comparable<RouteSelectionClass> {
       return int.parse(distance) - int.parse(other.distance);
     return danger - other.danger;
   }
+}
+
+String calculateDistance(String distance)
+{
+  int len = distance.length;
+  String km = distance.substring(0,len-3);
+  String m = distance.substring(len-3);
+  return km+"."+m+"km";
 }
