@@ -270,7 +270,7 @@ class ThirdPageState extends State<ThirdPage> {
                         ));
                         setState((){});
                       },
-                    ):descriptionCard("${routeGuide.description}", MediaQuery.of(context).size.width * 0.8),),
+                    ):descriptionCard(routeGuide.description,routeGuide.remainDistance,routeGuide.remainTime),)
           ),
         ],
       ),
