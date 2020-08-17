@@ -34,6 +34,7 @@ class ThirdPageState extends State<ThirdPage> {
   Set<Polyline> polylines = {};
   List<RouteSelectionClass> routeSelectionList = [];
   List<BitmapDescriptor> locationIcon = List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
+  List<BitmapDescriptor> startEndIcon = List<BitmapDescriptor>(2);
   Detour detour;
   PlaceInfo start, end;
   Polyline temp,selectedRoute;
