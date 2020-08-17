@@ -24,12 +24,20 @@ class RouteGuide {
   String roadName = "";
   String description = "";
 
+  /// 도착까지 남은 거리
+  int remainDistance = -1;
+  /// 도착까지 남은 시간
+  int remainTime = -1;
+
   /// 다음 경유지
   ///
   /// 해당 위치에 도달하면 description이 변경됨.
   LatLng nextStop;
 
   StreamController<LocationData> locationStream =StreamController<LocationData>.broadcast();
+
+  /// 마지막 sync 시간. 5초간격으로 연산 하는 용도로 사용.
+  DateTime lastSyncTime;
 
   /// RouteGuide 생성자
   ///
@@ -40,18 +48,31 @@ class RouteGuide {
   /// ```
   RouteGuide(Route data) {
     route = data;
+
+    remainDistance = route.distance;
+    remainTime = route.totalHour * 3600 + route.totalMinute * 60;
+
     roadName = route.locations[locationIndex].roadName;
+    description = route.locations[locationIndex].description;
     nextStop = route.locations[locationIndex+1].location;
-    description = "출발";
+    lastSyncTime = DateTime.now();
 
     locationStream.stream.listen((LocationData data) {
+
+      DateTime time = DateTime.now();
+      Duration difference = time.difference(lastSyncTime);
       // 경로 안내중일때, 위치가 변경 될 경우 실행.
-      if (started) {
+      if (started && difference.inSeconds > 1) {
+        lastSyncTime = time;
         double distance = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
         if (distance < 20.00 && locationIndex != route.locations.length) {
           locationIndex++;
+          remainDistance -= route.locations[locationIndex].time;
+          remainTime -= route.locations[locationIndex].distance;
+
           roadName = route.locations[locationIndex].roadName;
           description = route.locations[locationIndex].description;
+
           nextStop = route.locations[locationIndex + 1].location;
           if(T.selectedPolylinePoints != null){
             T.selectedPolylinePoints.remove(T.selectedPolylinePoints.first);
@@ -68,10 +89,10 @@ class RouteGuide {
   ///
   /// 현재 위치에 따라 description이 변경됨.
   ///
-  /// ` bool started = true; `
+  /// ```
+  /// bool started = true;
+  /// ```
   start() => started = true;
-  stop(){
-    started = false;
-    locationStream.close();
-  }
+  stop() => started = false;
+  //    locationStream.close(); 이거 없어도 됨?
 }
