@@ -4,16 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart' as geo;
-import 'package:safewaydirection/page/LoadingPage.dart';
 import '../models/routeGuide.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
 import '../models/ColorLoader.dart';
 import '../detour.dart';
 import '../src/Server.dart';
-import '../models/utility.dart';
 import '../models/DescriptionCard.dart';
 
 LocationData currentLocation; // a reference to the destination location
@@ -319,7 +316,6 @@ class ThirdPageState extends State<ThirdPage> {
   }
 
   Future<bool> setPolylines() async {
-    print("==================Function setPolylines in ThirdPage.dart is CALLED!==================");
     detour = Detour.map(LatLng(start.latitude, start.longitude),
         LatLng(end.latitude, end.longitude));
     await detour.drawAllPolyline();
