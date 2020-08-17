@@ -11,7 +11,7 @@ import '../page/RecentSearchPage.dart';
 import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
-// import '../src/Server.dart';
+import '../src/Server.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class NewSearchPage extends StatefulWidget {
@@ -357,8 +357,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 child: Image.asset('image/_304.png',width: (width/5),),
                 onTap: () {
                   List<PlaceInfo> args = [start, end];
-                  print(start.mainText);
-                  print(end.mainText);
+                  stopUpdateLocation();
                   Navigator.push(
                     context,
                     MaterialPageRoute(

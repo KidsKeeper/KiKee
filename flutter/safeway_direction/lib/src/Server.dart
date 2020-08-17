@@ -108,21 +108,24 @@ Future<void> updateLocation() async {
 }
 
 Future<void> stopUpdateLocation() async {
-  locationSubscription.cancel();
-
   List<Kids> kids = await KikeeDB.instance.getKids();
   const String URL = 'http://3.34.194.177:8088/kids/location/end';
+
+  try { locationSubscription.cancel(); }
+  catch (e) { print(e); }
 
   try {
     int kidsId = kids[0].kidsId;
     String key = kids[0].key;
 
     Map data = { 'kidsId': kidsId, 'key': key };
-    await http.post(
+    final response = await http.post(
         Uri.encodeFull(URL),
         headers: headers,
         body: jsonEncode(data)
     );
+
+    print(response.body);
   }
 
   catch (e) { print(e); }
