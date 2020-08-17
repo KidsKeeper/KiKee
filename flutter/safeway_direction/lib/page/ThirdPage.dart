@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -43,6 +44,14 @@ class ThirdPageState extends State<ThirdPage> {
   // 경로안내 관련 데이터
   RouteGuide routeGuide;
 
+  //isolate start
+  Isolate _isolate;
+  bool _running = false;
+  static int _counter = 0;
+  String notification = "";
+  ReceivePort _receivePort;
+  //isolate done
+
   @override
   void initState() {
     super.initState();
@@ -55,23 +64,54 @@ class ThirdPageState extends State<ThirdPage> {
       updatePinOnMap(cLoc);
       if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
-
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation1.png').then((onValue) {locationIcon[0] = onValue;});
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation2.png').then((onValue) {locationIcon[1] = onValue;});
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation3.png').then((onValue) {locationIcon[2] = onValue;});
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/startMarker.png')
-        .then((onValue) {
-      startEndIcon[0] = onValue;
-    });
-
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'image/endMarker.png')
-        .then((onValue) {
-      startEndIcon[1] = onValue;
-    });
-
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/startMarker.png').then((onValue) {startEndIcon[0] = onValue;});
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/endMarker.png').then((onValue) {startEndIcon[1] = onValue;});
   }
+
+
+  //isolate start
+  void _start() async {
+    _running = true;
+    _receivePort = ReceivePort();
+    _isolate = await Isolate.spawn(_checkTimer, _receivePort.sendPort);
+    _receivePort.listen(_handleMessage, onDone:() {
+      print("done!");
+    });
+  }
+
+  static void _checkTimer(SendPort sendPort) async {
+    Timer.periodic(new Duration(seconds: 1), (Timer t) {
+      _counter++;
+      String msg = 'notification ' + _counter.toString();
+      print('SEND: ' + msg);
+      sendPort.send(msg);
+    });
+  }
+
+  void _handleMessage(dynamic data) {
+    print('RECEIVED: ' + data);
+    setState(() {
+      notification = data;
+    });
+  }
+
+  void _stop() {
+    if (_isolate != null) {
+      setState(() {
+        _running = false;
+        notification = '';
+      });
+      _receivePort.close();
+      _isolate.kill(priority: Isolate.immediate);
+      _isolate = null;
+    }
+  }
+  //isolate done
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +226,11 @@ class ThirdPageState extends State<ThirdPage> {
                       }
 
                     }),
+                FloatingActionButton(
+                  onPressed: _running ? _stop : _start,
+                  tooltip: _running ? 'Timer stop' : 'Timer start',
+                  child: _running ? new Icon(Icons.stop) : new Icon(Icons.play_arrow),
+                ),
               ],
             ),
           ),
