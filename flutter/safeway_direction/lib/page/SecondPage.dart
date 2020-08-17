@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
-import 'package:safewaydirection/page/DBpage.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../models/search_map_place.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
+import '../models/Favorite.dart';
 import '../page/ThirdPage.dart';
 import '../page/RecentSearchPage.dart';
-// import '../page/DBpage.dart';
+import '../page/DBpage.dart';
 import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
 import '../src/Server.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 class NewSearchPage extends StatefulWidget {
   @override
@@ -34,11 +34,41 @@ class _NewSearchPageState extends State<NewSearchPage> {
   final List<IconData> icons = [ // favorite icons list
     Icons.add,
     Icons.home,
-    Icons.star,
-    Icons.school
+    Icons.school,
+    Icons.book
   ];
 
-  int iconNumber = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
+  int iconNumber1 = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
+  int iconNumber2 = 0;
+  int iconNumber3 = 0;
+  int iconNumber4 = 0;
+  int iconNumber5 = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateFavoriteIcon();
+  }
+
+  void _updateFavoriteIcon() async {
+    List<Favorite> data = await KikeeDB.instance.getFavoriteTest2();
+    List iconArray = [];
+
+    for( int i = 1; i < 6; i++ ) {
+      try { iconArray.add(data[i].icon); }
+      catch (e) { iconArray.add(0); }
+    }
+
+    setState(() {
+      iconNumber1 = iconArray[0];
+      iconNumber2 = iconArray[1];
+      iconNumber3 = iconArray[2];
+      iconNumber4 = iconArray[3];
+      iconNumber5 = iconArray[4];
+    });
+
+    print(iconArray);
+  }
 
   void updateEndPlace( ) { // update end data fetched from recent search
     setState(() {
@@ -183,14 +213,8 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             onPressed: () {
                               KikeeDB.instance.getFavorite(1).then((data) {
                                 try {
-                                  setState(() {
-                                    iconNumber = data[0]['icon'];
-                                  });
-
-                                  print(iconNumber);
                                   searchController2.text = data[0]['mainText'];
                                   end = PlaceInfo(
-                                    // placeId: place.placeId,
                                       description: data[0]['description'],
                                       longitude: data[0]['longitude'],
                                       latitude: data[0]['latitude'],
@@ -201,18 +225,19 @@ class _NewSearchPageState extends State<NewSearchPage> {
                               });
                             },
                             onLongPress: () {
-                              KikeeDB.instance.getFavorite(1).then((data) {
+                              KikeeDB.instance.getFavorite(1).then((data) async {
                                 try {
                                   viewFavorite(context, 1, data);
-                                } catch (error) {
-                                  viewFavorite(context, 1, data);
+                                }
+                                catch (e) {
+                                  print(e);
                                 }
                               });
                             },
                             elevation: 0,
                             fillColor: Color(0xff47c2bb),
                             child: Icon(
-                              icons[iconNumber],
+                              icons[iconNumber1],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -235,11 +260,29 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           height: width/4,
                           padding: EdgeInsets.all(width/32),
                           child: RawMaterialButton(
-                            onPressed: null,
+                            onPressed: () {
+                              KikeeDB.instance.getFavorite(2).then((data) {
+                                try {
+                                  searchController2.text = data[0]['mainText'];
+                                  end = PlaceInfo(
+                                      description: data[0]['description'],
+                                      longitude: data[0]['longitude'],
+                                      latitude: data[0]['latitude'],
+                                      mainText: data[0]['mainText']);
+                                } catch (error) {
+                                  print(error);
+                                }
+                              });
+                            },
+                            onLongPress: () {
+                              KikeeDB.instance.getFavorite(2).then((data) {
+                                viewFavorite(context, 2, data);
+                              });
+                            },
                             elevation: 0,
                             fillColor: Colors.blueAccent,
                             child: Icon(
-                              Icons.school,
+                              icons[iconNumber2],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -294,7 +337,25 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           height: width/4,
                           padding: EdgeInsets.all(width/32),
                           child: RawMaterialButton(
-                            onPressed: null,
+                            onPressed: () {
+                              KikeeDB.instance.getFavorite(4).then((data) {
+                                try {
+                                  searchController2.text = data[0]['mainText'];
+                                  end = PlaceInfo(
+                                      description: data[0]['description'],
+                                      longitude: data[0]['longitude'],
+                                      latitude: data[0]['latitude'],
+                                      mainText: data[0]['mainText']);
+                                } catch (error) {
+                                  print(error);
+                                }
+                              });
+                            },
+                            onLongPress: () {
+                              KikeeDB.instance.getFavorite(4).then((data) {
+                                viewFavorite(context, 4, data);
+                              });
+                            },
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(
@@ -321,7 +382,25 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           height: width/4,
                           padding: EdgeInsets.all(width/32),
                           child: RawMaterialButton(
-                            onPressed: null,
+                            onPressed: () {
+                              KikeeDB.instance.getFavorite(5).then((data) {
+                                try {
+                                  searchController2.text = data[0]['mainText'];
+                                  end = PlaceInfo(
+                                      description: data[0]['description'],
+                                      longitude: data[0]['longitude'],
+                                      latitude: data[0]['latitude'],
+                                      mainText: data[0]['mainText']);
+                                } catch (error) {
+                                  print(error);
+                                }
+                              });
+                            },
+                            onLongPress: () {
+                              KikeeDB.instance.getFavorite(5).then((data) {
+                                viewFavorite(context, 5, data);
+                              });
+                            },
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(

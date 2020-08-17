@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:safewaydirection/models/Favorite.dart';
 
 import '../db/KikeeDB.dart';
-import '../models/Kids.dart';
+// import '../models/Kids.dart';
+import '../models/Favorite.dart';
 
 class DBpage extends StatefulWidget {
   @override
@@ -14,9 +16,11 @@ class _DBpageState extends State<DBpage> {
     return Scaffold(
       appBar: AppBar( title: Text('디비 목록 결과') ),
       // body: FutureBuilder<List<Parents>>(
-      body: FutureBuilder<List<Kids>>(
+      body: FutureBuilder<List<Favorite>>(
+      // body: FutureBuilder<List<Kids>>(
         // future: DB.instance.getParents(),
-        future: KikeeDB.instance.getKids(),
+        future: KikeeDB.instance.getFavoriteTest2(),
+        // future: KikeeDB.instance.getKids(),
         builder: (context, snapshot) {
           if( snapshot.hasData ) {
             return ListView.builder(
@@ -24,16 +28,17 @@ class _DBpageState extends State<DBpage> {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   // title: Text( snapshot.data[index].parentsId.toString() ),
-                  title: Text( snapshot.data[index].kidsId.toString() ),
+                  title: Text( snapshot.data[index].text.toString() ),
                   // subtitle: Text( snapshot.data[index].key.toString() ),
-                  subtitle: Text( snapshot.data[index].key.toString() ),
+                  subtitle: Text( snapshot.data[index].id.toString() ),
                   trailing: 
                     IconButton(
                       alignment: Alignment.center,
                       icon: Icon(Icons.delete),
                       onPressed: () async {
                         // _deleteParents();
-                        _deletekidsId();
+                        // _deletekidsId();
+                        _deleteFavoriteId(index);
                         setState(() {});
                       },
                     ),
@@ -51,4 +56,5 @@ class _DBpageState extends State<DBpage> {
 }
 
 // _deleteParents() { DB.instance.deleteParentsId(); }
-_deletekidsId() { KikeeDB.instance.deleteKidsId(1); }
+// _deletekidsId() { KikeeDB.instance.deleteKidsId(1); }
+_deleteFavoriteId(int id) { KikeeDB.instance.deleteFavorite(id); }

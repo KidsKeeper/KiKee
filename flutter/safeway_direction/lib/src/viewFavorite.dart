@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:safewaydirection/keys.dart';
+
+import '../keys.dart';
 import '../db/KikeeDB.dart';
 import '../models/Favorite.dart';
 import '../models/RecentSearch.dart';
 import '../models/search_map_place.dart';
 
 viewFavorite(BuildContext context, int id, var data) {
-  Favorite favoriteInfo;
+  Favorite favoriteInfo = Favorite();
   RecentSearch recentSearchInfo;
 
   final favoriteController = new TextEditingController();
+  final favoriteTextController = new TextEditingController();
 
   // update favorite
   try {
+    favoriteTextController.text = data[0]['text'];
+
     favoriteInfo = Favorite(
       // placeId: place.placeId,
       id: data[0]['id'],
       description: data[0]['description'],
       longitude: data[0]['longtitude'],
       latitude: data[0]['latitude'],
-      mainText: data[0]['mainText'],);
+      mainText: data[0]['mainText'],
+      icon: data[0]['icon']
+    );
 
     Alert(
       context: context,
@@ -34,6 +40,9 @@ viewFavorite(BuildContext context, int id, var data) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SizedBox(height: 20,),
+          TextField(
+            controller: favoriteTextController,
+          ),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
@@ -53,17 +62,16 @@ viewFavorite(BuildContext context, int id, var data) {
                 // id: id,
                 placeId: place.placeId,
                 description: place.description,
-                // longitude: lng,
-                // latitude: lat,
-                mainText: place.mainText,);
-
-              favoriteInfo = Favorite(
-                // placeId: place.placeId,
-                id: id,
-                description: place.description,
                 longitude: lng,
                 latitude: lat,
                 mainText: place.mainText,);
+
+                favoriteInfo.id = id;
+                favoriteInfo.description = place.description;
+                favoriteInfo.longitude = lng;
+                favoriteInfo.latitude = lat;
+                favoriteInfo.mainText = place.mainText;
+                favoriteInfo.text = favoriteTextController.text;
 
               _insertRecentSearch(recentSearchInfo);
             },
@@ -175,7 +183,7 @@ viewFavorite(BuildContext context, int id, var data) {
           onPressed: () {
             _updateFavorite(favoriteInfo);
             print('db update');
-            Navigator.pop(context);
+            Navigator.pop(context, 1);
           },
           child:
           Text("수정", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
@@ -186,6 +194,7 @@ viewFavorite(BuildContext context, int id, var data) {
 
   // insert favorite
   catch (error) {
+    print(error);
     Alert(
       context: context,
       title: '즐겨찾기 추가',
@@ -199,6 +208,12 @@ viewFavorite(BuildContext context, int id, var data) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SizedBox(height: 20,),
+          TextField(
+            controller: favoriteTextController,
+            decoration: InputDecoration(
+              hintText: '즐겨찾기 이름'
+            ),
+          ),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
@@ -218,20 +233,18 @@ viewFavorite(BuildContext context, int id, var data) {
                 // id: id,
                 placeId: place.placeId,
                 description: place.description,
-                // longitude: lng,
-                // latitude: lat,
-                mainText: place.mainText,);
-
-              favoriteInfo = Favorite(
-                // placeId: place.placeId,
-                id: id,
-                description: place.description,
                 longitude: lng,
                 latitude: lat,
                 mainText: place.mainText,);
 
+                favoriteInfo.id = id;
+                favoriteInfo.description = place.description;
+                favoriteInfo.longitude = lng;
+                favoriteInfo.latitude = lat;
+                favoriteInfo.mainText = place.mainText;
+                favoriteInfo.text = favoriteTextController.text;
+
               _insertRecentSearch(recentSearchInfo);
-              // KikeeDB.instance.insertRecentSearch(recentSearchInfo);
             },
           ),
           SizedBox(height: 20,),
@@ -329,7 +342,7 @@ viewFavorite(BuildContext context, int id, var data) {
             radius: BorderRadius.circular(15),
             onPressed: () {
               _insertFavorite(favoriteInfo);
-              print('db insert');
+              print('favorite db insert');
               Navigator.pop(context);
             },
             child:
