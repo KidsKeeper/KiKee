@@ -4,10 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:safewaydirection/page/LoadingPage.dart';
 import '../models/routeGuide.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
+import '../models/ColorLoader.dart';
 import '../detour.dart';
 import '../src/Server.dart';
 import '../models/utility.dart';
@@ -44,17 +47,18 @@ class ThirdPageState extends State<ThirdPage> {
   // 경로안내 관련 데이터
   RouteGuide routeGuide;
 
-  //isolate start
+  //isolate variables (start)
   Isolate _isolate;
   bool _running = false;
   static int _counter = 0;
   String notification = "";
   ReceivePort _receivePort;
-  //isolate done
+  //isolate variables (finish)
 
   @override
   void initState() {
     super.initState();
+    _start();
     //make status false
     stopUpdateLocation();
     print("ThirdPage: initState - stopUpdateLocation called.");
@@ -70,48 +74,6 @@ class ThirdPageState extends State<ThirdPage> {
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/startMarker.png').then((onValue) {startEndIcon[0] = onValue;});
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/endMarker.png').then((onValue) {startEndIcon[1] = onValue;});
   }
-
-
-  //isolate start
-  void _start() async {
-    _running = true;
-    _receivePort = ReceivePort();
-    _isolate = await Isolate.spawn(_checkTimer, _receivePort.sendPort);
-    _receivePort.listen(_handleMessage, onDone:() {
-      print("done!");
-    });
-  }
-
-  static void _checkTimer(SendPort sendPort) async {
-    Timer.periodic(new Duration(seconds: 1), (Timer t) {
-      _counter++;
-      String msg = 'notification ' + _counter.toString();
-      print('SEND: ' + msg);
-      sendPort.send(msg);
-    });
-  }
-
-  void _handleMessage(dynamic data) {
-    print('RECEIVED: ' + data);
-    setState(() {
-      notification = data;
-    });
-  }
-
-  void _stop() {
-    if (_isolate != null) {
-      setState(() {
-        _running = false;
-        notification = '';
-      });
-      _receivePort.close();
-      _isolate.kill(priority: Isolate.immediate);
-      _isolate = null;
-    }
-  }
-  //isolate done
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -129,85 +91,85 @@ class ThirdPageState extends State<ThirdPage> {
       ));
     }
     //출발지, 도착지에 마커 찍는 부분.
-
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.0),
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Color(0xfffcefa3),
-          automaticallyImplyLeading: false,
-          title: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: InkWell(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        ' ${start.mainText.length>9?start.mainText.substring(0,9)+"...":start.mainText} ',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'BMJUA',
-                            color: Color(0xffffbb81)),
-                      ),
-                      Icon(Icons.arrow_forward,color: Colors.orangeAccent,),
-                      Text(
-                        ' ${end.mainText.length>9?end.mainText.substring(0,9)+"...":end.mainText}',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'BMJUA',
-                            color: Color(0xffffbb81)),
-                      ),
-                    ],
+    if(_running!=true){
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(70.0),
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: Color(0xfffcefa3),
+            automaticallyImplyLeading: false,
+            title: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          ' ${start.mainText.length > 9 ? start.mainText.substring(0, 9) + "..." : start.mainText} ',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'BMJUA',
+                              color: Color(0xffffbb81)),
+                        ),
+                        Icon(Icons.arrow_forward, color: Colors.orangeAccent,),
+                        Text(
+                          ' ${end.mainText.length > 9 ? end.mainText.substring(0, 9) + "..." : end.mainText}',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'BMJUA',
+                              color: Color(0xffffbb81)),
+                        ),
+                      ],
+                    ),
                   ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                color: Color(0xffffffff),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  color: Color(0xffffffff),
+                ),
               ),
             ),
           ),
         ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-              target: LatLng((route[0].latitude + route[1].latitude) / 2,
-                  (route[0].longitude + route[1].longitude) / 2),
-              zoom: 15.0,
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(
+                target: LatLng((route[0].latitude + route[1].latitude) / 2,
+                    (route[0].longitude + route[1].longitude) / 2),
+                zoom: 15.0,
+              ),
+              markers: _markers,
+              polylines: polylines,
+              zoomControlsEnabled: false,
+              onMapCreated: (GoogleMapController controller) {
+                _mapController.complete(controller);
+                setPolylines();
+              },
             ),
-            markers: _markers,
-            polylines: polylines,
-            zoomControlsEnabled: false,
-            onMapCreated: (GoogleMapController controller) {
-              _mapController.complete(controller);
-              setPolylines();
-            },
-          ),
-          Positioned(
-            bottom: 150,
-            right: 20,
-            child: Column(
-              children: <Widget>[
-                Text('내위치',style: TextStyle(fontFamily: 'BMJUA'),),
-                SizedBox(height: 5,),
-                FloatingActionButton(
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Image.asset('image/CurrentLocation.png'),
-                    ),
-                    backgroundColor: Colors.white,
-                    onPressed: () async {
+            Positioned(
+              bottom: 150,
+              right: 20,
+              child: Column(
+                children: <Widget>[
+                  Text('내위치', style: TextStyle(fontFamily: 'BMJUA'),),
+                  SizedBox(height: 5,),
+                  FloatingActionButton(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Image.asset('image/CurrentLocation.png'),
+                      ),
+                      backgroundColor: Colors.white,
+                      onPressed: () async {
                       geo.Position currentLocation = await geo.Geolocator().getLastKnownPosition(desiredAccuracy: geo.LocationAccuracy.high);
                       final GoogleMapController controller = await _mapController.future;
                       if(isRoutingStart==false){
@@ -223,104 +185,140 @@ class ThirdPageState extends State<ThirdPage> {
                             zoom: 19.151926040649414
                         )));
                         print('isRoutingStart is true');
-                      }
-
-                    }),
-                FloatingActionButton(
-                  onPressed: _running ? _stop : _start,
-                  tooltip: _running ? 'Timer stop' : 'Timer start',
-                  child: _running ? new Icon(Icons.stop) : new Icon(Icons.play_arrow),
-                ),
-              ],
+                      }}),
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 30,
-            left: 20,
-            width: MediaQuery.of(context).size.width,
-            height: 100,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: routeGuide == null ? routeSelectionList.length : 1, //슬라이드 카드 정보 리스트
-                itemBuilder: (BuildContext context, int index) =>
-                    routeGuide == null ? GestureDetector(//선택한거 빼고 지우는 부분.
-                      child: routeSelectionCard(routeSelectionList[index]),
-                      onTap: () {
-                        print("ThirdPage: change isRoutingStart Value. Probably");
-                        routeGuide = RouteGuide(detour.sortRoute[index]);
-                        routeGuide.start();
-                        try{
+            Positioned(
+                bottom: 30,
+                left: 20,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: routeGuide == null ? routeSelectionList.length : 1,
+                  //슬라이드 카드 정보 리스트
+                  itemBuilder: (BuildContext context, int index) =>
+                  routeGuide == null ? GestureDetector( //선택한거 빼고 지우는 부분.
+                    child: routeSelectionCard(routeSelectionList[index]),
+                    onTap: () {
+                      print("ThirdPage: change isRoutingStart Value. Probably");
+                      routeGuide = RouteGuide(detour.sortRoute[index]);
+                      routeGuide.start();
+                      try {
                         var id = routeSelectionList[index].polylineId;
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId==id){
-                            updatePolygon(polylines.toList()[i].points,start.mainText,end.mainText);//부모앱에 아이 길찾기 정보 전송한 부분
-                            selectedPolylinePoints = polylines.toList()[i].points;
+                        for (int i = polylines.length - 1; i > -1; i--) {
+                          if (polylines.toList()[i].polylineId == id) {
+                            updatePolygon(
+                                polylines.toList()[i].points, start.mainText,
+                                end.mainText); //부모앱에 아이 길찾기 정보 전송한 부분
+                            selectedPolylinePoints = polylines.toList()[i]
+                                .points;
                             selectedRoute = new Polyline(
                               polylineId: PolylineId("selected_route"),
-                              points:selectedPolylinePoints,
+                              points: selectedPolylinePoints,
                               color: polylines.toList()[i].color,
                               visible: true,
                             );
-                          }else{
+                          } else {
                             polylines.remove(polylines.toList()[i]);
                           }
                         }
                         polylines.remove(polylines.last);
                         polylines.add(selectedRoute);
-                        }
-                        catch(e){
-                          print(e);
-                        }
-                        updateLocation();//부모앱에 아이의 현재위치 실시간 알려주는 부분
-                        routeSelectionList.clear();
-                        setState(() {isRoutingStart=true;});
+                      }
+                      catch (e) {
+                        print(e);
+                      }
+                      updateLocation(); //부모앱에 아이의 현재위치 실시간 알려주는 부분
+                      routeSelectionList.clear();
+                      setState(() {
+                        isRoutingStart = true;
+                      });
 //                        if(mounted){
 //                          setState(() {isRoutingStart=true;print("onTap setState");});
 //                        }
-                        _zoomStart();
-                      },
-                      onLongPressStart: (details) {
-                        var id = routeSelectionList[index].polylineId;
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId==id){
-                            temp = polylines.toList()[i];
-                            polylines.remove(polylines.toList()[i]);
-                          }
+                      _zoomStart();
+                    },
+                    onLongPressStart: (details) {
+                      var id = routeSelectionList[index].polylineId;
+                      for (int i = polylines.length - 1; i > -1; i--) {
+                        if (polylines.toList()[i].polylineId == id) {
+                          temp = polylines.toList()[i];
+                          polylines.remove(polylines.toList()[i]);
                         }
-                        polylines.add(Polyline(
-                          polylineId: id,
-                          points:temp.points,
-                          color:Colors.tealAccent,
-                          visible: true,
-                          zIndex: 300,
-                        ));
-                        setState((){});
-                      },
-                      onLongPressEnd: (details) {
-                        var id = routeSelectionList[index].polylineId;
-                        var color = temp.color;
-                        for(int i=polylines.length-1; i>-1; i--){
-                          if(polylines.toList()[i].polylineId==id){
-                            temp = polylines.toList()[i];
-                            polylines.remove(polylines.toList()[i]);
-                          }
+                      }
+                      polylines.add(Polyline(
+                        polylineId: id,
+                        points: temp.points,
+                        color: Colors.tealAccent,
+                        visible: true,
+                        zIndex: 300,
+                      ));
+                      setState(() {});
+                    },
+                    onLongPressEnd: (details) {
+                      var id = routeSelectionList[index].polylineId;
+                      var color = temp.color;
+                      for (int i = polylines.length - 1; i > -1; i--) {
+                        if (polylines.toList()[i].polylineId == id) {
+                          temp = polylines.toList()[i];
+                          polylines.remove(polylines.toList()[i]);
                         }
-                        polylines.add(Polyline(
-                          polylineId: id,
-                          points:temp.points,
-                          color:color,//colors[setColorId(routeSelectionList[index].danger)]
-                          visible: true,
-                        ));
-                        setState((){});
-                      },
-                    ):descriptionCard(routeGuide.description,routeGuide.remainDistance,routeGuide.remainTime),)
-          ),
-        ],
-      ),
-    );
+                      }
+                      polylines.add(Polyline(
+                        polylineId: id,
+                        points: temp.points,
+                        color: color,
+                        //colors[setColorId(routeSelectionList[index].danger)]
+                        visible: true,
+                      ));
+                      setState(() {});
+                    },
+                  ) : descriptionCard(
+                      routeGuide.description, routeGuide.remainDistance,
+                      routeGuide.remainTime),)
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      return Scaffold(
+        body: Container(
+            decoration: BoxDecoration(
+                gradient:LinearGradient(
+                    begin: Alignment.topCenter,
+                    end:Alignment.bottomCenter,
+                    colors: [Color(0xfffcf2a3),Color(0xfffed7a1)]),
+                image: DecorationImage(
+                  image: AssetImage('image/loading.png'),
+
+                )
+            ),
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text("잠시 기다려주세요..",
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontFamily: 'BMJUA',
+                      color: Colors.orangeAccent),),
+                Padding(padding: EdgeInsets.only(bottom: 50),),
+                ColorLoader4(),
+                Padding(padding: EdgeInsets.only(bottom: 100),),
+              ],
+            )
+        ),
+      );
+    }
   }
 
-  void setPolylines() async {
+  Future<bool> setPolylines() async {
     print("==================Function setPolylines in ThirdPage.dart is CALLED!==================");
     detour = Detour.map(LatLng(start.latitude, start.longitude),
         LatLng(end.latitude, end.longitude));
@@ -330,6 +328,7 @@ class ThirdPageState extends State<ThirdPage> {
     if( this.mounted ) { // setState() called after dispose() 오류 해결 방법
       setState(() {});
     }
+    return true;
   }
 
   void updatePinOnMap(LocationData location) {
@@ -355,6 +354,54 @@ class ThirdPageState extends State<ThirdPage> {
         zoom: 19.151926040649414))
     );
   }
+
+
+  //isolate start
+  void _start() async {
+    _running = true;
+    _receivePort = ReceivePort();
+    _isolate = await Isolate.spawn(_checkTimer, _receivePort.sendPort);
+    _receivePort.listen(_handleMessage, onDone:() {
+      print("isolate (LoadingScreen) done!");
+    });
+  }
+
+  static void _checkTimer(SendPort sendPort) async {
+    Timer.periodic(new Duration(seconds: 3), (Timer t) { //3초마다 확인.
+      _counter++;
+      String msg = 'notification ' + _counter.toString();
+      print('SEND: ' + msg);
+      sendPort.send(msg);
+    });
+  }
+
+  void _handleMessage(dynamic data) async {
+    //print('RECEIVED: ' + data);
+    setState(() {
+      notification = data;
+    });
+    var result = false;
+    if(data == "notification 1"){ //첫 시도에만 setPolylines함수 호출.
+      result = await setPolylines(); //result에 값 받길 기다림. 하지만, 여기서 멈추지 않고 _checkTimer->_handleMessage 계속 실행
+    }
+    if(result == true){//첫번째 시도에서 결국 result값이 받아졌다면 stop됨.
+      _stop();
+    }
+  }
+
+  void _stop() {
+    if (_isolate != null) {
+      setState(() {
+        _running = false;
+        notification = '';
+      });
+      _receivePort.close();
+      _isolate.kill(priority: Isolate.immediate);
+      _isolate = null;
+    }
+  }
+//isolate done
+
 
   @override
   void dispose() {
