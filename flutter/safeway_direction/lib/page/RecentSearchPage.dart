@@ -42,6 +42,12 @@ class _RecentSearchPageState extends State<RecentSearchPage> {
                     },
                   title: Text( snapshot.data[index].mainText,style: TextStyle(fontFamily: 'BMJUA',fontSize: 17),),
                   subtitle: Text( snapshot.data[index].description,style: TextStyle(fontFamily: 'BMJUA',fontSize: 10),),
+                  trailing:
+                    IconButton(
+                      alignment: Alignment.center,
+                      icon: Icon(Icons.delete),
+                      onPressed: () async { _deleteRecentSearch( snapshot.data[index].id ); setState(() {}); },
+                    ),
                   leading: Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFF0AD74),
@@ -51,15 +57,6 @@ class _RecentSearchPageState extends State<RecentSearchPage> {
                       icon: Icon(Icons.schedule,color: Color(0xfffdee96),size: 30,),
                       onPressed: () {},
                   ),)
-
-                    // IconButton(
-                    //   alignment: Alignment.center,
-                    //   icon: Icon(Icons.delete),
-                    //   onPressed: () async {
-                    //     _deleteRecentSearch( snapshot.data[index].id );
-                    //     setState(() {});
-                    //   },
-                    // ),
                 );
               }
             );
@@ -73,4 +70,4 @@ class _RecentSearchPageState extends State<RecentSearchPage> {
   }
 }
 
-// _deleteRecentSearch( int id ) { KikeeDB.instance.deleteRecentSearch(id); }
+_deleteRecentSearch( int id ) { KikeeDB.instance.deleteRecentSearch(id); }
