@@ -435,21 +435,20 @@ class _NewSearchPageState extends State<NewSearchPage> {
               top: height/24,
               right: (width / 10),
               child: InkWell(
-                child: Image.asset('image/_304.png',width: (width/5),),
+                child: Image.asset('image/kiki.png',width: (width/5),),
                 onTap: () {
                   if(searchController.text==""||searchController2.text==""){
-                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야 길찾기를 시작할 수 있습니다!");
+                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다");
                   }else{
-
+                    List<PlaceInfo> args = [start, end];
+                    stopUpdateLocation();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ThirdPage(),
+                          settings: RouteSettings(arguments: args)),
+                    );
                   }
-//                  List<PlaceInfo> args = [start, end];
-//                  stopUpdateLocation();
-//                  Navigator.push(
-//                    context,
-//                    MaterialPageRoute(
-//                        builder: (context) => ThirdPage(),
-//                        settings: RouteSettings(arguments: args)),
-//                  );
                 },
               ),
             ),

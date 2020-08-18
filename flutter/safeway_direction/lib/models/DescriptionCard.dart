@@ -15,7 +15,7 @@ Widget descriptionCard(String description,int distance,int time)
           padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
             radius: 30,
-            child: Image.asset('image/_304.png',height: 50,),
+            child: Image.asset('image/kiki.png',height: 50,),
             backgroundColor: Colors.white,
           ),
         ),

@@ -42,7 +42,7 @@ class _FirstPage2State extends State<FirstPage2> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('KIKEE',style: TextStyle(fontFamily: 'BMJUA',fontSize: 70,color: Colors.orange) ,),
-                Image.asset('image/_304.png',height: 57,),
+                Image.asset('image/kiki.png',height: 57,),
               ],
             ),
             SizedBox(

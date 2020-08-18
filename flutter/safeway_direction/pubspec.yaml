@@ -36,16 +36,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - image/_303.png
-    - image/_304.png
-    - image/KakaoTalk_20200709_214841133.png
-    - image/currentLocation1.png
-    - image/currentLocation2.png
-    - image/currentLocation3.png
+    - image/kiki.png
+    - image/myPin.png
     - image/CurrentLocation.png
     - image/startMarker.png
     - image/endMarker.png
-    - image/loading.png
   fonts:
     - family: BMJUA
       fonts:

@@ -65,9 +65,7 @@ class ThirdPageState extends State<ThirdPage> {
       updatePinOnMap(cLoc);
       if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation1.png').then((onValue) {locationIcon[0] = onValue;});
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation2.png').then((onValue) {locationIcon[1] = onValue;});
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/currentLocation3.png').then((onValue) {locationIcon[2] = onValue;});
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/myPin.png').then((onValue) {locationIcon[0] = onValue;});
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/startMarker.png').then((onValue) {startEndIcon[0] = onValue;});
     BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/endMarker.png').then((onValue) {startEndIcon[1] = onValue;});
   }
@@ -291,23 +289,20 @@ class ThirdPageState extends State<ThirdPage> {
                     begin: Alignment.topCenter,
                     end:Alignment.bottomCenter,
                     colors: [Color(0xfffcf2a3),Color(0xfffed7a1)]),
-                image: DecorationImage(
-                  image: AssetImage('image/loading.png'),
-
-                )
+//                image: DecorationImage(
+//                  image: AssetImage('image/loading2.png'),
+//                )
             ),
             child:Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text("잠시 기다려주세요..",
-                  style: TextStyle(
-                      fontSize: 25,
-                      fontFamily: 'BMJUA',
-                      color: Colors.orangeAccent),),
-                Padding(padding: EdgeInsets.only(bottom: 50),),
+                Image.asset('image/kiki.png'),
+                SizedBox(height:20),
+                Text("잠시 기다려주세요..", style: TextStyle(fontSize: 25, fontFamily: 'BMJUA', color: Colors.orangeAccent),),
+                SizedBox(height:20),
                 ColorLoader4(),
-                Padding(padding: EdgeInsets.only(bottom: 100),),
+                //Padding(padding: EdgeInsets.only(bottom: 100),),
               ],
             )
         ),
