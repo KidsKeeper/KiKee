@@ -94,21 +94,20 @@ exports.location = function (req, res) {
     console.log('parents start to get location');
 
     const kidsId = req.body['kidsId'];
+    console.log(kidsId);
     // const parnetsId = req.body['parnetsId'];
 
     if( kidsId ) {
         kidslocationModel.find({ kidsId: kidsId }, (err, ldata) => {
+            console.log(ldata);
             if(err) console.log(err);
-            if( length == 0 ) res.send('no data');
+            if( Object.keys(ldata).length == 0 ) res.send('no data');
             if( ldata[0]['status'] == true ) {
-                // kidslocationModel.updateOne({ kidsId: kidsId }, {
-                //     parentsId: parnetsId
-                // }, { upsert: true }, function (err, data) { if(err) console.log(err); });
-
+                console.log('status is ture');
                 res.json({ ldata });
             }
 
-            res.send('no data');
+            else { res.send('no data'); }
         });
     }
 
@@ -123,10 +122,10 @@ exports.polygon = function (req, res) {
 
     if( kidsId ) {
         kidspolygonModel.find({ kidsId: kidsId }, (err, pdata) => {
-            const length = Object.keys(data).length;
+            const length = Object.keys(pdata).length;
 
             if(err) console.log(err);
-            if( length == 0 ) res.send('no data');
+            if( length === 0 ) res.send('[Server] no data');
             else {
                 for( var i = 0; i < length; i++ ) {
                     if( pdata[i]['polygon'] != null ) { // 길 찾기를 하고 길 찾기가 끝난 상태라면
@@ -135,11 +134,11 @@ exports.polygon = function (req, res) {
                         kidspolygonModel.deleteOne({ kidsId: kidsId }, (err, ddata) => { // 데이터를 가지고 가면 있던 데이터 삭제.
                             if(err) console.log(err);
                         });
-
-                        res.json({ data });
                     }
                 }
-                res.send('noting to update');
+                console.log(pdata);
+                res.json({ pdata });
+                // res.send('noting to update');
             }
         });
     }
