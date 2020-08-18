@@ -1,6 +1,9 @@
 import 'dart:core';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:ui' as ui;
 
 class Pair<E, F> {
   final E first;
@@ -65,4 +68,12 @@ double distanceInMeterByHaversine(LatLng l1, LatLng l2) {
   distance = 2 * radius * asin(squareRoot);
 
   return distance * 1000;
+}
+
+Future<BitmapDescriptor> getBytesFromAsset(String path, int width) async {
+  ByteData data = await rootBundle.load(path);
+  ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+  ui.FrameInfo fi = await codec.getNextFrame();
+  Uint8List result = (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  return BitmapDescriptor.fromBytes(result);
 }

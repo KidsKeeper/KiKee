@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:safewaydirection/models/utility.dart';
 import '../models/routeGuide.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RouteSelectCard.dart';
@@ -34,7 +35,7 @@ class ThirdPageState extends State<ThirdPage> {
   Set<Marker> _markers = {};
   Set<Polyline> polylines = {};
   List<RouteSelectionClass> routeSelectionList = [];
-  List<BitmapDescriptor> locationIcon = List<BitmapDescriptor>(3); // 현재 위치 표시하는 icon list
+  BitmapDescriptor locationIcon; // 현재 위치 표시하는 icon list
   List<BitmapDescriptor> startEndIcon = List<BitmapDescriptor>(2);
   Detour detour;
   PlaceInfo start, end;
@@ -65,9 +66,10 @@ class ThirdPageState extends State<ThirdPage> {
       updatePinOnMap(cLoc);
       if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),'image/myPin.png').then((onValue) {locationIcon[0] = onValue;});
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/startMarker.png').then((onValue) {startEndIcon[0] = onValue;});
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'image/endMarker.png').then((onValue) {startEndIcon[1] = onValue;});
+    
+    getBytesFromAsset('image/myPin.png', 90).then((BitmapDescriptor value) => locationIcon = value);
+    getBytesFromAsset('image/startMarker.png', 90).then((BitmapDescriptor value) => startEndIcon[0] = value);
+    getBytesFromAsset('image/endMarker.png', 90).then((BitmapDescriptor value) => startEndIcon[1] = value);
   }
 
   @override
@@ -78,13 +80,19 @@ class ThirdPageState extends State<ThirdPage> {
     print("Third Page build runned! (it keeps running, did you know that? - 재원) ");
     //addMarker(start,end);
 
-    for (int i = 0; i < 2; i++) {
+    if(startEndIcon[0] != null && startEndIcon[1] != null){
       _markers.add(Marker(
-        markerId: MarkerId(_markers.length.toString()),
-        position: LatLng(route[i].latitude, route[i].longitude),
-        icon: startEndIcon[i],
+        markerId: MarkerId('start'),
+        position: LatLng(route[0].latitude, route[0].longitude),
+        icon: startEndIcon[0],
+      ));
+      _markers.add(Marker(
+        markerId: MarkerId('end'),
+        position: LatLng(route[1].latitude, route[1].longitude),
+        icon: startEndIcon[1],
       ));
     }
+      
     //출발지, 도착지에 마커 찍는 부분.
     if(_running!=true){
       return Scaffold(
@@ -148,7 +156,6 @@ class ThirdPageState extends State<ThirdPage> {
               zoomControlsEnabled: false,
               onMapCreated: (GoogleMapController controller) {
                 _mapController.complete(controller);
-                setPolylines();
               },
             ),
             Positioned(
@@ -331,7 +338,7 @@ class ThirdPageState extends State<ThirdPage> {
             markerId: MarkerId('sourcePin'),
             position:
             LatLng(location.latitude, location.longitude), // updated position
-            icon: locationIcon[0]));
+            icon: locationIcon));
       });
     }
   }
