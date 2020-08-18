@@ -31,7 +31,6 @@ class ThirdPage extends StatefulWidget {
 
 class ThirdPageState extends State<ThirdPage> {
   Completer<GoogleMapController> _mapController = Completer();
-  Set<Marker> markers = {};
   Set<Marker> _markers = {};
   Set<Polyline> polylines = {};
   List<RouteSelectionClass> routeSelectionList = [];
