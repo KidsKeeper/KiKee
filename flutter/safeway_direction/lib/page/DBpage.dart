@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:safewaydirection/models/Favorite.dart';
 
 import '../db/KikeeDB.dart';
-// import '../models/Kids.dart';
+import '../models/Kids.dart';
 import '../models/Favorite.dart';
 
 class DBpage extends StatefulWidget {
@@ -16,19 +16,19 @@ class _DBpageState extends State<DBpage> {
     return Scaffold(
       appBar: AppBar( title: Text('디비 목록 결과') ),
       // body: FutureBuilder<List<Parents>>(
-      body: FutureBuilder<List<Favorite>>(
-      // body: FutureBuilder<List<Kids>>(
+//      body: FutureBuilder<List<Favorite>>(
+       body: FutureBuilder<List<Kids>>(
         // future: DB.instance.getParents(),
-        future: KikeeDB.instance.getFavoriteTest2(),
-        // future: KikeeDB.instance.getKids(),
+//        future: KikeeDB.instance.getFavoriteTest2(),
+         future: KikeeDB.instance.getKids(),
         builder: (context, snapshot) {
           if( snapshot.hasData ) {
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  // title: Text( snapshot.data[index].parentsId.toString() ),
-                  title: Text( snapshot.data[index].text.toString() ),
+                   title: Text( snapshot.data[index].kidsId.toString() ),
+//                  title: Text( snapshot.data[index].text.toString() ),
                   // subtitle: Text( snapshot.data[index].key.toString() ),
                   subtitle: Text( snapshot.data[index].id.toString() ),
                   trailing: 

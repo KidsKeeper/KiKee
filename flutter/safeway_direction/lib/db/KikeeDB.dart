@@ -12,7 +12,7 @@ import '../src/Helper.dart';
 class KikeeDB {
   KikeeDB._();
 
-  static const databaseName = "kakia.db";
+  static const databaseName = "kekeke.db";
   static final KikeeDB instance = KikeeDB._();
   static Database _database;
 

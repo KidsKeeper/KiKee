@@ -66,9 +66,9 @@ class ThirdPageState extends State<ThirdPage> {
       if (routeGuide != null) routeGuide.locationStream.add(cLoc);
     });
     
-    getBytesFromAsset('image/myPin.png', 90).then((BitmapDescriptor value) => locationIcon = value);
-    getBytesFromAsset('image/startMarker.png', 90).then((BitmapDescriptor value) => startEndIcon[0] = value);
-    getBytesFromAsset('image/endMarker.png', 90).then((BitmapDescriptor value) => startEndIcon[1] = value);
+    getBytesFromAsset('image/myPin.png', 110).then((BitmapDescriptor value) => locationIcon = value);
+    getBytesFromAsset('image/startMarker.png', 110).then((BitmapDescriptor value) => startEndIcon[0] = value);
+    getBytesFromAsset('image/endMarker.png', 110).then((BitmapDescriptor value) => startEndIcon[1] = value);
   }
 
   @override
