@@ -54,7 +54,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
     List<Favorite> data = await KikeeDB.instance.getFavoriteTest2();
     List iconArray = [];
 
-    for( int i = 1; i < 6; i++ ) {
+    for( int i = 0; i < 5; i++ ) {
       try { iconArray.add(data[i].icon); }
       catch (e) { iconArray.add(0); }
     }
@@ -359,7 +359,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(
-                              Icons.add,
+                              icons[iconNumber4],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -404,7 +404,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(
-                              Icons.add,
+                              icons[iconNumber5],
                               color: Colors.white,
                               size: width/8,
                             ),
