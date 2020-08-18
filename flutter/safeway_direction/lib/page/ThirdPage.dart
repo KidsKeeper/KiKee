@@ -383,6 +383,9 @@ class ThirdPageState extends State<ThirdPage> {
     if(result == true){//첫번째 시도에서 결국 result값이 받아졌다면 stop됨.
       _stop();
     }
+    if(data == null || data =="notification 60"){
+      _stop();
+    }
   }
 
   void _stop() {

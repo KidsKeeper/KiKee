@@ -200,11 +200,7 @@ class SearchMapPlaceWidgetState extends State<SearchMapPlaceWidget> with TickerP
               onEditingComplete: _selectPlace,
               autofocus: false,
               focusNode: _fn,
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.04,
-                  fontFamily: 'BMJUA',
-                color: Color(0xFFF0AD74),
-              ),
+              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, fontFamily: 'BMJUA', color: Color(0xFFF0AD74),),
             ),
           ),
           Container(width: 15),

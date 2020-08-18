@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:safewaydirection/page/DBpage.dart';
-
+import 'package:rflutter_alert/rflutter_alert.dart';
 import '../models/search_map_place.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
+import '../models/AlertDialog.dart';
 import '../page/ThirdPage.dart';
 import '../page/RecentSearchPage.dart';
 // import '../page/DBpage.dart';
@@ -12,7 +13,7 @@ import '../src/viewFavorite.dart';
 import '../db/KikeeDB.dart';
 import '../keys.dart';
 import '../src/Server.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+
 
 class NewSearchPage extends StatefulWidget {
   @override
@@ -53,7 +54,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
       catch(e) { print(e); }
     });
   }
-
 
   void moveRecentSearchPage() async { // navigate to recent search page and save its location data using updateend
     update = null;
@@ -102,7 +102,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    if(first) {
+    if(first) { //재원: 이거 뭐야??? first 뭐하는거야?
       start = ModalRoute.of(context).settings.arguments;
       searchController.text = start.description;
       first = false;
@@ -356,20 +356,25 @@ class _NewSearchPageState extends State<NewSearchPage> {
               child: InkWell(
                 child: Image.asset('image/_304.png',width: (width/5),),
                 onTap: () {
-                  List<PlaceInfo> args = [start, end];
-                  stopUpdateLocation();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ThirdPage(),
-                        settings: RouteSettings(arguments: args)),
-                  );
+                  if(searchController.text==""||searchController2.text==""){
+                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야 길찾기를 시작할 수 있습니다!");
+                  }else{
+
+                  }
+//                  List<PlaceInfo> args = [start, end];
+//                  stopUpdateLocation();
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(
+//                        builder: (context) => ThirdPage(),
+//                        settings: RouteSettings(arguments: args)),
+//                  );
                 },
               ),
             ),
             Positioned(
-              top: (height/48)*3,
-              right: (width/10)*3,
+              top: (height/40)*3,
+              right: (width/9.5)*3,
               child: Bubble(
                 padding: BubbleEdges.all(15),
                 shadowColor: Color(0xffe5d877),
@@ -379,7 +384,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       '나를 누르면 길찾기를 시작해!',
                       style: TextStyle(
                           fontFamily: 'BMJUA',
-                          fontSize: 15,
+                          fontSize: 18,
                           color: Colors.orange),
                     ),
                   ],
@@ -399,24 +404,10 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   lableText: '도착지: ',
                   onSelected: (place) async {
                     final geolocation = await place.geolocation;
-
                     double lat = geolocation.lat();
                     double lng = geolocation.lng();
-
-                    end = PlaceInfo(
-                        placeId: place.placeId,
-                        description: place.description,
-                        longitude: lng,
-                        latitude: lat,
-                        mainText: place.mainText);
-
-                    recentSearchInfo = RecentSearch(
-                        placeId: place.placeId,
-                        description: place.description,
-                        longitude: lng,
-                        latitude: lat,
-                        mainText: place.mainText);
-
+                    end = PlaceInfo(placeId: place.placeId, description: place.description, longitude: lng, latitude: lat, mainText: place.mainText);
+                    recentSearchInfo = RecentSearch(placeId: place.placeId, description: place.description, longitude: lng, latitude: lat, mainText: place.mainText);
                     KikeeDB.instance.insertRecentSearch(recentSearchInfo);
                   }),
               width: (MediaQuery.of(context).size.width / 5) * 4,
