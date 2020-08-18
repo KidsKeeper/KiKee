@@ -1,26 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:safewaydirection/keys.dart';
+
+import '../keys.dart';
 import '../db/KikeeDB.dart';
 import '../models/Favorite.dart';
 import '../models/RecentSearch.dart';
 import '../models/search_map_place.dart';
 
 viewFavorite(BuildContext context, int id, var data) {
-  Favorite favoriteInfo;
+  Favorite favoriteInfo = Favorite(
+    id: id,
+    description: null,
+    text: null,
+    longitude: null,
+    latitude: null,
+    mainText: null,
+    icon: null
+  );
+
   RecentSearch recentSearchInfo;
 
   final favoriteController = new TextEditingController();
+  final favoriteTextController = new TextEditingController();
 
   // update favorite
   try {
+    favoriteTextController.text = data[0]['text'];
+
     favoriteInfo = Favorite(
       // placeId: place.placeId,
       id: data[0]['id'],
       description: data[0]['description'],
       longitude: data[0]['longtitude'],
       latitude: data[0]['latitude'],
-      mainText: data[0]['mainText'],);
+      mainText: data[0]['mainText'],
+      icon: data[0]['icon']
+    );
 
     Alert(
       context: context,
@@ -34,6 +49,41 @@ viewFavorite(BuildContext context, int id, var data) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SizedBox(height: 20,),
+          Container(
+            child:TextField(
+              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+              controller: favoriteTextController,
+              decoration: InputDecoration(
+                hintText: '즐겨찾기 이름 설정',
+                hintStyle: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(30.0),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(30.0),
+                  ),
+                ),
+                fillColor: Colors.white,
+                filled:true,
+              ),
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xffe5e3dd),
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),]
+            ),
+          ),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
@@ -50,20 +100,17 @@ viewFavorite(BuildContext context, int id, var data) {
               double lng = geolocation.lng();
 
               recentSearchInfo = RecentSearch(
-                // id: id,
                 placeId: place.placeId,
-                description: place.description,
-                // longitude: lng,
-                // latitude: lat,
-                mainText: place.mainText,);
-
-              favoriteInfo = Favorite(
-                // placeId: place.placeId,
-                id: id,
                 description: place.description,
                 longitude: lng,
                 latitude: lat,
                 mainText: place.mainText,);
+
+                favoriteInfo.description = place.description;
+                favoriteInfo.longitude = lng;
+                favoriteInfo.latitude = lat;
+                favoriteInfo.mainText = place.mainText;
+                favoriteInfo.text = favoriteTextController.text;
 
               _insertRecentSearch(recentSearchInfo);
             },
@@ -186,6 +233,7 @@ viewFavorite(BuildContext context, int id, var data) {
 
   // insert favorite
   catch (error) {
+    print(error);
     Alert(
       context: context,
       title: '즐겨찾기 추가',
@@ -199,6 +247,41 @@ viewFavorite(BuildContext context, int id, var data) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SizedBox(height: 20,),
+          Container(
+            child:TextField(
+              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+              controller: favoriteTextController,
+              decoration: InputDecoration(
+                hintText: '즐겨찾기 이름 설정',
+                hintStyle: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(30.0),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(30.0),
+                  ),
+                ),
+                fillColor: Colors.white,
+                filled:true,
+              ),
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xffe5e3dd),
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),]
+            ),
+          ),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
@@ -215,23 +298,19 @@ viewFavorite(BuildContext context, int id, var data) {
               double lng = geolocation.lng();
 
               recentSearchInfo = RecentSearch(
-                // id: id,
                 placeId: place.placeId,
-                description: place.description,
-                // longitude: lng,
-                // latitude: lat,
-                mainText: place.mainText,);
-
-              favoriteInfo = Favorite(
-                // placeId: place.placeId,
-                id: id,
                 description: place.description,
                 longitude: lng,
                 latitude: lat,
                 mainText: place.mainText,);
 
+                favoriteInfo.description = place.description;
+                favoriteInfo.longitude = lng;
+                favoriteInfo.latitude = lat;
+                favoriteInfo.mainText = place.mainText;
+                favoriteInfo.text = favoriteTextController.text;
+
               _insertRecentSearch(recentSearchInfo);
-              // KikeeDB.instance.insertRecentSearch(recentSearchInfo);
             },
           ),
           SizedBox(height: 20,),
@@ -329,7 +408,7 @@ viewFavorite(BuildContext context, int id, var data) {
             radius: BorderRadius.circular(15),
             onPressed: () {
               _insertFavorite(favoriteInfo);
-              print('db insert');
+              print('favorite db insert');
               Navigator.pop(context);
             },
             child:
@@ -341,6 +420,6 @@ viewFavorite(BuildContext context, int id, var data) {
 }
 
 _insertRecentSearch ( RecentSearch recentSearchInfo ) { print('recent insert'); KikeeDB.instance.insertRecentSearch(recentSearchInfo); }
-_insertFavorite ( Favorite favoriteInfo ) { KikeeDB.instance.insertFavorite(favoriteInfo); }
+_insertFavorite ( Favorite favoriteInfo ) { print('id: ' + favoriteInfo.id.toString() ); KikeeDB.instance.insertFavorite(favoriteInfo); }
 _updateFavorite ( Favorite favoriteInfo ) { KikeeDB.instance.updateFavorite(favoriteInfo); }
 _deleteFavorite ( int id ) { KikeeDB.instance.deleteFavorite(id); }

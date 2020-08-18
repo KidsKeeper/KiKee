@@ -12,7 +12,7 @@ import '../src/Helper.dart';
 class KikeeDB {
   KikeeDB._();
 
-  static const databaseName = "kaka.db";
+  static const databaseName = "kakia.db";
   static final KikeeDB instance = KikeeDB._();
   static Database _database;
 
@@ -27,7 +27,7 @@ class KikeeDB {
         version: 1,
         onCreate: ( Database db, int version ) async {
           await db.execute( "CREATE TABLE recentsearch (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, placeId TEXT, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT)" );
-          await db.execute( "CREATE TABLE favorite (id INTEGER PRIMARY KEY, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
+          await db.execute( "CREATE TABLE favorite (id INTEGER PRIMARY KEY, description TEXT, text TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
           await db.execute( "CREATE TABLE kids (id INTEGER PRIMARY KEY, kidsId INTEGER, key TEXT)" );
         }
     );
@@ -140,6 +140,23 @@ class KikeeDB {
     var data = await db.query( 'favorite', where: 'id = ?', whereArgs: [id] );
 
     return data;
+  }
+
+  Future<List<Favorite>> getFavoriteTest2() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('favorite');
+
+    return List.generate(maps.length, (i) {
+      return Favorite(
+          id: maps[i]['id'],
+          description: maps[i]['description'],
+          // longitude: longitude,
+          // latitude: latitude,
+          mainText: maps[i]['mainText'],
+          icon: maps[i]['icon'],
+          text: maps[i]['text']
+      );
+    });
   }
 
   insertFavorite( Favorite data ) async {
