@@ -230,9 +230,11 @@ class ThirdPageState extends State<ThirdPage> {
                       }
                       updateLocation(); //부모앱에 아이의 현재위치 실시간 알려주는 부분
                       routeSelectionList.clear();
-                      setState(() {
-                        isRoutingStart = true;
-                      });
+                      if( this.mounted ) {
+                        setState(() {
+                          isRoutingStart = true;
+                        });
+                      }
 //                        if(mounted){
 //                          setState(() {isRoutingStart=true;print("onTap setState");});
 //                        }
@@ -253,7 +255,7 @@ class ThirdPageState extends State<ThirdPage> {
                         visible: true,
                         zIndex: 300,
                       ));
-                      setState(() {});
+                      if( this.mounted ) { setState(() {}); }
                     },
                     onLongPressEnd: (details) {
                       var id = routeSelectionList[index].polylineId;
@@ -271,7 +273,7 @@ class ThirdPageState extends State<ThirdPage> {
                         //colors[setColorId(routeSelectionList[index].danger)]
                         visible: true,
                       ));
-                      setState(() {});
+                      if( this.mounted ) { setState(() {}); }
                     },
                   ) : descriptionCard(
                       routeGuide.description, routeGuide.remainDistance,
@@ -368,9 +370,11 @@ class ThirdPageState extends State<ThirdPage> {
 
   void _handleMessage(dynamic data) async {
     //print('RECEIVED: ' + data);
-    setState(() {
-      notification = data;
-    });
+    if( this.mounted ) {
+      setState(() {
+        notification = data;
+      });
+    }
     var result = false;
     if(data == "notification 1"){ //첫 시도에만 setPolylines함수 호출.
       result = await setPolylines(); //result에 값 받길 기다림. 하지만, 여기서 멈추지 않고 _checkTimer->_handleMessage 계속 실행
@@ -385,10 +389,12 @@ class ThirdPageState extends State<ThirdPage> {
 
   void _stop() {
     if (_isolate != null) {
-      setState(() {
-        _running = false;
-        notification = '';
-      });
+      if( this.mounted ) {
+        setState(() {
+          _running = false;
+          notification = '';
+        });
+      }
       _receivePort.close();
       _isolate.kill(priority: Isolate.immediate);
       _isolate = null;
