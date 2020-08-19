@@ -439,6 +439,8 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 onTap: () {
                   if(searchController.text==""||searchController2.text==""){
                    showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다");
+                  }else if(searchController.text == searchController2.text){
+                    showMyDialog(context,"어라?? 출발지와 도착지가 같아요~!");
                   }else{
                     List<PlaceInfo> args = [start, end];
                     stopUpdateLocation();
