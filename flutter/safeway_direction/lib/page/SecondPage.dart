@@ -441,6 +441,8 @@ class _NewSearchPageState extends State<NewSearchPage> {
                    showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다");
                   }else if(searchController.text == searchController2.text){
                     showMyDialog(context,"어라?? 출발지와 도착지가 같아요~!");
+                  }else if(start==null||end==null){
+                    showMyDialog(context,"출발지/도착지를 검색한 후 검색결과를 선택해야 진행이 됩니다.");
                   }else{
                     List<PlaceInfo> args = [start, end];
                     stopUpdateLocation();
