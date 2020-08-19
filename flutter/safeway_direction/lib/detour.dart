@@ -119,6 +119,23 @@ class Detour{
       if(cnt ==6)
         break;
     }
+
+    Map<int, List<int>> data = Map<int, List<int>>();
+    for(int i in [0,1,2,3])
+      data[i] = [0];
+    for(int i = 0 ; i < colorsId.length; i++){
+      data[colorsId[i]][0]++;
+      data[colorsId[i]].add(i);
+    }
+      
+    
+    for(int i in [0,1,2,3])
+      if(data[i][0] > 2)
+        for(int j = data[i].length-1; j>2 ; j--){
+          colorsId.removeAt(data[i][j]);
+          polylinePoints.removeAt(data[i][j]);
+        }
+
   }
 
   Future<void> drawAllPolyline() async{
