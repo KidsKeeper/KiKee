@@ -36,6 +36,7 @@ class ThirdPageState extends State<ThirdPage> {
   List<RouteSelectionClass> routeSelectionList = [];
   BitmapDescriptor locationIcon; // 현재 위치 표시하는 icon list
   List<BitmapDescriptor> startEndIcon = List<BitmapDescriptor>(2);
+  BitmapDescriptor crosswalkIcon; // 횡단보도 아이콘
   Detour detour;
   PlaceInfo start, end;
   Polyline temp,selectedRoute;
@@ -69,6 +70,7 @@ class ThirdPageState extends State<ThirdPage> {
     getBytesFromAsset('image/myPin.png', 110).then((BitmapDescriptor value) => locationIcon = value);
     getBytesFromAsset('image/startMarker.png', 110).then((BitmapDescriptor value) => startEndIcon[0] = value);
     getBytesFromAsset('image/endMarker.png', 110).then((BitmapDescriptor value) => startEndIcon[1] = value);
+    getBytesFromAsset('image/crosswalk.png', 110).then((BitmapDescriptor value) => crosswalkIcon = value);
   }
 
   @override
@@ -209,6 +211,12 @@ class ThirdPageState extends State<ThirdPage> {
                       print("ThirdPage: change isRoutingStart Value. Probably");
                       routeGuide = RouteGuide(detour.sortRoute[index]);
                       routeGuide.start();
+                      for(LatLng iter in routeGuide.route.crossWalks)
+                        _markers.add(Marker(
+                          markerId: MarkerId('crossWalk ${_markers.length.toString()}'),
+                          position:
+                          LatLng(iter.latitude, iter.longitude), // updated position
+                          icon: crosswalkIcon));
                       try {
                         var id = routeSelectionList[index].polylineId;
                         for (int i = polylines.length - 1; i > -1; i--) {

@@ -41,6 +41,7 @@ flutter:
     - image/CurrentLocation.png
     - image/startMarker.png
     - image/endMarker.png
+    - image/crosswalk.png
   fonts:
     - family: BMJUA
       fonts:
