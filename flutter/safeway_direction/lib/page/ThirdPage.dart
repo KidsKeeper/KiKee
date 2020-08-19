@@ -112,7 +112,7 @@ class ThirdPageState extends State<ThirdPage> {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          ' ${start.mainText.length > 9 ? start.mainText.substring(0, 9) + "..." : start.mainText} ',
+                          ' ${start.mainText.length+end.mainText.length > 18 ? textConvert(start.mainText): start.mainText} ',
                           style: TextStyle(
                               fontSize: 18,
                               fontFamily: 'BMJUA',
@@ -120,7 +120,7 @@ class ThirdPageState extends State<ThirdPage> {
                         ),
                         Icon(Icons.arrow_forward, color: Colors.orangeAccent,),
                         Text(
-                          ' ${end.mainText.length > 9 ? end.mainText.substring(0, 9) + "..." : end.mainText}',
+                          ' ${end.mainText.length+end.mainText.length > 18 ? textConvert(end.mainText) : end.mainText}',
                           style: TextStyle(
                               fontSize: 18,
                               fontFamily: 'BMJUA',
@@ -196,7 +196,7 @@ class ThirdPageState extends State<ThirdPage> {
                 width: MediaQuery
                     .of(context)
                     .size
-                    .width,
+                    .width -40,
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -387,8 +387,16 @@ class ThirdPageState extends State<ThirdPage> {
     if(data == null || data =="notification 60"){
       _stop();
     }
+
   }
 
+  String textConvert(String text)
+  {
+    if(text.length>9){
+      return text.substring(0,9)+"...";
+    }
+    else return text;
+  }
   void _stop() {
     if (_isolate != null) {
       setState(() {

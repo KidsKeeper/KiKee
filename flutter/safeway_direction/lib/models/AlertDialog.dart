@@ -3,15 +3,22 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 Future<void> showMyDialog(BuildContext context,String msg) async{
   return Alert(
+    type: AlertType.warning,
     context: context,
-    title: msg,
+    title: '조심하세요!',
     style: AlertStyle(
-      titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.black26,fontSize: 20),
+      titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.orangeAccent,fontSize: 30),
       backgroundColor: Color(0xfffdfbf4),
       alertBorder: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32.0),),
       ),
     ),
-//    content: Text(msg,style:TextStyle( fontFamily: 'BMJUA',color: Colors.black,fontSize: 20)),
+      content: Column(
+        children: <Widget>[
+          SizedBox(height: 10,),
+          Text(msg,style:TextStyle( fontFamily: 'BMJUA',color: Colors.black54,fontSize: 20),textAlign: TextAlign.center,),
+          SizedBox(height: 5,),
+        ],
+      ),
     buttons: [
       DialogButton(
           color: Color(0xfff7b413),
