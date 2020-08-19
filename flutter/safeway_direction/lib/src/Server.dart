@@ -63,11 +63,11 @@ Future<String> kidsKeyCreate( int kidsId ) async {
 }
 
 Future<void> updatePolygon(List<LatLng> points,String source, String destination) async {
-  List<Kids> kids = await KikeeDB.instance.getKids();
   const String URL = 'http://3.34.194.177:8088/kids/location/start';
 
   try {
     print('polygon send');
+    List<Kids> kids = await KikeeDB.instance.getKids();
     int kidsId = kids[0].kidsId;
     String key = kids[0].key;
 
@@ -84,10 +84,10 @@ Future<void> updatePolygon(List<LatLng> points,String source, String destination
 }
 
 Future<void> updateLocation() async {
-  List<Kids> kids = await KikeeDB.instance.getKids();
   const String URL = 'http://3.34.194.177:8088/kids/location/start';
 
   try {
+    List<Kids> kids = await KikeeDB.instance.getKids();
     int kidsId = kids[0].kidsId;
     String key = kids[0].key;
 
