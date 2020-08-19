@@ -6,7 +6,7 @@ Future<void> showMyDialog(BuildContext context,String msg) async{
     context: context,
     title: msg,
     style: AlertStyle(
-      titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.black,fontSize: 20),
+      titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.black26,fontSize: 20),
       backgroundColor: Color(0xfffdfbf4),
       alertBorder: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32.0),),
       ),
@@ -15,7 +15,7 @@ Future<void> showMyDialog(BuildContext context,String msg) async{
     buttons: [
       DialogButton(
           color: Color(0xfff7b413),
-          radius: BorderRadius.circular(15),
+          radius: BorderRadius.circular(30),
           onPressed: () {
             Navigator.pop(context);
           },

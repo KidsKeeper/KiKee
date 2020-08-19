@@ -51,7 +51,7 @@ viewFavorite(BuildContext context, int id, var data) {
           SizedBox(height: 20,),
           Container(
             child:TextField(
-              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xFFF0AD74), fontSize: 15),
               controller: favoriteTextController,
               decoration: InputDecoration(
                 hintText: '즐겨찾기 이름 설정',
@@ -84,6 +84,7 @@ viewFavorite(BuildContext context, int id, var data) {
                   ),]
             ),
           ),
+          SizedBox(height: 20,),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
@@ -249,7 +250,7 @@ viewFavorite(BuildContext context, int id, var data) {
           SizedBox(height: 20,),
           Container(
             child:TextField(
-              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xfff7d8ae), fontSize: 15),
+              style: TextStyle(fontFamily: 'BMJUA', color: Color(0xFFF0AD74), fontSize: 15),
               controller: favoriteTextController,
               decoration: InputDecoration(
                 hintText: '즐겨찾기 이름 설정',
@@ -282,6 +283,7 @@ viewFavorite(BuildContext context, int id, var data) {
                   ),]
             ),
           ),
+          SizedBox(height: 20,),
           SearchMapPlaceWidget(
             apiKey: Keys.googleMap,
             language: 'ko',
