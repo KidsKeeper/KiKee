@@ -7,7 +7,7 @@ import 'api/accidentInformation.dart';
 import 'models/route.dart' as way;
 
 class Detour{
-  List<Color> colors = [ Colors.red, Colors.yellow, Colors.orange, Colors.blue ];
+  List<Color> colors = [ Colors.red, Colors.orange, Colors.yellow, Colors.blue ];
   List<int> colorsId = [];
   Set<Polyline> polylines = {};
   List<List<LatLng>> polylinePoints = [];
@@ -134,6 +134,7 @@ class Detour{
         for(int j = data[i].length-1; j>2 ; j--){
           colorsId.removeAt(data[i][j]);
           polylinePoints.removeAt(data[i][j]);
+          sortRoute.removeAt(data[i][j]);
         }
 
   }
