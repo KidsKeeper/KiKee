@@ -62,9 +62,11 @@ class ThirdPageState extends State<ThirdPage> {
     print("ThirdPage: initState - stopUpdateLocation called.");
     location = new Location();
     location.onLocationChanged.listen((LocationData cLoc) {
-      currentLocation = cLoc;
-      updatePinOnMap(cLoc);
-      if (routeGuide != null) routeGuide.locationStream.add(cLoc);
+      if(!_running){
+        currentLocation = cLoc;
+        updatePinOnMap(cLoc);
+        if (routeGuide != null) routeGuide.locationStream.add(cLoc);
+      }
     });
     
     getBytesFromAsset('image/myPin.png', 110).then((BitmapDescriptor value) => locationIcon = value);
@@ -384,11 +386,7 @@ class ThirdPageState extends State<ThirdPage> {
 
   void _handleMessage(dynamic data) async {
     //print('RECEIVED: ' + data);
-    if( this.mounted ) {
-      setState(() {
-        notification = data;
-      });
-    }
+    notification = data;
     var result = false;
     if(data == "notification 1"){ //첫 시도에만 setPolylines함수 호출.
       result = await setPolylines(); //result에 값 받길 기다림. 하지만, 여기서 멈추지 않고 _checkTimer->_handleMessage 계속 실행
