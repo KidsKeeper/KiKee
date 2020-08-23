@@ -48,6 +48,9 @@ class Pair<E, F> {
 ///
 /// 두 좌표 사이의 거리를 계산해서 m로 반환.
 double distanceInMeterByHaversine(LatLng l1, LatLng l2) {
+  if(l1 == null || l2 == null)
+    return 9999;
+    
   double distance;
 
   final double radius = 6371; // 지구 반지름(km)

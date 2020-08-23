@@ -33,6 +33,7 @@ class RouteGuide {
   ///
   /// 해당 위치에 도달하면 description이 변경됨.
   LatLng nextStop;
+  LatLng nextStop2;
 
   StreamController<LocationData> locationStream =StreamController<LocationData>.broadcast();
 
@@ -55,6 +56,7 @@ class RouteGuide {
     roadName = route.locations[locationIndex].roadName;
     description = route.locations[locationIndex].description;
     nextStop = route.locations[locationIndex+1].location;
+    nextStop2 = route.locations[locationIndex+2].location;
     lastSyncTime = DateTime.now();
 
     locationStream.stream.listen((LocationData data) {
@@ -64,23 +66,45 @@ class RouteGuide {
       // 경로 안내중일때, 위치가 변경 될 경우 실행.
       if (started && difference.inSeconds > 1) {
         lastSyncTime = time;
-        double distance = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
-        if (distance < 20.00 && locationIndex != route.locations.length) {
-          locationIndex++;
-          remainDistance -= route.locations[locationIndex].time;
-          remainTime -= route.locations[locationIndex].distance;
 
-          roadName = route.locations[locationIndex].roadName;
-          description = route.locations[locationIndex].description;
+        double distance = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
+        double distance2 = distanceInMeterByHaversine(LatLng(data.latitude, data.longitude), nextStop2); // 현재 위치와 다음 경로 안내 지점과의 거리 계산
+        if (distance < 20.00 && locationIndex != route.locations.length) {
+          timeupdate(route.locations[locationIndex]);
+          update(route.locations[locationIndex+1]);
 
           nextStop = route.locations[locationIndex + 1].location;
-          if(T.selectedPolylinePoints != null){
+          if(route.locations.length - locationIndex <= 2)
+            nextStop2 = null;
+          else
+            nextStop2 = route.locations[locationIndex + 2].location;
+
+          if(T.selectedPolylinePoints.isNotEmpty){
             T.selectedPolylinePoints.remove(T.selectedPolylinePoints.first);
           }
+          
+          locationIndex++;
+        }
+        else if(distance2 < 20.00 &&  route.locations.length - locationIndex > 2){
+          timeupdate(route.locations[locationIndex]);
+          timeupdate(route.locations[locationIndex + 1]);
+          update(route.locations[locationIndex+2]);
+          
+          nextStop = route.locations[locationIndex + 2].location;
+          nextStop2 = route.locations[locationIndex + 3].location;
+
+          for(int i = 0; i< 2; i++)
+            if(T.selectedPolylinePoints.isNotEmpty)
+              T.selectedPolylinePoints.remove(T.selectedPolylinePoints.first);
+          
+          locationIndex += 2;
         }
 
         if (description == "") description = "경로 따라 진행";
-        if (locationIndex == route.locations.length) description = "도착";
+        if (locationIndex == route.locations.length){
+          description = "도착";
+          stop();
+        }
       }
     });
   }
@@ -93,6 +117,18 @@ class RouteGuide {
   /// bool started = true;
   /// ```
   start() => started = true;
-  stop() => started = false;
-  //    locationStream.close(); 이거 없어도 됨?
+  stop(){
+    if(started){
+    started = false;
+    locationStream.close();
+    }
+  }
+  timeupdate(Point data){
+    remainDistance -= data.time;
+    remainTime -= data.distance;
+  }
+  update(Point data){
+    roadName = data.roadName;
+    description = data.description;
+  }
 }

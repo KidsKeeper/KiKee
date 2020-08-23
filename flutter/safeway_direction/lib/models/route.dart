@@ -12,7 +12,7 @@ class Route {
   int totalMinute;
   int totalDanger = 0;
 
-  List<_Point> locations = [];
+  List<Point> locations = [];
   List<LatLng> crossWalks = [];
 
   @override
@@ -44,7 +44,7 @@ class Route {
         sectionTime = iter['properties']['time'];
         sectinoDistance = iter['properties']['distance'];
         for( int i = 0; i < iter['geometry']['coordinates'].length ; i++ ){
-            locations.add( _Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str, sectinoDistance, sectionTime) );
+            locations.add( Point(LatLng(iter['geometry']['coordinates'][i][1],iter['geometry']['coordinates'][i][0]), 0, iter['properties']['name'], str, sectinoDistance, sectionTime) );
             sectionTime = 0;
             sectinoDistance = 0;
         }
@@ -78,7 +78,7 @@ class Route {
   List<LatLng> toLatLngList() {
     List<LatLng> result = [];
 
-    for( _Point iter in locations )
+    for( Point iter in locations )
       result.add(iter.location);
 
     return result;
@@ -93,7 +93,7 @@ class Route {
     Set<String> roadNameList = BadPoint.roadNameToSet(dangerList);
 
     // 위험도 계산
-    for( _Point iter in locations ){
+    for( Point iter in locations ){
       if( roadNameList.contains(iter.roadName) ) {
         List<LatLng> latlngList = await TmapServices.getNearRoadInformation(iter.location);
 
@@ -113,7 +113,7 @@ class Route {
   }
 }
 
-class _Point {
+class Point {
   LatLng location;
   int danger = 0;
   String roadName;
@@ -121,14 +121,14 @@ class _Point {
   int distance;
   int time;
 
-  _Point( this.location, this.danger, this.roadName, this.description, this.distance, this.time);
+  Point( this.location, this.danger, this.roadName, this.description, this.distance, this.time);
 
   @override
   int get hashCode => location.hashCode;
 
   @override
   bool operator ==(dynamic other) =>
-      other is !_Point ? false : (location.latitude - other.location.latitude).abs()<0.001&&(location.longitude - other.location.longitude).abs()<0.001 ; //(location == other.location)
+      other is !Point ? false : (location.latitude - other.location.latitude).abs()<0.001&&(location.longitude - other.location.longitude).abs()<0.001 ; //(location == other.location)
 
 }
 

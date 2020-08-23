@@ -9,15 +9,12 @@ import '../models/route.dart';
 class TmapServices {
   static const String projectKey = Keys.tMap;
 
-  static Future<Route> getRoute(LatLng origin, LatLng destination,
-      [List<LatLng> passList]) async {
+  static Future<Route> getRoute(LatLng origin, LatLng destination, [List<LatLng> passList]) async {
     List<LatLng> origindata = await getNearRoadInformation(origin);
-    origin =
-        origindata != null ? _getPointMeetLine(origindata, origin) : origin;
     List<LatLng> destinationData = await getNearRoadInformation(destination);
-    destination = destinationData != null
-        ? _getPointMeetLine(destinationData, destination)
-        : destination;
+
+    origin = (origindata.length == 1) ? origin : _getPointMeetLine(origindata, origin) ;
+    destination = (destinationData.length == 1) ? destination : _getPointMeetLine(destinationData, destination);
 
     Map<String, dynamic> requestData = {
       "appKey": projectKey,
@@ -69,6 +66,7 @@ class TmapServices {
         }
       return result;
     } catch (e) {
+      print("Error : TmapService.getRoute");
       return null;
     }
   }
@@ -92,7 +90,7 @@ class TmapServices {
             iter['location']['latitude'], iter['location']['longitude']));
       return result;
     } catch (e) {
-      return null;
+      return [position];
     }
   }
 
