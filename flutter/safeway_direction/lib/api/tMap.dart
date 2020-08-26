@@ -13,8 +13,12 @@ class TmapServices {
     List<LatLng> origindata = await getNearRoadInformation(origin);
     List<LatLng> destinationData = await getNearRoadInformation(destination);
 
-    origin = (origindata.length == 1) ? origin : _getPointMeetLine(origindata, origin) ;
-    destination = (destinationData.length == 1) ? destination : _getPointMeetLine(destinationData, destination);
+    origin = (origindata.length == 1)
+        ? origin
+        : _getPointMeetLine(origindata, origin);
+    destination = (destinationData.length == 1)
+        ? destination
+        : _getPointMeetLine(destinationData, destination);
 
     Map<String, dynamic> requestData = {
       "appKey": projectKey,
@@ -66,7 +70,7 @@ class TmapServices {
         }
       return result;
     } catch (e) {
-      print("Error : TmapService.getRoute");
+      print("Error : 경로를 찾을 수 없습니다");
       return null;
     }
   }
