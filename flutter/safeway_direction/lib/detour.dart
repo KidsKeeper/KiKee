@@ -53,9 +53,8 @@ class Detour{
       for(int direction =0; direction<4; direction++){ //위험 포인트에서 경유 후보 뽑아냄.
         LatLng fourWayPos = LatLng( dp.latitude+fourWay[direction][0],dp.longitude+fourWay[direction][1] );
         var near = await TmapServices.getNearRoadInformation(fourWayPos);
-        for(int passPoint =0; passPoint<near.length; passPoint++){
-          passPoints.add(LatLng(near[passPoint].latitude,near[passPoint].longitude));
-        }
+        passPoints.add(near.first);
+        passPoints.add(near.last);
       }
       for( int pp = 0; pp<passPoints.length; pp++ ) { // 뽑아낸 경유 후보들에서 새로운 경로후보들 뽑음
         route = await TmapServices.getRoute( source, destination,[passPoints[pp]] );
