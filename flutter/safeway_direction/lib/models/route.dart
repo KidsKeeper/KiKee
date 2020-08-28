@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -115,6 +116,41 @@ class Route {
   }
 }
 
+/// 병렬처리를 위한 Isolate용 updateDanger 함수
+/// __Example__
+/// ```
+/// ReceivePort  _receivePort = ReceivePort();
+/// _receivePort.listen((value){
+///   'sendPort.send(data)를 통해 받은 데이터 처리' 
+///  });
+/// for(way.Route iter in routes)
+///   Isolate.spawn(function, Tuple3(_receivePort.sendPort,Route,Set<BadPoint>));
+/// ```
+Future<void> updateDangerinIsolate(Tuple3<SendPort,Route,Set<BadPoint>> parameter) async {
+  SendPort sendPort = parameter.one;
+  Route data = parameter.two;
+  Set<BadPoint> dangerList = parameter.three;
+    // 위험도 0으로 초기화
+    data.totalDanger = 0;
+    for (var iter in data.locations) iter.danger = 0;
+
+    Set<String> roadNameList = BadPoint.roadNameToSet(dangerList);
+
+    // 위험도 계산
+    for (Point iter in data.locations) {
+      if (roadNameList.contains(iter.roadName)) {
+        List<LatLng> latlngList = await TmapServices.getNearRoadInformation(iter.location);
+        for (LatLng iter2 in latlngList) {
+          try {
+            iter.danger = dangerList.firstWhere((BadPoint iter) => iter.badLocation == Pair.geometryFloor(iter2)).danger;
+            data.totalDanger += iter.danger;
+            break;
+          } catch (e) {}
+        }
+      }
+    }
+    sendPort.send(data);
+  }
 class Point {
   LatLng location;
   int danger = 0;

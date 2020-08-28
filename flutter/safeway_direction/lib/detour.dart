@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'models/RouteSelectCard.dart';
@@ -5,6 +7,7 @@ import 'api/tMap.dart';
 import 'api/store.dart';
 import 'api/accidentInformation.dart';
 import 'models/route.dart' as way;
+import 'models/utility.dart';
 
 class Detour{
   List<Color> colors = [ Colors.red, Colors.orange, Colors.yellow, Colors.blue ];
@@ -14,7 +17,7 @@ class Detour{
   List<RouteSelectionClass> routeSelectionList = [];
   way.Route route = way.Route();
   Set<way.Route> routes = {};
-  List<LatLng> passPoints = [];
+  
   List<way.Route> sortRoute =[];
   LatLng source;
   LatLng destination;
@@ -31,12 +34,20 @@ class Detour{
     int start = -1;
     int end = -1;
     int cnt =0;
-
-    route = await TmapServices.getRoute(source, destination);  // get route infomation
+    
     print("==========================The First API getRoute in detour.dart is REQUESTED!===================");
     Set<way.BadPoint> accidentAreas = {};
-    await way.BadPoint.updateBadPointbyStore( accidentAreas, await findNearStoresInRectangle(source, destination) );
-    await way.BadPoint.updateBadPointbyAccident( accidentAreas, await getAccidentInformation(source, destination) );
+
+    await Future.wait([
+        TmapServices.getRoute(source, destination), // get route infomation
+        findNearStoresInRectangle(source, destination),
+        getAccidentInformation(source, destination)
+      ],
+    ).then((result) async {
+      route = result[0];
+      await way.BadPoint.updateBadPointbyStore( accidentAreas, result[1] );
+      await way.BadPoint.updateBadPointbyAccident( accidentAreas, result[2] );
+    });
     await route.updateDanger(accidentAreas);
 
     List<List<double>> fourWay = [ [0.001,0], [-0.001,0], [0,0.001], [0,-0.001] ]; //위 아래 오른쪽 왼쪽 100m
@@ -50,6 +61,7 @@ class Detour{
     }
 
     if(dp!=null){//more than 1 danger point
+      List<LatLng> passPoints = [];
       for(int direction =0; direction<4; direction++){ //위험 포인트에서 경유 후보 뽑아냄.
         LatLng fourWayPos = LatLng( dp.latitude+fourWay[direction][0],dp.longitude+fourWay[direction][1] );
         var near = await TmapServices.getNearRoadInformation(fourWayPos);
@@ -87,10 +99,26 @@ class Detour{
       routes.add(route);
     }
 
-    for(way.Route iter in routes) //danger points 에 따라 정렬했지만, 나중에 거리(시간)으로도 정렬기준을 새로 만들어야함.
-      await iter.updateDanger(accidentAreas);
+  
+    ReceivePort  _receivePort = ReceivePort();
+    _receivePort.listen((value){
+      if(value is way.Route)
+        sortRoute.add(value);
+      });
 
-    sortRoute = routes.toList();
+    for(way.Route iter in routes)
+      Isolate.spawn(way.updateDangerinIsolate, Tuple3(_receivePort.sendPort,iter,accidentAreas));
+    
+    await Future.doWhile( () async {
+      if(routes.length == sortRoute.length)
+        return false;
+      else{
+        await Future.delayed(const Duration(milliseconds: 1000), () {});
+        return true;
+      }
+    });
+    _receivePort.close();
+
     sortRoute.sort((a, b) {
       int result = a.totalDanger.compareTo(b.totalDanger);
       if (result == 0) return a.distance.compareTo(b.distance);
@@ -135,7 +163,6 @@ class Detour{
           polylinePoints.removeAt(data[i][j]);
           sortRoute.removeAt(data[i][j]);
         }
-
   }
 
   Future<void> drawAllPolyline() async{
