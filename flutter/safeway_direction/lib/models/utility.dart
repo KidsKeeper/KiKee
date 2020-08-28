@@ -44,6 +44,28 @@ class Pair<E, F> {
   }
 }
 
+class Tuple3<E, F, G> {
+  final E one;
+  final F two;
+  final G three;
+
+  Tuple3(this.one, this.two, this.three);
+
+  @override
+  int get hashCode => one.hashCode ^ two.hashCode ^ three.hashCode;
+
+  @override
+  bool operator ==(other) {
+    if (other is! Tuple3) {
+      return false;
+    }
+    return other.one == one && other.two == two && other.three == three;
+  }
+
+  @override
+  String toString() => '($one, $two, $three)';
+
+}
 /// 하버사인 공식,
 ///
 /// 두 좌표 사이의 거리를 계산해서 m로 반환.
