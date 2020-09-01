@@ -43,13 +43,7 @@ class Route {
 
     var iter = data['features'];
 
-    locations.add(Point(
-        LatLng(iter[0]['geometry']['coordinates'][1], iter[0]['geometry']['coordinates'][0]),
-        0,
-        iter[1]['properties']['name'],
-        iter[0]['properties']['description'],
-        0,
-        0));
+    locations.add(Point(LatLng(iter[0]['geometry']['coordinates'][1], iter[0]['geometry']['coordinates'][0]), 0, iter[1]['properties']['name'], iter[0]['properties']['description'], 0, 0));
 
     for (var iter in data['features']) {
       if (iter['geometry']['type'] == 'LineString') {
@@ -204,9 +198,9 @@ class BadPoint {
         //
         Pair<double, double> pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
-            (BadPoint iter) =>
-                iter.roadName == roadName && iter.badLocation == pairLatLng,
-            orElse: () {result.add(BadPoint(Pair.geometryFloor(iter), roadName));return result.last;}).danger += 1;
+            (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+            orElse: () {result.add(BadPoint(Pair.geometryFloor(iter), roadName));return result.last;}
+            ).danger += 1;
       }
     }
   }
