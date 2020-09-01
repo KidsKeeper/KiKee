@@ -611,6 +611,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
       Alert(
         context: context,
         title: '즐겨찾기 수정',
+        type: AlertType.none,
         style: AlertStyle(
           titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.black,fontSize: 20),
           backgroundColor: Color(0xfffdfbf4),
@@ -801,6 +802,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
             Text("수정", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
           ),
         ],
+        closeFunction: () {}
       ).show();
     }
 
@@ -810,6 +812,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
       Alert(
         context: context,
         title: '즐겨찾기 추가',
+        type: AlertType.none,
         style: AlertStyle(
           titleStyle: TextStyle( fontFamily: 'BMJUA',color: Colors.black,fontSize: 20),
           backgroundColor: Color(0xfffdfbf4),
@@ -989,6 +992,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
               child: Text("저장", style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'))
           ),
         ],
+        closeFunction: () {}
       ).show();
     }
   }
