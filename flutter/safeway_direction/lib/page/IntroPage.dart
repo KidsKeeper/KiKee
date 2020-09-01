@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:safewaydirection/page/FirstPage2.dart';
 
 final List<String> imgList = [
-  'image/firstPage.png','image/secondPage.png'
+  'image/kiki.png','image/kiki.png'
 ];
 class CarouselWithIndicatorDemo extends StatefulWidget {
   @override

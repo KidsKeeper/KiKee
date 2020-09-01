@@ -78,7 +78,7 @@ class _KidsKeeperClassState extends State<KidsKeeperClass> {
                   end:Alignment.bottomCenter,
                   colors: [Color(0xfffcf2a3),Color(0xfffed7a1)]),
               image: DecorationImage(
-                image: AssetImage('image/loadingKidsKeeper.png'),
+                image: AssetImage('image/kiki.png'),
               )
           ),
         ),

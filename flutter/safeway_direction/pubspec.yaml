@@ -44,9 +44,6 @@ flutter:
     - image/startMarker.png
     - image/endMarker.png
     - image/crosswalk.png
-    - image/loadingKidsKeeper.png
-    - image/firstPage.png
-    - image/secondPage.png
 
   fonts:
     - family: BMJUA
