@@ -27,7 +27,7 @@ class Detour{
   Detour();
   
   Detour.map(this.source, this.destination){
-    print("mapped");
+    print("=============Detour.dart:: mapped==========");
   }
 
   Future<void> getRouteOrDetour() async{ //이 함수가 호출되면, polylinePoints 리스트의 값이 채워짐.
@@ -61,12 +61,44 @@ class Detour{
     }
 
     if(dp!=null){//more than 1 danger point
+
       List<LatLng> passPoints = [];
       for(int direction =0; direction<4; direction++){ //위험 포인트에서 경유 후보 뽑아냄.
         LatLng fourWayPos = LatLng( dp.latitude+fourWay[direction][0],dp.longitude+fourWay[direction][1] );
         var near = await TmapServices.getNearRoadInformation(fourWayPos);
-        passPoints.add(near.first);
-        passPoints.add(near.last);
+        var beforeTest = [near.first, near.last];
+        //경유 후보 거르기 시작
+        double lat = source.latitude-destination.latitude;
+        double lng = source.longitude-destination.longitude;
+        for(var b in beforeTest){
+          var result = true;
+          if(lat<0&&lng<0){
+            //source 보다 위도 경도 작으면 ban
+            if(source.latitude>b.latitude || source.longitude>b.longitude)
+              result = false;
+          }else if(lat<=0&&lng>0){
+            //source 보다 위도 작고 경도 높으면 ban
+            if(source.latitude>b.latitude || source.longitude<b.longitude)
+              result = false;
+          }else if(lat>0&&lng<=0){
+            //source 보다 위도 높고 경도 낮으면 ban
+            if(source.latitude<b.latitude || source.longitude>b.longitude)
+              result = false;
+          }else if(lat>=0&&lng>=0){
+            //source 보다 위도 크고 경도 크면 ban
+            if(source.latitude<b.latitude || source.longitude<b.longitude)
+              result = false;
+          }
+          if(result==true){
+            print("added!");
+            passPoints.add(b);
+          }else{
+            print("걸러짐!!");
+          }
+        }
+        //경유 후보 거르기 끝
+//        passPoints.add(near.first);
+//        passPoints.add(near.last);
       }
       for( int pp = 0; pp<passPoints.length; pp++ ) { // 뽑아낸 경유 후보들에서 새로운 경로후보들 뽑음
         route = await TmapServices.getRoute( source, destination,[passPoints[pp]] );
