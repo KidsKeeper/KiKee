@@ -655,6 +655,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ),]
               ),
             ),
+            SizedBox(height: 20,),
             SearchMapPlaceWidget(
               apiKey: Keys.googleMap,
               language: 'ko',
@@ -854,6 +855,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ),]
               ),
             ),
+            SizedBox(height: 20,),
             SearchMapPlaceWidget(
               apiKey: Keys.googleMap,
               language: 'ko',
