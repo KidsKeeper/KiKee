@@ -1,68 +1,50 @@
-# KidsKeeper
 
-## 업데이트2 (2020.07.21)
-```
-새로운 업데이트입니다.
-설이가 수정한 파일을 master에 합쳤습니다.
-android/src/main/manifest..어쩌구 이놈의 key값이 ****로 변경되었으며
-ios/Runner/어쩌구dele어쩌구(?) 이놈의 key값도 ****로 변경되어
-master 코드를 pull 하신경우 이 두 부분을 각각 google map key값으로 수정한뒤 실행해야 합니다.
-```
+# KidsKeeper for Kids 
 
+> 키즈키퍼는 부모님과 연동가능한 아이들을 위한 , 위험한 경로를 피해서 안전한 길찾기를 도와주는   어플리케이션 입니다.<br>🙋‍♂️[KidsKeeper for Parents](https://github.com/KidsKeeper/Parents)🙋‍♀️
+<div>
+<img src = "https://media.giphy.com/media/XHvTSwcVNVf3BJRb0b/giphy.gif" width ="300" >
+</div>
 
+## Made By 
+ - 👩🏻‍🌾 [한재원](https://github.com/ellynhan) 
+ - 👩🏻‍💻 [임윤정](https://github.com/Yj0916)
+ - 👨🏻‍🎨 이황준
+ - 👸🏻 [강승길](https://github.com/seunggil1)
+ - 🦄 [전설](https://github.com/redundant4u)
+ 
+## Abstraction
 
-```
-다들 현재 합쳐진 파일로 업데이트를 하기위해
+### 서비스 설명
 
+1) 안전한 길 찾기
 
-본인 작업 브랜치에서 `git pull origin master`를 해주시기 바랍니다!
-
-만약 충돌로 인해 `aborting`이 난 경우 해결 방안은 두 가지 입니다.
-```
-
-
-> (만약 딱히 충돌도 안났는데 업데이트도 안됐다 하면... git fetch origin 한번 해보십숑)
-
-
-
-### 1. 기존 파일에서 `stash`를 생성해 `stash` 저장을 해준 후 `master`파일을 받아오기
-
-(Android stuido 에서는 VCS -> Git -> stash 있고
-
-Visual studio Code 에서는 SOURCE CONTROL:GIT (왼쪽 세로형 메뉴바 3번째꺼)에서 ''' 누르고 밑에 stash 있음)
+<div>
+<img src = "https://drive.google.com/uc?export=view&id=1bgBLWJSQPYMbQqOUHodUrbUDre_YjdVt" width = "300">
+</div>
 
 
-> 이렇게 하면 기존에 있던 파일은 `stash`파일에 저장됩니다. 하지만 `unstash`했을 때 충돌나는건 여전하겠죠. (vs code는 apply stash)
+> 부산 금정구 사고 지역 open api와 유해업소 open api를 필요한 부분만 정리하여 서버에 저장해두고 있는데, 이 저장된 데이터를 활용하여 경로마다 위험도를 계산합니다.<br> 위험도에 따라 경로를 정렬하고 **각 위험도에 따른 경로의  각 색상별로 2가지 이내의 경로 결과**만 표시하도록 하고 최대 8개의 경로 후보들중에서 사용자가 선택 가능합니다!
+>**사용자가  원하는 경로를 선택**했을 시 길찾기가 시작 되도록 하고, <br> 출발지와 목적지를 설정할 떄 사용자의 편의를 위하여 사용자가 아무 설정을 하지 않았을 때는 출발지가 사용자의 위치를 자동으로 입력받도록  합니다. <br>또한, 사용자가 길찾기 도중에는 **실시간으로 본인의 위치**를 지도 위에서 확인 할 수 있도록 되어있습니다.
 
-> > 그냥 기존 파일 쓸 생각 없단 마음으로 하는 방안입니다.
-> > 주로 제가 새로운 브랜치 만들기 귀찮은데 충돌 해결을 직접하고 싶진 않다 싶을 때 사용하는 방법입니다.
+2) 심플하고 직관적인 UI/UX 디자인
 
+<div>
+<img src = "https://drive.google.com/uc?export=view&id=1QzxdzQsVjsbM8fRypMg0u3r6Y5_HqMWr" width = "300">
+</div>
 
-
-
-
-### 2. 새로운 브랜치를 만든 후 위 방법 사용하기.
-
-> 이렇게 하면 기존에 있던 브랜치의 파일들은 보존할 수 있습니다. 하지만 어차피 깃허브에 히스토리에 다 보존이 되어있는데 .. (생략)
+>사용자가 **쉽게 이해가 가능한 인터페이스**로 설계되어있습니다.<br>  추상적인 메타포보다는 심플하고 직관적인 아이콘을 사용해, **간단한 설명과 함께 가이드라인**을 제시하고 있습니다.<br>버튼이나 조작 방법은 되도록 간단하게 작동이 가능하도록 하여 인지적 부담을 감소시키고,  사용자가 기억하기 쉽고 빠른 습득이 가능하게 설계하여 **어린이에게 친화적인 앱입니다.**
 
 
+3) 편의기능
+<div>
+<img src = "https://drive.google.com/uc?export=view&id=18z5X-iABdZH-mDypJlyDMepwHNddfonk" width = "300">
+</div>
 
+>사용자가 자주 사용하는 위치 정보를 리스트 방식으로 저장하여 쉽게 정보를 불러올 수 있도록 제공하고 있습니다. <br>또 사용자가 이전에 검색했던 기록을 통해 쉽게 출발지나 목적지를 설정할 수 있도록 하기 위해서 이전 검색 기록 기능도 제공하고 있습니다.
 
-#### ▶︎ 파일을 pull받고 실행시켜보기전에 `safeway_direction/lib/` 에 `keys.dart` 파일을 만들어야 합니다.
+### 구조
+<div>
+<img src = "https://drive.google.com/uc?export=view&id=13YnrAtnLBfsz_4ySNqLcOETedimEpkAl" width = 65%>
+</div>
 
-
-```dart
-class Keys{
-  static const String googleMap =  "******";
-  static const String database = "******";
-  static const String tMap = "******";
-  static const String place = "******";
-}
-```
-
-
-
-> 근데 여기서 googleMap이랑 place랑 키가 같은 경우 그냥 googleMap 키랑 place키에 값을 같은걸 넣어주면 됩니다.
-
-
-(나중에 정리합시다ㅋㅋ)
