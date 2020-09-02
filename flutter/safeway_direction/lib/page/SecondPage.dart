@@ -443,7 +443,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 child: Image.asset('image/kiki.png',width: (width/5),),
                 onTap: () {
                   if(searchController.text==""||searchController2.text==""){
-                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다");
+                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다.");
                   }else if(searchController.text == searchController2.text){
                     showMyDialog(context,"어라?? 출발지와 도착지가 같아요~!");
                   }else if(start==null||end==null){
@@ -977,6 +977,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
               radius: BorderRadius.circular(15),
               onPressed: () {
                 if( favoriteInfo.icon == null ) { showMyDialog(context,"아이콘을 선택 해주세요!"); }
+                if( favoriteInfo.latitude == null ) { showMyDialog(context,"장소를 검색 해주세요."); }
 
                 else {
                   _insertFavorite(favoriteInfo);
