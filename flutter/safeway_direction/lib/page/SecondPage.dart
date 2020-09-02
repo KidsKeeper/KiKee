@@ -12,7 +12,6 @@ import '../db/KikeeDB.dart';
 import '../keys.dart';
 import '../src/Server.dart';
 
-
 class NewSearchPage extends StatefulWidget {
   @override
   _NewSearchPageState createState() => _NewSearchPageState();
@@ -783,6 +782,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
             radius: BorderRadius.circular(15),
             onPressed: () {
               _deleteFavorite(id);
+              _updateFavoriteIcon();
               print('db delete');
               Navigator.pop(context);
             },
