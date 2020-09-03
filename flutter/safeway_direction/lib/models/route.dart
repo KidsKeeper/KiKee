@@ -188,15 +188,14 @@ class BadPoint {
   }
 
   static Future<void> updateBadPointbyStore(Set<BadPoint> result, List<Store> dangerList) async {
+    List<LatLng> latlngList = [];
+    String roadName;
+    Pair<double, double> pairLatLng;
     for(Store danger in dangerList){
-      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
+      latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in latlngList){
-        String roadName = await TmapServices.reverseGeocoding(iter);
-        //only test
-        if(danger.rdnm != roadName)
-          print("roadName different : " + danger.rdnm + " != " + roadName);
-        //
-        Pair<double, double> pairLatLng = Pair.geometryFloor(iter);
+        roadName = await TmapServices.reverseGeocoding(iter);
+        pairLatLng = Pair.geometryFloor(iter);
         result.firstWhere(
             (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
             orElse: () {result.add(BadPoint(Pair.geometryFloor(iter), roadName));return result.last;}
@@ -206,13 +205,15 @@ class BadPoint {
   }
 
   static Future<void> updateBadPointbyAccident(Set<BadPoint> result, List<AccidentArea> dangerList) async{
+    List<LatLng> latlngList = [];
+    String roadName;
+    Pair<double, double> pairLatLng;
     for(AccidentArea danger in dangerList){
-      List<LatLng> latlngList = await TmapServices.getNearRoadInformation(danger.location);
+      latlngList = await TmapServices.getNearRoadInformation(danger.location);
       for(LatLng iter in  latlngList){
-        String roadName = await TmapServices.reverseGeocoding(iter);
-        Pair<double, double> pairLatLng = Pair.geometryFloor(iter);
-        result.firstWhere(
-                (BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
+        roadName = await TmapServices.reverseGeocoding(iter);
+        pairLatLng = Pair.geometryFloor(iter);
+        result.firstWhere((BadPoint iter) => iter.roadName == roadName && iter.badLocation == pairLatLng,
             orElse: () {result.add(BadPoint(Pair.geometryFloor(iter), roadName)); return result.last;}).danger += danger.occrrncCnt;
       }
     }
