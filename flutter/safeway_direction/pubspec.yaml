@@ -43,8 +43,13 @@ flutter:
     - image/startMarker.png
     - image/endMarker.png
     - image/crosswalk.png
-    - image/convenient.png
-    - image/convenient2.png
+    - image/firstpage_1.png
+    - image/secondpage1.png
+    - image/secondpage2.png
+    - image/favoritepage.png
+    - image/loadingpage.png
+    - image/thirdpage1.png
+    - image/thirdpage2.png
 
   fonts:
     - family: BMJUA

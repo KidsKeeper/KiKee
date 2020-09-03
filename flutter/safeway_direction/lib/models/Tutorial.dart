@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 
 final List<String> imgList = [
-  'image/convenient2.png','image/convenient.png'
+  'image/firstpage_1.png','image/secondpage1.png','image/favoritepage.png','image/secondpage2.png','image/loadingpage.png','image/thirdpage1.png','image/thirdpage2.png',
 ];
 
 class TutorialDialog extends StatefulWidget {
@@ -37,7 +37,9 @@ class _TutorialDialogState extends State<TutorialDialog> {
                     carouselController: _controller,
                     items: imgList.map((item) =>
                         Container(
-                          child: Center(child: Image.asset(item,)),
+                          child: Image.asset(item,),
+                          alignment: Alignment.topCenter,
+                          margin: EdgeInsets.only(top:10),
                         )).toList(),
                     options: CarouselOptions(
                         autoPlay: false,
@@ -55,13 +57,13 @@ class _TutorialDialogState extends State<TutorialDialog> {
                 ],
               ),
             ),
-            Align(alignment: Alignment.bottomCenter,
+            Align(
+                alignment: Alignment(0.0,0.8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children:
                   imgList.map((url) {
                     int index = imgList.indexOf(url);
-                    print(index.toString());
                     return Container(
                       width: 15.0,
                       height: 15.0,
