@@ -58,7 +58,7 @@ class _TutorialDialogState extends State<TutorialDialog> {
               ),
             ),
             Align(
-                alignment: Alignment(0.0,0.8),
+                alignment: Alignment(0.0,0.85),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children:
