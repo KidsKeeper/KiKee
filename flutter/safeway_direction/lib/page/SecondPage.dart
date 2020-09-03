@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+
 import '../models/search_map_place.dart';
 import '../models/PlaceInfo.dart';
 import '../models/RecentSearch.dart';
@@ -36,11 +37,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
     Icons.book
   ];
 
-  int iconNumber1 = 0; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
-  int iconNumber2 = 0;
-  int iconNumber3 = 0;
-  int iconNumber4 = 0;
-  int iconNumber5 = 0;
+  List iconArray = [ 0, 0, 0, 0, 0 ]; // 몇 번째 즐겨찾기 아이콘을 가리키는 변수, variable which points numberth favorite icons
 
   @override
   void initState() {
@@ -49,22 +46,16 @@ class _NewSearchPageState extends State<NewSearchPage> {
   }
 
   void _updateFavoriteIcon() async {
-    List<Favorite> data = await KikeeDB.instance.getFavoriteTest2();
-    List iconArray = [];
+    List<Favorite> data = await KikeeDB.instance.getFavoriteIcon();
+    List iconTempArray = [ 0, 0, 0, 0, 0 ];
 
-    for( int i = 0; i < 5; i++ ) {
-      try { iconArray.add(data[i].icon); }
-      catch (e) { iconArray.add(0); }
+    for( int i = 0; i < data.length; i++ ) {
+      iconTempArray[ data[i].id - 1 ] = data[i].icon;
     }
 
-    setState(() {
-      iconNumber1 = iconArray[0];
-      iconNumber2 = iconArray[1];
-      iconNumber3 = iconArray[2];
-      iconNumber4 = iconArray[3];
-      iconNumber5 = iconArray[4];
-    });
+    iconArray = iconTempArray;
 
+    setState( () {} );
     print(iconArray);
   }
 
@@ -235,7 +226,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Color(0xff47c2bb),
                             child: Icon(
-                              icons[iconNumber1],
+                              icons[iconArray[0]],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -280,7 +271,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Colors.blueAccent,
                             child: Icon(
-                              icons[iconNumber2],
+                              icons[iconArray[1]],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -330,7 +321,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Colors.purple,
                             child: Icon(
-                              icons[iconNumber3],
+                              icons[iconArray[2]],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -375,7 +366,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(
-                              icons[iconNumber4],
+                              icons[iconArray[3]],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -420,7 +411,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             elevation: 0,
                             fillColor: Color(0xFFF0AD74),
                             child: Icon(
-                              icons[iconNumber5],
+                              icons[iconArray[4]],
                               color: Colors.white,
                               size: width/8,
                             ),
@@ -452,7 +443,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 child: Image.asset('image/kiki.png',width: (width/5),),
                 onTap: () {
                   if(searchController.text==""||searchController2.text==""){
-                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다");
+                   showMyDialog(context,"출발지와 도착지를 모두 채우셔야\n길찾기를 시작할 수 있습니다.");
                   }else if(searchController.text == searchController2.text){
                     showMyDialog(context,"어라?? 출발지와 도착지가 같아요~!");
                   }else if(start==null||end==null){
@@ -678,6 +669,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   latitude: lat,
                   mainText: place.mainText,);
 
+                  favoriteInfo.id = id;
                   favoriteInfo.description = place.description;
                   favoriteInfo.longitude = lng;
                   favoriteInfo.latitude = lat;
@@ -782,9 +774,9 @@ class _NewSearchPageState extends State<NewSearchPage> {
             radius: BorderRadius.circular(15),
             onPressed: () {
               _deleteFavorite(id);
-              _updateFavoriteIcon();
               print('db delete');
               Navigator.pop(context);
+              _updateFavoriteIcon();
             },
             child:
             Text("삭제", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
@@ -796,7 +788,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
               _updateFavorite(favoriteInfo);
               print('db update');
               Navigator.pop(context);
-              setState( () { _updateFavoriteIcon(); } );
+              _updateFavoriteIcon();
             },
             child:
             Text("수정", style: TextStyle(color: Colors.white, fontSize: 15,fontFamily: 'BMJUA')),
@@ -808,7 +800,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
 
     // insert favorite
     catch (error) {
-      print(error);
       Alert(
         context: context,
         title: '즐겨찾기 추가',
@@ -881,6 +872,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   latitude: lat,
                   mainText: place.mainText,);
 
+                  favoriteInfo.id = id;
                   favoriteInfo.description = place.description;
                   favoriteInfo.longitude = lng;
                   favoriteInfo.latitude = lat;
@@ -984,10 +976,15 @@ class _NewSearchPageState extends State<NewSearchPage> {
               color: Color(0xfff7b413),
               radius: BorderRadius.circular(15),
               onPressed: () {
-                _insertFavorite(favoriteInfo);
-                print('favorite db insert');
-                Navigator.pop(context);
-                setState( () { _updateFavoriteIcon(); } );
+                if( favoriteInfo.icon == null ) { showMyDialog(context,"아이콘을 선택 해주세요!"); }
+                if( favoriteInfo.latitude == null ) { showMyDialog(context,"장소를 검색 해주세요."); }
+
+                else {
+                  _insertFavorite(favoriteInfo);
+                  print('favorite db insert');
+                  Navigator.pop(context);
+                  _updateFavoriteIcon();
+                }
               },
               child: Text("저장", style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'BMJUA'))
           ),

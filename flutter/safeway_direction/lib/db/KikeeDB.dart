@@ -12,7 +12,7 @@ import '../src/Helper.dart';
 class KikeeDB {
   KikeeDB._();
 
-  static const databaseName = "kekeke.db";
+  static const databaseName = "kek.db";
   static final KikeeDB instance = KikeeDB._();
   static Database _database;
 
@@ -27,7 +27,7 @@ class KikeeDB {
         version: 1,
         onCreate: ( Database db, int version ) async {
           await db.execute( "CREATE TABLE recentsearch (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, placeId TEXT, description TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT)" );
-          await db.execute( "CREATE TABLE favorite (id INTEGER PRIMARY KEY, description TEXT, text TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
+          await db.execute( "CREATE TABLE favorite (id INTEGER, description TEXT, text TEXT, longitude DOUBLE, latitude DOUBLE, mainText TEXT, icon INTEGER)" );
           await db.execute( "CREATE TABLE kids (id INTEGER PRIMARY KEY, kidsId INTEGER, key TEXT)" );
         }
     );
@@ -142,19 +142,14 @@ class KikeeDB {
     return data;
   }
 
-  Future<List<Favorite>> getFavoriteTest2() async {
+  Future<List<Favorite>> getFavoriteIcon() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('favorite');
 
     return List.generate(maps.length, (i) {
       return Favorite(
           id: maps[i]['id'],
-          description: maps[i]['description'],
-          // longitude: longitude,
-          // latitude: latitude,
-          mainText: maps[i]['mainText'],
           icon: maps[i]['icon'],
-          text: maps[i]['text']
       );
     });
   }
@@ -172,7 +167,7 @@ class KikeeDB {
   }
 
   updateFavorite( Favorite data ) async {
-    final db = await database;
+    final Database db = await database;
 
     await db.update( 'favorite', data.toMap(),
         where: 'id = ?',
@@ -183,7 +178,7 @@ class KikeeDB {
 
   deleteFavorite( int id ) async {
     final Database db = await database;
-    db.delete( 'favorite', where: 'id = ?', whereArgs: [id] );
+    await db.delete( 'favorite', where: 'id = ?', whereArgs: [id] );
   }
 
   Future<List<Kids>> getKids() async {
@@ -197,10 +192,5 @@ class KikeeDB {
           kidsId: maps[i]['kidsId']
       );
     });
-  }
-
-  deleteKidsId( int id ) async {
-    final Database db = await database;
-    db.delete( 'kids', where: 'id = ?', whereArgs: [id] );
   }
 }

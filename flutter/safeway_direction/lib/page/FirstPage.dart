@@ -9,16 +9,14 @@ import '../db/KikeeDB.dart';
 import '../page/SecondPage.dart';
 import '../models/PlaceInfo.dart';
 import '../models/Tutorial.dart';
+import '../models/AlertDialog.dart';
 
-
-
-
-class FirstPage2 extends StatefulWidget {
+class FirstPage extends StatefulWidget {
   @override
-  _FirstPage2State createState() => _FirstPage2State();
+  _FirstPageState createState() => _FirstPageState();
 }
 
-class _FirstPage2State extends State<FirstPage2> {
+class _FirstPageState extends State<FirstPage> {
   String myCode =  "미생성";
   @override
   void initState() {
@@ -136,23 +134,27 @@ class _FirstPage2State extends State<FirstPage2> {
                         fontSize: 20),),
                     onPressed: () async
                     {
-                      const String PLACES_API_KEY = Keys.place;
-                      Position position = await Geolocator().getLastKnownPosition(
-                          desiredAccuracy: LocationAccuracy.high);
-                      double long = position.longitude;
-                      double lat = position.latitude;
-                      print('geocode : $long , $lat');
+                      // const String PLACES_API_KEY = Keys.place;
+                      // Position position = await Geolocator().getLastKnownPosition(
+                      //     desiredAccuracy: LocationAccuracy.high);
+                      // double long = position.longitude;
+                      // double lat = position.latitude;
+                      // print('geocode : $long , $lat');
 
-                      String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
-                      Response response = await Dio().get(url);
-                      print('get response');
-                      PlaceInfo place = new PlaceInfo(latitude: lat,
-                          longitude: long,
-                          description: "내 위치",
-                          mainText: "내 현재 위치 ");
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => NewSearchPage(),
-                        settings: RouteSettings(arguments: place),));
+                      // String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$PLACES_API_KEY&language=ko';
+                      // Response response = await Dio().get(url);
+                      // print('get response');
+                      // PlaceInfo place = new PlaceInfo(latitude: lat,
+                      //     longitude: long,
+                      //     description: "내 위치",
+                      //     mainText: "내 현재 위치 ");
+                          PlaceInfo place = PlaceInfo( mainText: '부산대학교정', latitude: 35.231618, longitude: 129.084071, description: '부산대학교정문 ');
+                      if( place.longitude == null ) { showMyDialog(context,"현재 위치를 받아오는 데 실패 했습니다.\n위치 권한을 확인해 주십시오."); }
+                      else { 
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => NewSearchPage(),
+                          settings: RouteSettings(arguments: place),));
+                      }
                     },
                   ),
                 ],
